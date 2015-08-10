@@ -147,7 +147,7 @@ public class MadCow extends PollingScript<ClientContext>{
 		}
 		else
 		{
-			if(Player.Backpack.Count(ctx, ObjectName.RAW_BEEF) > 2)
+			if(Player.Backpack.Count(ctx, ObjectName.RAW_BEEF) > 4)
 			{
 				return State.usebags;
 			}

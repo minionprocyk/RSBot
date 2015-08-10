@@ -49,5 +49,13 @@ public class Focus {
 		final Npc npc = ctx.npcs.select().name(npcName).nearest().poll();
 		ctx.camera.turnTo(npc);
 	}
+	public static void CheckFocus(ClientContext ctx, String object)
+	{
+		
+	}
+	public static void CheckFocus(ClientContext ctx, GameObject gameObject)
+	{
+		
+	}
 
 }

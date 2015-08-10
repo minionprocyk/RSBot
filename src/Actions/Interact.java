@@ -16,6 +16,7 @@ public class Interact {
 			if(gameObject.inViewport())
 			{
 				//object is valid and in viewport. We're also not doing anything
+				Camera.Focus.CheckFocus(ctx, gameObject);
 				gameObject.interact(action);
 				return true;
 			}
