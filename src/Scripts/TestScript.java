@@ -12,8 +12,8 @@ import Constants.ObjectName;
 public class TestScript  extends PollingScript<ClientContext> implements MessageListener{
 	MessageListener ml=null;
 	public void poll() {		
-		if(Player.Backpack.Contains(ctx, ObjectName.RAW_BEEF))System.out.println("We have "+Player.Backpack.Count(ctx, ObjectName.RAW_BEEF)+" raw beef");
 		Utility.Sleep.WaitRandomTime(1,1000);
+		ctx.controller.stop();
 	}
 	
 	public void messaged(MessageEvent message) {

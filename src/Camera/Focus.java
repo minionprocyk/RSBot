@@ -1,11 +1,16 @@
 package Camera;
 
+import java.awt.Point;
+import java.awt.Rectangle;
+
 import org.powerbot.script.Random;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
 public class Focus {
+	//high pitch raises camera to look at floor
+	//yaw of 0 is north, >0 is looking more west and <0 is looking more east
 	public static void OnRandomObject(ClientContext ctx)
 	{
 		//focus on a random object that is in the area
@@ -38,24 +43,20 @@ public class Focus {
 	public static void OnObject(ClientContext ctx, String objectName)
 	{
 		final GameObject gameObject = ctx.objects.select().name(objectName).nearest().poll();
-		ctx.camera.turnTo(gameObject);
+		Camera.Focus.OnObject(ctx, gameObject);
 	}
 	public static void OnObject(ClientContext ctx, GameObject gameObject)
 	{
+		ctx.camera.pitch(Random.nextInt(70,90));
 		ctx.camera.turnTo(gameObject);
 	}
 	public static void OnNpc(ClientContext ctx, String npcName)
 	{
 		final Npc npc = ctx.npcs.select().name(npcName).nearest().poll();
+		ctx.camera.pitch(Random.nextInt(70,90));
 		ctx.camera.turnTo(npc);
 	}
-	public static void CheckFocus(ClientContext ctx, String object)
-	{
-		
-	}
-	public static void CheckFocus(ClientContext ctx, GameObject gameObject)
-	{
-		
-	}
+
+
 
 }
