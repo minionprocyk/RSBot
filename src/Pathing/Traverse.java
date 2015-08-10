@@ -12,10 +12,10 @@ public class Traverse {
 			while(ctx.players.local().tile().distanceTo(t) > 3)
 			{
 				//shake the camera randomly 30% of the time while moving
-				if(Random.nextInt(0, 100)>70)Camera.Shake.Random(ctx);
+				if(Random.nextInt(0, 100)>70)Camera.Focus.OnRandomObject(ctx);
 				
 				ctx.movement.step(t);
-				Utility.Sleep.WaitRandomTime(750, 1500);
+				Utility.Sleep.WaitRandomTime(3000, 6000);
 			}
 		}
 	}
