@@ -1,5 +1,5 @@
 #eclipse project files
-*.project
+*.classpath
 
 # Windows image file caches
 Thumbs.db
