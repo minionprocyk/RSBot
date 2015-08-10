@@ -43,7 +43,7 @@ public class MadCow extends PollingScript<ClientContext>{
 			//wait until the cow is dead and loot it
 			if(interacted)
 			{
-				//wait for this ore to not exist or for 30 seconds
+				//wait for this cow to not exist or for 30 seconds
 				long now = System.currentTimeMillis();
 				do
 				{
@@ -79,6 +79,10 @@ public class MadCow extends PollingScript<ClientContext>{
 					Actions.Interact.InteractWithObject(ctx, ObjectName.FIRE, Interact.USE, 0);
 					Utility.Sleep.WaitRandomTime(1000, 3000);
 					if(ctx.widgets.component(1370, 20).valid())ctx.widgets.component(1370, 20).click();
+					do
+					{
+						Utility.Sleep.WaitRandomTime(1000, 2000);
+					}while(Player.Animation.CheckPlayerAnimation(ctx)==Animation.PLAYER_NOT_IDLE);
 				}
 				else
 				{
@@ -143,7 +147,7 @@ public class MadCow extends PollingScript<ClientContext>{
 		}
 		else
 		{
-			if(Player.Backpack.Contains(ctx, ObjectName.BONES) && Player.Backpack.Count(ctx, ObjectName.RAW_BEEF) > 2)
+			if(Player.Backpack.Count(ctx, ObjectName.RAW_BEEF) > 2)
 			{
 				return State.usebags;
 			}
