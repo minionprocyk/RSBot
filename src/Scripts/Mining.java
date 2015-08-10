@@ -5,7 +5,7 @@ import org.powerbot.script.Random;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
-import org.powerbot.script.rt6.Item;
+import org.powerbot.script.rt6.GameObject;
 
 import Constants.Animation;
 import Constants.Interact;
@@ -16,7 +16,10 @@ import Pathing.Traverse;
 @Manifest(name = "CopperMining", description = "spawn crafter and tan stuff bitch", properties = "client=6; topic=0;")
 
 public class Mining extends PollingScript<ClientContext>{
-	boolean oreValid=false;
+	boolean interacted=false;
+	static int currentPlayerAnimation=-1;
+	
+	//tiles from furnace to cave entrance
 	Tile furnaceLocation = new Tile(2884,3506,0);
 	Tile bankLocation = new Tile(2889,3539,0);
 	Tile exitCave1 = new Tile(2278, 4511, 0);
@@ -43,29 +46,41 @@ public class Mining extends PollingScript<ClientContext>{
 	Tile[] fromFurnaceToCaveEntrance = new Tile[]{furnaceLocation, caveEntrance};
 	Tile[] fromBankToCaveEntrance = new Tile[]{bankLocation, btc1, 
 							btc2, btc3, btc4, btc5, caveEntrance};
+		
 	public void poll() {
+		currentPlayerAnimation = Player.Animation.CheckPlayerAnimation(ctx);
 		switch(getState())
 		{
 		case mining:
-			if(ctx.players.local().animation()==Animation.PLAYER_IDLE)
+			if(currentPlayerAnimation==Animation.PLAYER_IDLE)
 			{
-				//look for a rock
-				oreValid=Actions.Interact.InteractWithObject(ctx, ObjectName.TIN_ROCK, Interact.MINE);
-				
-				if(oreValid)
+				//look for a rock when were idle and the rock we were mining does not existS
+				String rock="";
+				switch(Random.nextInt(0, 2))
 				{
-					//rock has been interacted with
-					Utility.Sleep.WaitRandomTime(100, 700);
+				case 0:
+					rock = ObjectName.TIN_ROCK;
+					break;
+				case 1:
+					rock = ObjectName.COPPER_ROCK;
+					break;
 				}
-				else
+				final GameObject gameObject = ctx.objects.select().name(rock).nearest().poll();
+				interacted = Actions.Interact.InteractWithObject(ctx, gameObject, Interact.MINE,0);
+				if(interacted)
 				{
-					//we could not find a rock. so we should try a new location
-					Traverse.TraverseRandomPath(ctx, oreLocations);
+					//wait for this ore to not exist or for 30 seconds
+					long now = System.currentTimeMillis();
+					do
+					{
+						Utility.Sleep.Wait(100);
+					}while(gameObject.valid() && (Math.abs(now-System.currentTimeMillis())) < 1000*30);
+					System.out.println("Ore gone. Next one");
 				}
 			}
 			else
 			{
-				//player animation is not idle... so were probably mining something
+				//player animation is not idle... right....
 				Utility.Sleep.WaitRandomTime(250, 2000);
 			}
 			break;
@@ -99,6 +114,11 @@ public class Mining extends PollingScript<ClientContext>{
 			Traverse.TraversePath(ctx, fromFurnaceToCaveEntrance);
 			EnterCave();
 			break;
+		case stop:
+			//logout if were logged in and then stop the script
+			if(ctx.game.loggedIn())ctx.game.logout(true);
+			ctx.controller.stop();
+			
 		default:
 			//panic
 		}
@@ -106,18 +126,19 @@ public class Mining extends PollingScript<ClientContext>{
 	private void ExitCave()
 	{
 		Traverse.TraversePath(ctx, exitCave);
-		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT);
+		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT,0);
 		//wait for some time to load
 		Utility.Sleep.WaitRandomTime(1000, 3000);
 		if((ctx.players.local().tile().x() < 2500) || (ctx.players.local().tile().y() > 4000))
 		{
 			//we are still in the cave
-			Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT);		
+			Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT,0);		
 		}
 	}
 	private void EnterCave()
 	{
-		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_ENTRANCE, Interact.ENTER);
+		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_ENTRANCE, Interact.ENTER,0);
+		Traverse.TraverseRandomPath(ctx, oreLocations);
 	}
 	private void WalkToFurnace()
 	{
@@ -132,18 +153,22 @@ public class Mining extends PollingScript<ClientContext>{
 	}
 	private void Smelt()
 	{
-		Actions.Interact.InteractWithObject(ctx, ObjectName.FURNACE, Interact.SMELT);
+		Actions.Interact.InteractWithObject(ctx, ObjectName.FURNACE, Interact.SMELT,0);
 		
 		//click the 'smelt' component
 		ctx.widgets.component(1370, 12).click();
 	}
+	
 	public State getState()
 	{
 		if(ctx.backpack.select().count()==28)
 		{
-			//backpack is full. sometimes we should smelt first
-			
+			//backpack is full.
 			return State.deposit;
+		}
+		else if(ctx.game.loggedIn() == false)
+		{
+			return State.stop;
 		}
 		else
 		{
@@ -152,7 +177,8 @@ public class Mining extends PollingScript<ClientContext>{
 	}
 	public enum State
 	{
-		mining, deposit, smelt
+		mining, deposit, smelt, stop,
+		walk_to_furnace, walk_to_cave, walk_to_bank
 	}
 
 }

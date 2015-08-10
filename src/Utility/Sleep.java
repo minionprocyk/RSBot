@@ -11,4 +11,12 @@ public class Sleep {
 			e.printStackTrace();
 		}
 	}
+	public static void Wait(double time)
+	{
+		try {
+			Thread.sleep((long) time);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+	}
 }

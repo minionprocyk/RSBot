@@ -3,6 +3,7 @@ package Camera;
 import org.powerbot.script.Random;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
+import org.powerbot.script.rt6.Npc;
 
 public class Focus {
 	public static void OnRandomObject(ClientContext ctx)
@@ -38,6 +39,15 @@ public class Focus {
 	{
 		final GameObject gameObject = ctx.objects.select().name(objectName).nearest().poll();
 		ctx.camera.turnTo(gameObject);
+	}
+	public static void OnObject(ClientContext ctx, GameObject gameObject)
+	{
+		ctx.camera.turnTo(gameObject);
+	}
+	public static void OnNpc(ClientContext ctx, String npcName)
+	{
+		final Npc npc = ctx.npcs.select().name(npcName).nearest().poll();
+		ctx.camera.turnTo(npc);
 	}
 
 }
