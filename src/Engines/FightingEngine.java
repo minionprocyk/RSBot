@@ -10,6 +10,7 @@ public class FightingEngine{
 	private boolean higherLevelWarning=false;
 	private boolean interacted=false;
 	Area fightingArea;
+	//
 	private ClientContext ctx;
 	public FightingEngine()
 	{
