@@ -1,22 +1,30 @@
 package Scripts;
-import org.powerbot.script.MessageEvent;
-import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.rt6.ClientContext;
 
-import Chat.Messages;
+import Constants.ObjectName;
+import Engines.FightingEngine;
 
 @Manifest(name = "Test", description = "We do crazy things", properties = "client=6; topic=0;")
-public class TestScript  extends PollingScript<ClientContext> implements MessageListener{
-	MessageListener ml=null;
-	public void poll() {		
-		Utility.Sleep.WaitRandomTime(1,1000);
-		ctx.controller.stop();
+public class TestScript  extends PollingScript<ClientContext>{
+	String[] rocks = new String[]{ObjectName.COPPER_ROCKS, ObjectName.TIN_ROCKS, ObjectName.IRON_ROCKS};
+	public void poll() {	
+		switch(getState())
+		{
+		case mine:
+			//new MiningEngine().SetContext(ctx).SetRocks(rocks).build().run();
+			new FightingEngine().SetContext(ctx).build().run();
+		}
+		
 	}
 	
-	public void messaged(MessageEvent message) {
-		Messages.AddPastReadMessages(message.source(), message.text());
+	public State getState()
+	{
+		return State.mine;
 	}
-
+	public enum State
+	{
+		mine
+	}
 }
