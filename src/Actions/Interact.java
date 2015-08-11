@@ -11,6 +11,8 @@ public class Interact {
 	private static final int lowDistanceFromObject=4;
 	private static final int lowRandomWaitTime=1000;
 	private static final int highRandomWaitTime=3000;
+	private static int adjustPitch=3;
+	
 	public static boolean InteractWithObject(ClientContext ctx,GameObject gameObject, String action, int helper)
 	{
 		if(helper!=0)helper++;
@@ -34,7 +36,7 @@ public class Interact {
 				//check if were running
 				do
 				{
-					System.out.println("in motion");
+					System.out.println("In motion");
 					Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
 				}
 				while(ctx.players.local().inMotion());
@@ -45,6 +47,10 @@ public class Interact {
 					System.out.println("Player not idle");
 					Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
 				}while(Player.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
+				
+				//if were not right next to the object we were supposed to interact with. we have to try again
+				if(ctx.players.local().tile().distanceTo(gameObject) > 4)InteractWithObject(ctx, gameObject, action, helper);
+				
 				return true;
 			}
 			else
@@ -59,7 +65,7 @@ public class Interact {
 					System.out.println("Object not in viewport. Walking to Object");
 					Pathing.ToObject.WalkToObject(ctx, gameObject);
 				}
-								
+				if(helper >= adjustPitch)Camera.Focus.AdjustPitch(ctx);
 				InteractWithObject(ctx,gameObject,action,helper);
 				return true;
 			}
@@ -113,6 +119,9 @@ public class Interact {
 					System.out.println("Player not idle");
 					Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
 				}while(Player.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
+				
+				//if were not right next to the npc we were suppoesd to interact with. we have to try again
+				if(ctx.players.local().tile().distanceTo(npc) > 4)InteractWithNPC(ctx, npc, action, helper);
 				return true;
 			}
 			else
@@ -129,6 +138,7 @@ public class Interact {
 					System.out.println("NPC not in viewport. Walking to NPC");
 					ToObject.WalkToObject(ctx, npc);
 				}
+				if(helper > adjustPitch)Camera.Focus.AdjustPitch(ctx);
 				
 				InteractWithNPC(ctx,npc,action,helper);
 				return true;
@@ -146,9 +156,6 @@ public class Interact {
 	{
 		final Npc npc = ctx.npcs.select().name(npcName).nearest().poll();
 		InteractWithNPC(ctx,npc,action,0);
-		return true;
-		
+		return true;	
 	}
-	
-
 }

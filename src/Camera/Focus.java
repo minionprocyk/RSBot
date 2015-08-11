@@ -53,7 +53,22 @@ public class Focus {
 		final Npc npc = ctx.npcs.select().name(npcName).nearest().poll();
 		ctx.camera.turnTo(npc);
 	}
-
-
-
+	public static void AdjustPitch(ClientContext ctx)
+	{
+		int currentPitch = ctx.camera.pitch();
+		
+		if(currentPitch < 20)
+		{
+			//current pitch is low. should probably make it higher
+			ctx.camera.pitch(Random.nextInt(20, 50));
+		}
+		else if(currentPitch>=20 && currentPitch < 50)
+		{
+			ctx.camera.pitch(Random.nextInt(50, 90));
+		}
+		else if(currentPitch >= 50 && currentPitch < 100)
+		{
+			ctx.camera.pitch(Random.nextInt(20, 60));
+		}
+	}
 }
