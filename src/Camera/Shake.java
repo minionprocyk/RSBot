@@ -5,7 +5,7 @@ import org.powerbot.script.rt6.ClientContext;
 
 public class Shake {
 	//camera pitch at 0 = looking at floor
-	public static void Shake(ClientContext ctx)
+	public static void ShakeIt(ClientContext ctx)
 	{
 		for(int i=0;i<3;i++)
 		{
@@ -30,7 +30,7 @@ public class Shake {
 			SetRandomCameraDirection(ctx);
 			break;
 		case shake:
-			Shake(ctx);
+			ShakeIt(ctx);
 			break;
 		}
 		

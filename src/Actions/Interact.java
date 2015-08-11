@@ -2,14 +2,15 @@ package Actions;
 
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
-import org.powerbot.script.rt6.Item;
 import org.powerbot.script.rt6.Npc;
 
 import Constants.Animation;
 import Pathing.ToObject;
 
 public class Interact {
-	
+	private static final int lowDistanceFromObject=4;
+	private static final int lowRandomWaitTime=1000;
+	private static final int highRandomWaitTime=3000;
 	public static boolean InteractWithObject(ClientContext ctx,GameObject gameObject, String action, int helper)
 	{
 		if(helper!=0)helper++;
@@ -17,8 +18,8 @@ public class Interact {
 		{
 			if(gameObject.inViewport())
 			{
-				//object is valid and in viewpor.
-				if(ctx.players.local().tile().distanceTo(gameObject) > 4)
+				//object is valid and in viewport.
+				if(ctx.players.local().tile().distanceTo(gameObject) > lowDistanceFromObject)
 				{
 					//distance to the object is greater than 4 tiles. we should move towards it 
 					ToObject.WalkToObject(ctx, gameObject);
@@ -33,16 +34,17 @@ public class Interact {
 				//check if were running
 				do
 				{
-					Utility.Sleep.WaitRandomTime(1000, 3000);
 					System.out.println("in motion");
+					Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
 				}
 				while(ctx.players.local().inMotion());
 				
 				//check if were doing some sort of animation
 				do
 				{
-					Utility.Sleep.WaitRandomTime(1000, 3000);
-				}while(Player.Animation.CheckPlayerAnimation(ctx) == Animation.PLAYER_NOT_IDLE);
+					System.out.println("Player not idle");
+					Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
+				}while(Player.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
 				return true;
 			}
 			else
@@ -50,14 +52,14 @@ public class Interact {
 				//object is valid and not in viewport. try to put it on screen
 				if(helper%2==0)
 				{
+					System.out.println("Object not in viewport. Adjusting Camera");
 					Camera.Focus.OnObject(ctx, gameObject);
 				}else
 				{
+					System.out.println("Object not in viewport. Walking to Object");
 					Pathing.ToObject.WalkToObject(ctx, gameObject);
 				}
-				
-				Utility.Sleep.WaitRandomTime(500, 1500);
-				
+								
 				InteractWithObject(ctx,gameObject,action,helper);
 				return true;
 			}
@@ -75,11 +77,6 @@ public class Interact {
 		InteractWithObject(ctx,gameObject,action,0);
 		return true;
 	}
-	public static boolean InteractWithItem(ClientContext ctx, Item item, String action, int helper)
-	{
-		return false;
-		
-	}
 	public static boolean InteractWithNPC(ClientContext ctx, Npc npc, String action, int helper)
 	{
 		if(helper!=0)helper++;
@@ -89,9 +86,10 @@ public class Interact {
 			if(npc.inViewport())
 			{
 				//npc is valid and in viewport
-				if(ctx.players.local().tile().distanceTo(npc) > 4)
+				if(ctx.players.local().tile().distanceTo(npc) > lowDistanceFromObject)
 				{
 					//distance to the npc is greater than 4 tiles. we should move towards it 
+					System.out.println("Not very close to NPC. Walking");
 					ToObject.WalkToObject(ctx, npc);
 					
 				}
@@ -104,15 +102,17 @@ public class Interact {
 				//check if were running
 				do
 				{
-					Utility.Sleep.WaitRandomTime(1000, 3000);
+					System.out.println("In motion");
+					Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
 				}
 				while(ctx.players.local().inMotion());
 				
 				//check if were doing some sort of animation
 				do
 				{
-					Utility.Sleep.WaitRandomTime(1000, 3000);
-				}while(Player.Animation.CheckPlayerAnimation(ctx) == Animation.PLAYER_NOT_IDLE);
+					System.out.println("Player not idle");
+					Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
+				}while(Player.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
 				return true;
 			}
 			else
@@ -120,14 +120,15 @@ public class Interact {
 				//npc is valid and not in viewport
 				if(helper%2==0)
 				{
+					System.out.println("NPC not in viewport. Adjusting Camera");
 					Camera.Focus.OnNpc(ctx, npc.name());
 					
 				}
 				else
 				{
+					System.out.println("NPC not in viewport. Walking to NPC");
 					ToObject.WalkToObject(ctx, npc);
 				}
-				Utility.Sleep.WaitRandomTime(500, 1500);
 				
 				InteractWithNPC(ctx,npc,action,helper);
 				return true;

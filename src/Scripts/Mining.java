@@ -48,7 +48,7 @@ public class Mining extends PollingScript<ClientContext>{
 							btc2, btc3, btc4, btc5, caveEntrance};
 		
 	public void poll() {
-		currentPlayerAnimation = Player.Animation.CheckPlayerAnimation(ctx);
+		currentPlayerAnimation = Player.Animation.CheckPlayerIdle(ctx);
 		switch(getState())
 		{
 		case mining:

@@ -13,4 +13,5 @@ public class Interact {
 	public static final String BURY="Bury";
 	public static final String CHOP="Chop";
 	public static final String DROP="Drop";
+	public static final String EXAMINE="Examine";
 }

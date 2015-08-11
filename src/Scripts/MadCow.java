@@ -1,6 +1,8 @@
 package Scripts;
 
 import org.powerbot.script.Area;
+import org.powerbot.script.MessageEvent;
+import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
@@ -8,6 +10,7 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
+import Chat.Messages;
 import Constants.Animation;
 import Constants.Interact;
 import Constants.NpcName;
@@ -17,7 +20,9 @@ import Pathing.Traverse;
 
 @Manifest(name = "Cow Killing", description = "kill cows and shit", properties = "client=6; topic=0;")
 
-public class MadCow extends PollingScript<ClientContext>{
+public class MadCow extends PollingScript<ClientContext> implements MessageListener{
+	State previousState=null;
+	State currentState=null;
 	boolean interacted=false;
 	Area bankArea = new Area(new Tile(3177, 3290, 0),new Tile(3160, 3271, 0));
 	Area cowArea = new Area(new Tile(3201, 3313,0), new Tile(3160, 3328, 0));
@@ -27,7 +32,7 @@ public class MadCow extends PollingScript<ClientContext>{
 	
 	Tile[] fromBankToCows = new Tile[]{tcfb1, tcfb2};
 	public void poll() {
-		switch(getState())
+		switch(currentState=getState())
 		{
 		case kill:
 			System.out.println("here i go killing again");
@@ -54,6 +59,7 @@ public class MadCow extends PollingScript<ClientContext>{
 				Utility.Sleep.WaitRandomTime(1000, 3000);
 				if(ctx.widgets.component(1622, 14).valid())ctx.widgets.component(1622, 14).click();//loot all
 			}
+			previousState=currentState;
 			break;
 		case usebags:
 			//if we have bones bury them
@@ -71,7 +77,8 @@ public class MadCow extends PollingScript<ClientContext>{
 			{
 				System.out.println("We have raw beef");
 				//check if we have logs 
-				if(ctx.objects.select().name(ObjectName.FIRE).nearest().poll().valid())
+				if(ctx.objects.select().name(ObjectName.FIRE).nearest().poll().valid() &&
+				ctx.players.local().tile().distanceTo(ctx.objects.select().name(ObjectName.FIRE).nearest().poll()) < 10)
 				{
 					System.out.println("There's a fire we can use");
 					//theres a fire around to use
@@ -82,7 +89,7 @@ public class MadCow extends PollingScript<ClientContext>{
 					do
 					{
 						Utility.Sleep.WaitRandomTime(1000, 2000);
-					}while(Player.Animation.CheckPlayerAnimation(ctx)==Animation.PLAYER_NOT_IDLE);
+					}while(Player.Animation.CheckPlayerIdle(ctx)==Animation.PLAYER_NOT_IDLE);
 				}
 				else
 				{
@@ -95,7 +102,7 @@ public class MadCow extends PollingScript<ClientContext>{
 						do
 						{
 							Utility.Sleep.Wait(100);
-						}while(Player.Animation.CheckPlayerAnimation(ctx) == Animation.PLAYER_NOT_IDLE);
+						}while(Player.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
 					}
 					else
 					{
@@ -111,22 +118,44 @@ public class MadCow extends PollingScript<ClientContext>{
 					}
 				}
 			}
-			
+			previousState=currentState;
 			break;
 		case deposit:
 			System.out.println("Depositing at bank");
 			Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_CHEST, Interact.USE, 0);
 			ctx.bank.depositInventory();
 			ctx.bank.close();
+			previousState=currentState;
 			break;
 		case walk_to_bank:
 			System.out.println("Walking to bank");
 			Traverse.TraversePathInReverse(ctx, fromBankToCows);
 			ToObject.WalkToObject(ctx, ObjectName.BANK_CHEST,bankArea.getRandomTile());
+			previousState=currentState;
 			break;
 		case walk_to_cows:
 			System.out.println("Walking to cows");
+			
+			new Runnable() {
+				public void run() {
+					while(currentState==State.walk_to_cows)
+					{
+						if(Player.Backpack.Contains(ctx, ObjectName.BONES))
+						{
+							//bury the bones
+							Player.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
+						}
+						else if(Player.Backpack.Contains(ctx, ObjectName.BURNT_MEAT))
+						{
+							//drop the meat
+							Player.Backpack.Use(ctx, ObjectName.BURNT_MEAT, Interact.DROP);
+						}
+						Utility.Sleep.WaitRandomTime(500, 2000);
+					}
+				}
+			};
 			Traverse.TraversePath(ctx, fromBankToCows);
+			previousState=currentState;
 			break;
 		}
 	}
@@ -161,5 +190,10 @@ public class MadCow extends PollingScript<ClientContext>{
 	public enum State
 	{
 		kill, usebags, walk_to_bank, walk_to_cows, deposit
+	}
+
+	
+	public void messaged(MessageEvent message) {
+		Messages.AddPastReadMessages(message.source(), message.text());
 	}
 }
