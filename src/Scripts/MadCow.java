@@ -10,9 +10,9 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
+import Constants.Interact;
 import Chat.Messages;
 import Constants.Animation;
-import Constants.Interact;
 import Constants.NpcName;
 import Constants.ObjectName;
 import Pathing.ToObject;
