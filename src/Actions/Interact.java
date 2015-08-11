@@ -13,7 +13,8 @@ public class Interact {
 	private static final int highRandomWaitTime=3000;
 	private static int adjustPitch=3;
 	
-	public static boolean InteractWithObject(ClientContext ctx,GameObject gameObject, String action, int helper)
+	
+	private static boolean InteractWithObject(ClientContext ctx,GameObject gameObject, String action, int helper)
 	{
 		if(helper!=0)helper++;
 		if(gameObject.valid())
@@ -77,13 +78,21 @@ public class Interact {
 			return false;
 		}
 	}
-	public static boolean InteractWithObject(ClientContext ctx,String objectName, String action, int helper)
+	public static boolean InteractWithObject(ClientContext ctx,GameObject gameObject, String action)
+	{
+		return InteractWithObject(ctx,gameObject,action,0);
+	}
+	public static boolean InteractWithObject(ClientContext ctx,String objectName, String action)
 	{
 		final GameObject gameObject = ctx.objects.select().name(objectName).nearest().poll();
 		InteractWithObject(ctx,gameObject,action,0);
 		return true;
 	}
-	public static boolean InteractWithNPC(ClientContext ctx, Npc npc, String action, int helper)
+	public static boolean InteractWithNPC(ClientContext ctx, Npc npc, String action)
+	{
+		return InteractWithNPC(ctx,npc,action,0);
+	}
+	private static boolean InteractWithNPC(ClientContext ctx, Npc npc, String action, int helper)
 	{
 		if(helper!=0)helper++;
 		
@@ -152,7 +161,7 @@ public class Interact {
 			return false;
 		}
 	}
-	public static boolean InteractWithNPC(ClientContext ctx, String npcName, String action, int helper)
+	public static boolean InteractWithNPC(ClientContext ctx, String npcName, String action)
 	{
 		final Npc npc = ctx.npcs.select().name(npcName).nearest().poll();
 		InteractWithNPC(ctx,npc,action,0);

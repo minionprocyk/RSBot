@@ -43,7 +43,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 				Traverse.TraversePath(ctx, cowArea.getRandomTile());
 				return;
 			}
-			interacted = Actions.Interact.InteractWithNPC(ctx, NpcName.NULL, Interact.ATTACK, 0);
+			interacted = Actions.Interact.InteractWithNPC(ctx, NpcName.NULL, Interact.ATTACK);
 			
 			//wait until the cow is dead and loot it
 			if(interacted)
@@ -83,7 +83,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 					System.out.println("There's a fire we can use");
 					//theres a fire around to use
 					Player.Backpack.Use(ctx, ObjectName.RAW_BEEF, Interact.USE);
-					Actions.Interact.InteractWithObject(ctx, ObjectName.FIRE, Interact.USE, 0);
+					Actions.Interact.InteractWithObject(ctx, ObjectName.FIRE, Interact.USE);
 					Utility.Sleep.WaitRandomTime(1000, 3000);
 					if(ctx.widgets.component(1370, 20).valid())ctx.widgets.component(1370, 20).click();
 					do
@@ -110,7 +110,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 						//chop a tree for some wood
 						long now = System.currentTimeMillis();
 						final GameObject tree = ctx.objects.select().name(ObjectName.TREE).nearest().poll();
-						Actions.Interact.InteractWithObject(ctx, tree, Interact.CHOP, 0);
+						Actions.Interact.InteractWithObject(ctx, tree, Interact.CHOP);
 						do
 						{
 							Utility.Sleep.Wait(100);
@@ -122,7 +122,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 			break;
 		case deposit:
 			System.out.println("Depositing at bank");
-			Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_CHEST, Interact.USE, 0);
+			Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_CHEST, Interact.USE);
 			ctx.bank.depositInventory();
 			ctx.bank.close();
 			previousState=currentState;

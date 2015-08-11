@@ -31,14 +31,14 @@ public class Animation {
 		}
 		return animationCount[0] > animationCount[1] ? Constants.Animation.PLAYER_IDLE : Constants.Animation.PLAYER_NOT_IDLE;
 	}
-	public static int GetPlayerAnimation(ClientContext ctx,int nPoll)
+	public static int GetPlayerAnimation(ClientContext ctx)
 	{
 		//get the 3 most used animation values
 		Integer animationValue = new Integer(0);
 		//int[] animationCount = new int[3];
 		HashMap<Integer,Integer> animationCount = new HashMap<Integer,Integer>();
 		
-		for(int i=0;i<nPoll;i++)
+		for(int i=0;i<Random.nextInt(10, 30);i++)
 		{
 			animationValue = ctx.players.local().animation();
 			if(!animationCount.containsKey(animationValue))

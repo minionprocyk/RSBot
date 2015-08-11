@@ -66,7 +66,7 @@ public class Mining extends PollingScript<ClientContext>{
 					break;
 				}
 				final GameObject gameObject = ctx.objects.select().name(rock).nearest().poll();
-				interacted = Actions.Interact.InteractWithObject(ctx, gameObject, Interact.MINE,0);
+				interacted = Actions.Interact.InteractWithObject(ctx, gameObject, Interact.MINE);
 				if(interacted)
 				{
 					//wait for this ore to not exist or for 30 seconds
@@ -126,18 +126,18 @@ public class Mining extends PollingScript<ClientContext>{
 	private void ExitCave()
 	{
 		Traverse.TraversePath(ctx, exitCave);
-		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT,0);
+		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT);
 		//wait for some time to load
 		Utility.Sleep.WaitRandomTime(1000, 3000);
 		if((ctx.players.local().tile().x() < 2500) || (ctx.players.local().tile().y() > 4000))
 		{
 			//we are still in the cave
-			Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT,0);		
+			Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT);		
 		}
 	}
 	private void EnterCave()
 	{
-		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_ENTRANCE, Interact.ENTER,0);
+		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_ENTRANCE, Interact.ENTER);
 		Traverse.TraverseRandomPath(ctx, oreLocations);
 	}
 	private void WalkToFurnace()
@@ -153,7 +153,7 @@ public class Mining extends PollingScript<ClientContext>{
 	}
 	private void Smelt()
 	{
-		Actions.Interact.InteractWithObject(ctx, ObjectName.FURNACE, Interact.SMELT,0);
+		Actions.Interact.InteractWithObject(ctx, ObjectName.FURNACE, Interact.SMELT);
 		
 		//click the 'smelt' component
 		ctx.widgets.component(1370, 12).click();
