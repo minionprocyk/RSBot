@@ -20,9 +20,12 @@ public class ObjectName {
 	public static final String BANK_CHEST="Bank Chest";
 	
 	//rocks
+	public static final String COPPER_ROCKS = "Copper ore rocks";
 	public static final String COPPER_ROCK = "Copper rock";
+	public static final String TIN_ROCKS = "Tin ore rocks";
 	public static final String TIN_ROCK = "Tin rock";
 	public static final String CLAY_ROCK = "Clay rock";
+	public static final String IRON_ROCKS = "Iron ore rocks";
 	
 	//bars
 	public static final String BRONZE_BAR = "Bronze bar";

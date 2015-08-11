@@ -7,4 +7,5 @@ public class Math {
 		if(x>=a && x<=b)return true;
 		return false;
 	}
+	
 }
