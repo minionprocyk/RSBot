@@ -169,7 +169,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 		{
 			return State.walk_to_bank;
 		}
-		else if(Player.Backpack.isFull(ctx))
+		else if(Player.Backpack.hasStuff(ctx) && Player.Location.Within(ctx, bankArea))
 		{
 			return State.deposit;
 		}

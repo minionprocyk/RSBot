@@ -8,6 +8,10 @@ public class Backpack {
 	{
 		return ctx.backpack.select().count() == 28 ? true : false;
 	}
+	public static boolean hasStuff(ClientContext ctx)
+	{
+		return ctx.backpack.select().count() > 0 ? true : false;
+	}
 	public static boolean Contains(ClientContext ctx, String name)
 	{
 		//get the item by name
