@@ -24,13 +24,13 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 		if(init)
 		{
 			init=false;
-			new ChatEngine().SetContext(ctx).SetDebug(true).build().start();
+			new Thread(new ChatEngine(ctx).SetDebug(true).build()).start();
 		}
 		switch(getState())
 		{
 		case doThings:
 			//System.out.println("Ok were doing things");
-			new ChoppingEngine().SetContext(ctx).SetTrees(trees).build().run();;
+			new ChoppingEngine(ctx).SetTrees(trees).build().run();;
 			break;
 		case goal:
 			//light the logs

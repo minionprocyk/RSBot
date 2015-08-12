@@ -11,7 +11,7 @@ import org.powerbot.script.rt6.Npc;
 import Constants.Animation;
 import Constants.Interact;
 
-public class MiningEngine{
+public class MiningEngine extends Engine{
 	//this class should be a standard mining routine that scripts can call
 	private String[] rocksToMine;
 	private boolean interacted=false;
@@ -19,8 +19,9 @@ public class MiningEngine{
 	private boolean runOnce=true;
 	private Area miningArea;
 	private ClientContext ctx;
-	public MiningEngine()
+	public MiningEngine(ClientContext ctx)
 	{
+		super(ctx);
 	}
 	public void run() {
 		//if(runOnce==true)activate timer
@@ -66,7 +67,7 @@ public class MiningEngine{
 			//player is not idle. Check if were in combat
 			if(ctx.players.local().inCombat())
 			{
-				new FightingEngine().SetContext(ctx).SetFightingArea(miningArea);
+				new FightingEngine(ctx).SetFightingArea(miningArea);
 			}
 			
 		}
@@ -85,11 +86,6 @@ public class MiningEngine{
 	public MiningEngine SetMiningArea(Area area)
 	{
 		this.miningArea = area;
-		return this;
-	}
-	public MiningEngine SetContext(ClientContext ctx)
-	{
-		this.ctx = ctx;
 		return this;
 	}
 	public MiningEngine build()

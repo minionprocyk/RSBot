@@ -11,7 +11,7 @@ import org.powerbot.script.rt6.Npc;
 import Constants.Animation;
 import Constants.Interact;
 
-public class ChoppingEngine {
+public class ChoppingEngine extends Engine{
 	//this class should be a standard mining routine that scripts can call
 	private String[] treesToChop;
 	private boolean interacted=false;
@@ -19,8 +19,9 @@ public class ChoppingEngine {
 	private boolean runOnce=true;
 	private Area choppingArea;
 	private ClientContext ctx;
-	public ChoppingEngine()
+	public ChoppingEngine(ClientContext ctx)
 	{
+		super(ctx);
 	}
 	public void run() {
 		//if(runOnce==true)activate timer
@@ -63,7 +64,7 @@ public class ChoppingEngine {
 			//player is not idle. Check if were in combat
 			if(ctx.players.local().inCombat())
 			{
-				new FightingEngine().SetContext(ctx).SetFightingArea(choppingArea);
+				new FightingEngine(ctx).SetFightingArea(choppingArea);
 			}
 			
 		}
@@ -82,11 +83,6 @@ public class ChoppingEngine {
 	public ChoppingEngine SetChoppingArea(Area area)
 	{
 		this.choppingArea = area;
-		return this;
-	}
-	public ChoppingEngine SetContext(ClientContext ctx)
-	{
-		this.ctx = ctx;
 		return this;
 	}
 	public ChoppingEngine build()

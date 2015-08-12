@@ -6,14 +6,15 @@ import org.powerbot.script.rt6.Npc;
 
 import Constants.Interact;
 
-public class FightingEngine{
+public class FightingEngine extends Engine{
 	private boolean higherLevelWarning=false;
 	private boolean interacted=false;
 	Area fightingArea;
 	//
 	private ClientContext ctx;
-	public FightingEngine()
+	public FightingEngine(ClientContext ctx)
 	{
+		super(ctx);
 	}
 	public void run() {
 		//if were not in combat. find a target
@@ -53,11 +54,6 @@ public class FightingEngine{
 	public FightingEngine SetFightingArea(Area area)
 	{
 		this.fightingArea = area;
-		return this;
-	}
-	public FightingEngine SetContext(ClientContext ctx)
-	{
-		this.ctx = ctx;
 		return this;
 	}
 	public FightingEngine build()

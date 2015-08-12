@@ -16,7 +16,11 @@ public class ToObject {
 			Utility.Sleep.WhileRunning(ctx);
 			
 			if(ctx.players.local().tile().distanceTo(locatable) > 4)WalkToObject(ctx, locatable);
-		}		
+		}
+		else
+		{
+			System.out.println("WalkToObject: The object doesnt exist. ");
+		}
 	}
 	public static void WalkToObject(ClientContext ctx, String GameObject)
 	{

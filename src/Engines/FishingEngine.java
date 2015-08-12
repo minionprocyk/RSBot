@@ -12,7 +12,7 @@ import Constants.Animation;
 import Constants.Interact;
 import Constants.ObjectName;
 
-public class FishingEngine {
+public class FishingEngine extends Engine{
 	//this class should be a standard mining routine that scripts can call
 		private String[] treesToChop;
 		private boolean interacted=false;
@@ -20,8 +20,9 @@ public class FishingEngine {
 		private boolean runOnce=true;
 		private Area fishingArea;
 		private ClientContext ctx;
-		public FishingEngine()
+		public FishingEngine(ClientContext ctx)
 		{
+			super(ctx);
 		}
 		public void run() {
 			//if(runOnce==true)activate timer
@@ -53,7 +54,7 @@ public class FishingEngine {
 				//player is not idle. Check if were in combat
 				if(ctx.players.local().inCombat())
 				{
-					new FightingEngine().SetContext(ctx).SetFightingArea(fishingArea);
+					new FightingEngine(ctx).SetFightingArea(fishingArea);
 				}
 				
 			}
@@ -67,11 +68,6 @@ public class FishingEngine {
 		public FishingEngine SetFishingArea(Area area)
 		{
 			this.fishingArea = area;
-			return this;
-		}
-		public FishingEngine SetContext(ClientContext ctx)
-		{
-			this.ctx = ctx;
 			return this;
 		}
 		public FishingEngine build()
