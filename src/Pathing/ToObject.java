@@ -6,21 +6,15 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 
 public class ToObject {
-	public static void WalkToObject(ClientContext ctx, Locatable locateable)
+	public static void WalkToObject(ClientContext ctx, Locatable locatable)
 	{
-		ctx.camera.turnTo(locateable);
-		ctx.movement.step(locateable);
+		Camera.Focus.OnObject(ctx, locatable);
+		ctx.movement.step(locatable);
 		//wait until we're close to the object
-		do
-		{
-			try {					
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}while(ctx.players.local().tile().distanceTo(locateable) > 4);
-			
-		//done
+		Utility.Sleep.WhileRunning(ctx);
+		
+		if(ctx.players.local().tile().distanceTo(locatable) > 4)WalkToObject(ctx, locatable);
+		
 		return;
 	}
 	public static void WalkToObject(ClientContext ctx, String GameObject)
