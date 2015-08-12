@@ -3,9 +3,7 @@ package Engines;
 import java.util.Iterator;
 
 import org.powerbot.script.Area;
-import org.powerbot.script.Random;
 import org.powerbot.script.rt6.ClientContext;
-import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
 import Constants.Animation;
@@ -26,7 +24,7 @@ public class FishingEngine extends Engine{
 		}
 		public void run() {
 			//if(runOnce==true)activate timer
-			if(Player.Animation.GetPlayerAnimation(ctx)==Animation.PLAYER_IDLE)
+			if(LocalPlayer.Animation.GetPlayerAnimation(ctx)==Animation.PLAYER_IDLE)
 			{
 				//player is idle. we should find something to mine
 				

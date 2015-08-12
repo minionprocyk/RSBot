@@ -1,4 +1,4 @@
-package Player;
+package LocalPlayer;
 
 import java.util.HashMap;
 import java.util.Iterator;

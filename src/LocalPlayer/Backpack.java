@@ -1,4 +1,4 @@
-package Player;
+package LocalPlayer;
 
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Item;
@@ -12,7 +12,7 @@ public class Backpack {
 	{
 		return ctx.backpack.select().count() > 0 ? true : false;
 	}
-	public static boolean Contains(ClientContext ctx, String name)
+	public static boolean Has(ClientContext ctx, String name)
 	{
 		//get the item by name
 		final Item item = ctx.backpack.select().name(name).first().poll();

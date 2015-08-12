@@ -10,7 +10,7 @@ public class Script {
 	
 	public static State GetState(ClientContext ctx)
 	{
-		if(Player.Backpack.isFull(ctx))
+		if(LocalPlayer.Backpack.isFull(ctx))
 		{
 			currentState = State.walk_to_bank;
 		}

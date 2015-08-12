@@ -1,5 +1,9 @@
 package Scripts;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.powerbot.script.MessageEvent;
 import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
@@ -9,8 +13,14 @@ import Chat.Messages;
 import Tasks.Task;
 import Tasks.WalkToBurd;
 
-public class Generic extends PollingScript<ClientContext> implements MessageListener{
-	Task[] tasks = new Task[]{new WalkToBurd(ctx)};
+public class Script extends PollingScript<ClientContext> implements MessageListener{
+	List<Task> tasks  = new ArrayList<Task>();
+	
+	public void start()
+	{
+		tasks.addAll(Arrays.asList( new WalkToBurd(ctx)));
+	}
+	
 	public void poll() {
 		for(Task t: tasks)
 		{

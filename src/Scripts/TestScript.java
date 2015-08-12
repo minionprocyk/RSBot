@@ -2,13 +2,11 @@ package Scripts;
 import org.powerbot.script.MessageEvent;
 import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
-import org.powerbot.script.Random;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 
 import Chat.Messages;
-import Constants.Interact;
 import Constants.ItemName;
 import Constants.ObjectName;
 import Engines.ChatEngine;
@@ -44,7 +42,7 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 	public State getState()
 	{
 		
-		if(Player.Backpack.Count(ctx, ItemName.LOGS) == 18)
+		if(LocalPlayer.Backpack.Count(ctx, ItemName.LOGS) == 18)
 		{
 			return State.goal;
 		}

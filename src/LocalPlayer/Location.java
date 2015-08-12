@@ -1,4 +1,4 @@
-package Player;
+package LocalPlayer;
 
 import org.powerbot.script.Area;
 import org.powerbot.script.Tile;

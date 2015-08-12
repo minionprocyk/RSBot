@@ -1,15 +1,13 @@
 package Scripts;
 
 import org.powerbot.script.PollingScript;
-import org.powerbot.script.Random;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
-import org.powerbot.script.rt6.GameObject;
 
-import Constants.Animation;
 import Constants.Interact;
 import Constants.ObjectName;
+import Engines.MiningEngine;
 import Pathing.ToObject;
 import Pathing.Traverse;
 
@@ -46,43 +44,13 @@ public class Mining extends PollingScript<ClientContext>{
 	Tile[] fromFurnaceToCaveEntrance = new Tile[]{furnaceLocation, caveEntrance};
 	Tile[] fromBankToCaveEntrance = new Tile[]{bankLocation, btc1, 
 							btc2, btc3, btc4, btc5, caveEntrance};
-		
+	String[] rocks = new String[]{ObjectName.COPPER_ROCK,ObjectName.TIN_ROCK};
 	public void poll() {
-		currentPlayerAnimation = Player.Animation.CheckPlayerIdle(ctx);
+		currentPlayerAnimation = LocalPlayer.Animation.CheckPlayerIdle(ctx);
 		switch(getState())
 		{
 		case mining:
-			if(currentPlayerAnimation==Animation.PLAYER_IDLE)
-			{
-				//look for a rock when were idle and the rock we were mining does not existS
-				String rock="";
-				switch(Random.nextInt(0, 2))
-				{
-				case 0:
-					rock = ObjectName.TIN_ROCK;
-					break;
-				case 1:
-					rock = ObjectName.COPPER_ROCK;
-					break;
-				}
-				final GameObject gameObject = ctx.objects.select().name(rock).nearest().poll();
-				interacted = Actions.Interact.InteractWithObject(ctx, gameObject, Interact.MINE);
-				if(interacted)
-				{
-					//wait for this ore to not exist or for 30 seconds
-					long now = System.currentTimeMillis();
-					do
-					{
-						Utility.Sleep.Wait(100);
-					}while(gameObject.valid() && (Math.abs(now-System.currentTimeMillis())) < 1000*30);
-					System.out.println("Ore gone. Next one");
-				}
-			}
-			else
-			{
-				//player animation is not idle... right....
-				Utility.Sleep.WaitRandomTime(250, 2000);
-			}
+			new MiningEngine(ctx).SetRocks(rocks).build().run();
 			break;
 		case deposit:
 			//exit the cave

@@ -7,6 +7,7 @@ import org.powerbot.script.Random;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
+import org.powerbot.script.rt6.Player;
 
 import Constants.Animation;
 import Constants.Interact;
@@ -25,7 +26,7 @@ public class MiningEngine extends Engine{
 	}
 	public void run() {
 		//if(runOnce==true)activate timer
-		if(Player.Animation.GetPlayerAnimation(ctx)==Animation.PLAYER_IDLE)
+		if(LocalPlayer.Animation.GetPlayerAnimation(ctx)==Animation.PLAYER_IDLE)
 		{
 			//player is idle. we should find something to mine
 			
@@ -49,6 +50,16 @@ public class MiningEngine extends Engine{
 					}
 				}
 				
+				//check if a player is already mining that rock
+				Iterator<Player> iPlayer = ctx.players.select().iterator();
+				while(iPlayer.hasNext())
+				{
+					if(iPlayer.next().tile().distanceTo(rockObject) < 2)
+					{
+						//we need to find a new rock. someone is probably using this one
+					}
+				}
+			
 				
 				//interact with it
 				interacted = Actions.Interact.InteractWithObject(ctx, rockObject, Interact.MINE);
@@ -57,7 +68,7 @@ public class MiningEngine extends Engine{
 					do
 					{
 						Utility.Sleep.Wait(300);
-					}while(Player.Animation.GetPlayerAnimation(ctx) == Animation.PLAYER_MINING);
+					}while(LocalPlayer.Animation.GetPlayerAnimation(ctx) == Animation.PLAYER_MINING);
 				}
 			}
 			
