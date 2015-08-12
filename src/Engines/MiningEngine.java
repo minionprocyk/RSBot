@@ -4,6 +4,7 @@ import java.util.Iterator;
 
 import org.powerbot.script.Area;
 import org.powerbot.script.Random;
+import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
@@ -19,6 +20,7 @@ public class MiningEngine extends Engine{
 	private boolean higherLevelWarning=false;
 	private boolean runOnce=true;
 	private Area miningArea;
+	private Tile[] rockLocations;
 	private ClientContext ctx;
 	public MiningEngine(ClientContext ctx)
 	{
@@ -92,6 +94,11 @@ public class MiningEngine extends Engine{
 	public MiningEngine SetRocks(String[] rocks)
 	{
 		this.rocksToMine = rocks;
+		return this;
+	}
+	public MiningEngine SetMiningArea(Tile[] area)
+	{
+		this.rockLocations=area;
 		return this;
 	}
 	public MiningEngine SetMiningArea(Area area)

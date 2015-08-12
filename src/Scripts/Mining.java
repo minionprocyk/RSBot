@@ -32,7 +32,7 @@ public class Mining extends PollingScript<ClientContext>{
 	Tile btc4 = new Tile(2880, 3508, 0);
 	Tile btc5 = new Tile(2879, 3502, 0);
 	
-	//ore locations inside the cave
+	//rock locations inside the cave
 	Tile ore1 = new Tile(2274, 4515, 0);
 	Tile ore2 = new Tile(2272, 4526, 0);
 	Tile ore3 = new Tile(2264, 4515, 0);
@@ -50,7 +50,7 @@ public class Mining extends PollingScript<ClientContext>{
 		switch(getState())
 		{
 		case mining:
-			new MiningEngine(ctx).SetRocks(rocks).build().run();
+			new MiningEngine(ctx).SetRocks(rocks).SetMiningArea(oreLocations).build().run();
 			break;
 		case deposit:
 			//exit the cave
