@@ -12,6 +12,8 @@ public class Interact {
 	public static final String ATTACK="Attack";
 	public static final String BURY="Bury";
 	public static final String CHOP="Chop";
+	public static final String CHOP_DOWN="Chop down";
 	public static final String DROP="Drop";
 	public static final String EXAMINE="Examine";
+	public static final String CAGE="Cage";
 }

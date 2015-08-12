@@ -11,7 +11,6 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
-import Chat.Messages;
 import Constants.Animation;
 import Constants.Interact;
 import Constants.ItemName;
@@ -197,7 +196,8 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 	}
 
 	
-	public void messaged(MessageEvent message) {
-		Messages.AddPastReadMessages(message.source(), message.text());
+	public void messaged(MessageEvent arg0) {
+		
 	}
+
 }

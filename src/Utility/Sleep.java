@@ -53,4 +53,12 @@ public class Sleep {
 			System.out.println("Player not idle");
 		}while(Player.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
 	}
+	public static void WhilePlayer(ClientContext ctx, int animation)
+	{
+		do
+		{
+			Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
+			System.out.println("Player is doing that animation");
+		}while(Player.Animation.GetPlayerAnimation(ctx) == animation);
+	}
 }

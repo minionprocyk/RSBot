@@ -9,13 +9,13 @@ public class ObjectName {
 	public static final String COWHIDE="Cowhide";
 	public static final String LOGS="Logs";
 	public static final String FIRE="Fire";
-	
+	public static final String OAK="Oak";
 	//world objects
 	public static final String TREE="Tree";
 	public static final String FURNACE="Furnace";
 	public static final String CAVE_EXIT = "Cave";
 	public static final String CAVE_ENTRANCE = "Cave Entrance";
-	
+	public static final String FISHING_SPOT = "Fishing spot";
 	//banks
 	public static final String BANK_CHEST="Bank Chest";
 	

@@ -9,4 +9,5 @@ public class Animation {
 	public static final int PLAYER_CHOPPING=21191;
 	public static final int PLAYER_COOKING=25649;
 	public static final int PLAYER_NOT_IDLE=0;
+	public static final int PLAYER_FISHING=24931;
 }

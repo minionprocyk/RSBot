@@ -23,6 +23,7 @@ public class Interact {
 				if(ctx.players.local().tile().distanceTo(gameObject) > lowDistanceFromObject)
 				{
 					//distance to the object is greater than 4 tiles. we should move towards it 
+					System.out.println("Were a little far from the object. Lets move in");
 					ToObject.WalkToObject(ctx, gameObject);
 					
 				}

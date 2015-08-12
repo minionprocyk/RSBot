@@ -27,6 +27,7 @@ public class Backpack {
 	{
 		final Item item = ctx.backpack.select().name(name).first().poll();
 		item.interact(action);
+		Utility.Sleep.WhileNotIdle(ctx);
 	}
 
 }
