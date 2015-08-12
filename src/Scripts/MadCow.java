@@ -4,15 +4,17 @@ import org.powerbot.script.Area;
 import org.powerbot.script.MessageEvent;
 import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
+import org.powerbot.script.Random;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
-import Constants.Interact;
 import Chat.Messages;
 import Constants.Animation;
+import Constants.Interact;
+import Constants.ItemName;
 import Constants.NpcName;
 import Constants.ObjectName;
 import Pathing.ToObject;
@@ -24,6 +26,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 	State previousState=null;
 	State currentState=null;
 	boolean interacted=false;
+	boolean init=true;
 	Area bankArea = new Area(new Tile(3177, 3290, 0),new Tile(3160, 3271, 0));
 	Area cowArea = new Area(new Tile(3201, 3313,0), new Tile(3160, 3328, 0));
 
@@ -32,6 +35,11 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 	
 	Tile[] fromBankToCows = new Tile[]{tcfb1, tcfb2};
 	public void poll() {
+		if(init)
+		{
+			//i can initialize stuff here
+			//like .... new ChatEngine().run();
+		}
 		switch(currentState=getState())
 		{
 		case kill:
@@ -59,7 +67,6 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 				Utility.Sleep.WaitRandomTime(1000, 3000);
 				if(ctx.widgets.component(1622, 14).valid())ctx.widgets.component(1622, 14).click();//loot all
 			}
-			previousState=currentState;
 			break;
 		case usebags:
 			//if we have bones bury them
@@ -118,27 +125,18 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 					}
 				}
 			}
-			previousState=currentState;
 			break;
 		case deposit:
 			System.out.println("Depositing at bank");
 			Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_CHEST, Interact.USE);
 			ctx.bank.depositInventory();
 			ctx.bank.close();
-			previousState=currentState;
 			break;
 		case walk_to_bank:
 			System.out.println("Walking to bank");
-			Traverse.TraversePathInReverse(ctx, fromBankToCows);
-			ToObject.WalkToObject(ctx, ObjectName.BANK_CHEST,bankArea.getRandomTile());
-			previousState=currentState;
-			break;
-		case walk_to_cows:
-			System.out.println("Walking to cows");
-			
-			new Runnable() {
+			new Thread(new Runnable() {
 				public void run() {
-					while(currentState==State.walk_to_cows)
+					while(currentState==State.walk_to_bank)
 					{
 						if(Player.Backpack.Contains(ctx, ObjectName.BONES))
 						{
@@ -153,11 +151,16 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 						Utility.Sleep.WaitRandomTime(500, 2000);
 					}
 				}
-			};
+			}).start();
+			Traverse.TraversePathInReverse(ctx, fromBankToCows);
+			ToObject.WalkToObject(ctx, ObjectName.BANK_CHEST,bankArea.getRandomTile());
+			break;
+		case walk_to_cows:
+			System.out.println("Walking to cows");
 			Traverse.TraversePath(ctx, fromBankToCows);
-			previousState=currentState;
 			break;
 		}
+		previousState=currentState;
 	}
 	
 	public State getState()
@@ -176,7 +179,8 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 		}
 		else
 		{
-			if(Player.Backpack.Count(ctx, ObjectName.RAW_BEEF) > 4)
+			//this adds a little bit of randomness and usually will only bury bones randomly 
+			if(Player.Backpack.Count(ctx, ItemName.RAW_BEEF) > Random.nextInt(3, 5))
 			{
 				return State.usebags;
 			}

@@ -9,6 +9,9 @@ import org.powerbot.script.rt6.Npc;
 public class Focus {
 	//high pitch raises camera to look at floor
 	//yaw of 0 is north, >0 is looking more west and <0 is looking more east
+	
+	private static int GoodPitch = 50;
+	
 	public static void OnRandomObject(ClientContext ctx)
 	{
 		//focus on a random object that is in the area
@@ -16,8 +19,8 @@ public class Focus {
 		//get the number of objects around
 		int numObjects = ctx.objects.select().size();
 	
-		//pick a random index value
-		int randomValue = Random.nextInt(0, numObjects-1);
+		//pick a random index value, ran.nextint upper is exclusive
+		int randomValue = Random.nextInt(0, numObjects);
 		
 		//use the index value to query an object
 		int i=0;
@@ -40,7 +43,9 @@ public class Focus {
 	}
 	public static void OnObject(ClientContext ctx, Locatable locatable)
 	{
+		double modifier = Random.nextDouble(.8, 1.2);
 		ctx.camera.turnTo(locatable);
+		ctx.camera.angle((int) (ctx.camera.yaw() * modifier));
 	}
 	public static void OnObject(ClientContext ctx, String objectName)
 	{
