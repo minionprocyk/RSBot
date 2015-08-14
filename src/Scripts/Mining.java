@@ -45,12 +45,12 @@ public class Mining extends PollingScript<ClientContext>{
 	Tile[] fromBankToCaveEntrance = new Tile[]{bankLocation, btc1, 
 							btc2, btc3, btc4, btc5, caveEntrance};
 	String[] rocks = new String[]{ObjectName.COPPER_ROCK,ObjectName.TIN_ROCK};
+	MiningEngine me = MiningEngine.GetInstance().SetContext(ctx).SetRocks(rocks).SetMiningArea(oreLocations).build();
 	public void poll() {
-		currentPlayerAnimation = LocalPlayer.Animation.CheckPlayerIdle(ctx);
 		switch(getState())
 		{
 		case mining:
-			MiningEngine.GetInstance().SetContext(ctx).SetRocks(rocks).SetMiningArea(oreLocations).build().run();
+			me.run();
 			break;
 		case deposit:
 			//exit the cave
@@ -68,27 +68,10 @@ public class Mining extends PollingScript<ClientContext>{
 			//enter the cave
 			EnterCave();
 			break;
-		case smelt:
-			//walk out of the cave
-			ExitCave();
-			
-			//walk to the furnance
-			WalkToFurnace();
-			
-			//smelt
-			Smelt();
-			
-			//walk to cave
-			Traverse.TraversePath(ctx, fromFurnaceToCaveEntrance);
-			EnterCave();
-			break;
 		case stop:
 			//logout if were logged in and then stop the script
 			if(ctx.game.loggedIn())ctx.game.logout(true);
 			ctx.controller.stop();
-			
-		default:
-			//panic
 		}
 	}
 	private void ExitCave()
@@ -129,6 +112,8 @@ public class Mining extends PollingScript<ClientContext>{
 	
 	public State getState()
 	{
+				
+		
 		if(ctx.backpack.select().count()==28)
 		{
 			//backpack is full.

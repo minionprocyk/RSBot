@@ -1,16 +1,23 @@
 package Engines;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.powerbot.script.Area;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
+import org.powerbot.script.rt6.GameObject;
 
+import Constants.Interact;
+import Constants.ObjectName;
 import Pathing.AvoidObject;
-
+import Pathing.AvoidObjects;
 public class MiningEngine implements Runnable{
 	
 	//important objects
+	private static String[] allRocks = new String[]{ObjectName.COPPER_ROCK, ObjectName.COPPER_ROCKS,
+				ObjectName.TIN_ROCK, ObjectName.TIN_ROCKS, ObjectName.CLAY_ROCK, ObjectName.IRON_ROCKS};
 	private String[] rocksToMine;
-	private AvoidObject[] avoidObjects;
 	
 	//important flags
 	private boolean miningAreaSet=false;
@@ -18,14 +25,6 @@ public class MiningEngine implements Runnable{
 	private boolean rocksSpecificed=false;
 	
 	private boolean inMiningLocation=false;
-	private boolean closeToRocks=false;
-	private boolean otherPlayersMiningRock=false;
-	private boolean dangerous=false;
-	
-	private boolean interacted=false;
-	private boolean higherLevelWarning=false;
-	private boolean runOnce=true;
-	
 	private Area miningArea;
 	private Tile[] rockLocations;
 	private static ClientContext ctx;
@@ -37,6 +36,7 @@ public class MiningEngine implements Runnable{
 	{
 		if(me == null)
 		{
+			System.out.println("Creating Mining Engine");
 			me = new MiningEngine();
 		}
 		return me;
@@ -101,22 +101,90 @@ public class MiningEngine implements Runnable{
 			
 		}
 		else
-		{
-			//no mining area is set. We're going rogue
+		{			
+			//check if there are rocks around us
+			if(LocalPlayer.Location.NearObjects(ctx, rocksToMine))
+			{
+				//close to rocks
+			}
+			else
+			{
+				//find rocks and walk towards them
+				if(!ctx.objects.select().name(allRocks).isEmpty())
+				{
+					//theres rocks somewhere. walk towards it
+					Pathing.MoveTowards.Location(ctx, ctx.objects.select().name(allRocks).nearest().poll().tile());
+				}
+			}
 		}
 		
-		//we are either in the mining area or it is not set
+		//at this point. we assume that we're within the mining location
+		//or at least we are close to some rocks
 		
-	}
-	private void ClearFlags()
-	{
-		higherLevelWarning=false;
-		interacted=false;
+		/*
+		 * if there are rocks we want around us
+		 * 		check if other people are mining those rocks
+		 * 				if people are
+		 * 						flag the rock to be avoided
+		 * 	
+		 */
+		String[] rockList=null;
+		GameObject rockWeWant=null;		
+		if(rocksSpecificed)
+		{
+			rockList=rocksToMine;
+		}
+		else
+		{
+			rockList=allRocks;
+		}
+		Iterator<GameObject> iRocks = ctx.objects.select().name(rockList).nearest().iterator();
+		Iterator<AvoidObject> iAvoid=null;
+		boolean getNextRock=false;
+		while(iRocks.hasNext())
+		{
+			getNextRock=false;
+			iAvoid = AvoidObjects.GetList().iterator();
+			rockWeWant = iRocks.next();
+			
+			//check if the rock is in the avoid list
+			AvoidObject ao = null;
+			while(iAvoid.hasNext())
+			{
+				ao = iAvoid.next();
+				if(ao.getTile().distanceTo(rockWeWant.tile())==0)
+				{
+					System.out.println(rockWeWant.name()+" is in the avoid list. Get the next rock");
+					getNextRock=true;
+				}
+			}
+			if(getNextRock==false)break;
+		}
 		
-		inMiningLocation=false;
-		closeToRocks=false;
-		otherPlayersMiningRock=false;
-		dangerous=false;
+		System.out.println("We got a rock that is not on the avoid list");
+		if(inMiningLocation)
+		{
+			if(rockWeWant.valid())
+			{				
+				//we found a rock we want. check if someone else is mining it
+				if(Tiles.Calculations.isPlayerNearObject(ctx, rockWeWant.tile()))
+				{
+					System.out.println("Player is near "+rockWeWant.name()+" avoid.");
+					//flag this rock as bad
+					Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(rockWeWant.tile()));
+				}
+				else if(LocalPlayer.Location.NearHighLevelMobs(ctx))
+				{
+					System.out.println("It's too dangerous to get this rock");
+					//its dangerous
+					Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(rockWeWant.tile()));					
+				}
+				else
+				{
+					Actions.Interact.InteractWithObject(ctx, rockWeWant, Interact.MINE);
+				}
+			}
+		}
 	}
 	public MiningEngine SetRocks(String[] rocks)
 	{

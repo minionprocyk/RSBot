@@ -62,6 +62,7 @@ public class Interact {
 					Pathing.ToObject.WalkToObject(ctx, gameObject);
 				}
 				if(helper >= adjustPitch)Camera.Focus.AdjustPitch(ctx);
+				helper++;
 				InteractWithObject(ctx,gameObject,action,helper);
 				return true;
 			}
@@ -139,7 +140,7 @@ public class Interact {
 					ToObject.WalkToObject(ctx, npc);
 				}
 				if(helper > adjustPitch)Camera.Focus.AdjustPitch(ctx);
-				
+				helper++;
 				InteractWithNPC(ctx,npc,action,helper);
 				return true;
 				

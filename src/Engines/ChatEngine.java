@@ -34,7 +34,7 @@ public class ChatEngine extends Thread implements Runnable {
 	}
 	public void run()
 	{
-		while(ChatEngine.ctx.game.loggedIn())
+		while(!ChatEngine.ctx.controller.isStopping())
 		{
 			System.out.println(Messages.GetLastReadMessage().getMessage());
 			Utility.Sleep.Wait(5000);

@@ -1,11 +1,6 @@
-/Actions/
-/Camera/
-/Chat/
-/Constants/
-/Engines/
 /LocalPlayer/
-/Pathing/
-/Scripts/
-/Tasks/
+/Engines/
 /Tiles/
-/Utility/
+/Scripts/
+/Pathing/
+/Actions/

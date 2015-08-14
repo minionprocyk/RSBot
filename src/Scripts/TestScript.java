@@ -6,6 +6,7 @@ import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 
+import Actions.Interact;
 import Chat.Messages;
 import Constants.ItemName;
 import Constants.ObjectName;
@@ -26,8 +27,10 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 		switch(getState())
 		{
 		case doThings:
-			//System.out.println("Ok were doing things");
-			//new ChoppingEngine(ctx).SetTrees(trees).build().run();;
+			if(ctx.backpack.select().name(ItemName.LOGS).count() > 0)
+			{
+				ctx.backpack.select().name(ItemName.LOGS).poll().interact(Constants.Interact.LIGHT);
+			}
 			break;
 		case goal:
 			//light the logs
