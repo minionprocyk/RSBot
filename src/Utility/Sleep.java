@@ -7,8 +7,8 @@ import org.powerbot.script.rt6.ClientContext;
 import Constants.Animation;
 
 public class Sleep {
-	private static final int lowRandomWaitTime=1000;
-	private static final int highRandomWaitTime=3000;
+	private static final int lowRandomWaitTime=500;
+	private static final int highRandomWaitTime=1500;
 	
 	public static void WaitRandomTime(int arg1, int arg2)
 	{
@@ -39,7 +39,7 @@ public class Sleep {
 			   currentTile.y() == ctx.players.local().tile().y())
 			{
 				//player has not moved. we need to exit the loop
-				System.out.println("Seems like we never started moving. Weird.");
+				System.out.println("Seems like we never started moving.");
 				break;
 			}
 			System.out.println("In Motion");

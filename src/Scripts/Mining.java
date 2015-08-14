@@ -1,29 +1,33 @@
 package Scripts;
 
+import org.powerbot.script.Area;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 
 import Constants.Interact;
+import Constants.ItemName;
 import Constants.ObjectName;
 import Engines.MiningEngine;
 import Pathing.ToObject;
 import Pathing.Traverse;
+import Tasks.SimpleTask;
 
 @Manifest(name = "CopperMining", description = "spawn crafter and tan stuff bitch", properties = "client=6; topic=0;")
 
 public class Mining extends PollingScript<ClientContext>{
 	boolean interacted=false;
 	static int currentPlayerAnimation=-1;
-	
+	private static State previousState = State.initialize;
+	private static State currentState = State.initialize;
 	//tiles from furnace to cave entrance
 	Tile furnaceLocation = new Tile(2884,3506,0);
 	Tile bankLocation = new Tile(2889,3539,0);
 	Tile exitCave1 = new Tile(2278, 4511, 0);
 	Tile exitCave2 = new Tile(2292, 4516,0);
 	Tile caveEntrance = new Tile(2876,3503,0);
-	
+	Area bankArea = new Area(new Tile(2894, 3535),new Tile(2883, 3536));
 	
 	//tiles from bank to cave
 	Tile btc1 = new Tile(2894, 3528, 0);
@@ -47,32 +51,51 @@ public class Mining extends PollingScript<ClientContext>{
 	String[] rocks = new String[]{ObjectName.COPPER_ROCK,ObjectName.TIN_ROCK};
 	MiningEngine me = MiningEngine.GetInstance().SetContext(ctx).SetRocks(rocks).SetMiningArea(oreLocations).build();
 	public void poll() {
-		switch(getState())
+		switch(currentState=getState())
 		{
 		case mining:
 			me.run();
 			break;
 		case deposit:
-			//exit the cave
-			ExitCave();
-			
-			//walk to the bank
-			Traverse.TraversePathInReverse(ctx, fromBankToCaveEntrance);
-			
 			//deposit everything into the bank
 			Desposit();
-			
-			//walk back to the cave
-			Traverse.TraversePath(ctx, fromBankToCaveEntrance);
-			
-			//enter the cave
-			EnterCave();
 			break;
 		case stop:
 			//logout if were logged in and then stop the script
 			if(ctx.game.loggedIn())ctx.game.logout(true);
 			ctx.controller.stop();
+		
+		case walk_to_bank:
+			//walk to the bank
+			Traverse.TraversePathInReverse(ctx, fromBankToCaveEntrance);
+			break;
+		case walk_to_cave:
+			if(ctx.objects.select().name(ObjectName.CAVE_ENTRANCE).nearest().poll().tile().distanceTo(ctx.players.local().tile()) > 6)
+			{
+				//walk back to the cave
+				Traverse.TraversePath(ctx, fromBankToCaveEntrance);
+				//enter the cave
+				EnterCave();
+			}
+			else
+			{
+				EnterCave();
+			}
+			
+			break;
+		case walk_to_furnace:
+			break;
+		case smelt:
+			SimpleTask.Smelt(ctx);
+			break;
+		case exit_cave:
+			//exit the cave
+			ExitCave();
+			break;
+		default:
+			System.out.println("No condition is being met.");
 		}
+		previousState=currentState;
 	}
 	private void ExitCave()
 	{
@@ -80,7 +103,7 @@ public class Mining extends PollingScript<ClientContext>{
 		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT);
 		//wait for some time to load
 		Utility.Sleep.WaitRandomTime(1000, 3000);
-		if((ctx.players.local().tile().x() < 2500) || (ctx.players.local().tile().y() > 4000))
+		if(insideCave())
 		{
 			//we are still in the cave
 			Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT);		
@@ -89,7 +112,6 @@ public class Mining extends PollingScript<ClientContext>{
 	private void EnterCave()
 	{
 		Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_ENTRANCE, Interact.ENTER);
-		Traverse.TraverseRandomPath(ctx, oreLocations);
 	}
 	private void WalkToFurnace()
 	{
@@ -98,9 +120,22 @@ public class Mining extends PollingScript<ClientContext>{
 	}
 	private void Desposit()
 	{
+		Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_BOOTH, Interact.BANK);
 		ctx.bank.open();
 		ctx.bank.depositInventory();
 		ctx.bank.close();
+	}
+	private boolean insideCave()
+	{
+		if((ctx.players.local().tile().x() < 2500) || (ctx.players.local().tile().y() > 4000))
+		{
+			//we are still in the cave
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 	private void Smelt()
 	{
@@ -112,26 +147,30 @@ public class Mining extends PollingScript<ClientContext>{
 	
 	public State getState()
 	{
-				
-		
-		if(ctx.backpack.select().count()==28)
+		if(insideCave() && LocalPlayer.Backpack.isFull(ctx))
 		{
-			//backpack is full.
-			return State.deposit;
+			return State.exit_cave;
 		}
-		else if(ctx.game.loggedIn() == false)
+		else if(insideCave() && !LocalPlayer.Backpack.isFull(ctx))
 		{
-			return State.stop;
+			return State.mining;
+		}
+		else if(!insideCave() && LocalPlayer.Backpack.hasStuff(ctx) && !LocalPlayer.Location.Within(ctx, bankArea))
+		{
+			return State.walk_to_bank;
+		}
+		else if(LocalPlayer.Location.Within(ctx, bankArea) && LocalPlayer.Backpack.hasStuff(ctx))
+		{
+			return State.deposit;
 		}
 		else
 		{
-			return State.mining;
+			return State.walk_to_cave;
 		}
 	}
 	public enum State
 	{
 		mining, deposit, smelt, stop,
-		walk_to_furnace, walk_to_cave, walk_to_bank
+		walk_to_furnace, walk_to_cave, walk_to_bank, exit_cave, initialize
 	}
-
 }

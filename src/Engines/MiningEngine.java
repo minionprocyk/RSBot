@@ -55,7 +55,7 @@ public class MiningEngine implements Runnable{
 		{
 			if(LocalPlayer.Location.Within(ctx, miningArea))
 			{
-				System.out.println("We are within the mining area. Nice");
+				System.out.println("We are within the mining area.");
 				inMiningLocation=true;
 			}
 			else
@@ -79,7 +79,7 @@ public class MiningEngine implements Runnable{
 		{
 			if(LocalPlayer.Location.DistanceTo(ctx, rockLocations) < 40)
 			{
-				System.out.println("We are within the mining area. Nice");
+				System.out.println("We are within the mining area.");
 				inMiningLocation=true;
 			}
 			else
@@ -121,13 +121,7 @@ public class MiningEngine implements Runnable{
 		//at this point. we assume that we're within the mining location
 		//or at least we are close to some rocks
 		
-		/*
-		 * if there are rocks we want around us
-		 * 		check if other people are mining those rocks
-		 * 				if people are
-		 * 						flag the rock to be avoided
-		 * 	
-		 */
+		// determine what list we are going to use
 		String[] rockList=null;
 		GameObject rockWeWant=null;		
 		if(rocksSpecificed)
@@ -138,6 +132,8 @@ public class MiningEngine implements Runnable{
 		{
 			rockList=allRocks;
 		}
+		
+		//select the nearest rock that isnt on the avoid list
 		Iterator<GameObject> iRocks = ctx.objects.select().name(rockList).nearest().iterator();
 		Iterator<AvoidObject> iAvoid=null;
 		boolean getNextRock=false;

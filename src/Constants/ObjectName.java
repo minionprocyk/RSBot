@@ -18,6 +18,7 @@ public class ObjectName {
 	public static final String FISHING_SPOT = "Fishing spot";
 	//banks
 	public static final String BANK_CHEST="Bank Chest";
+	public static final String BANK_BOOTH="Bank booth";
 	
 	//rocks
 	public static final String COPPER_ROCKS = "Copper ore rocks";

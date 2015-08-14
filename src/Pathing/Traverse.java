@@ -9,7 +9,7 @@ public class Traverse {
 	{
 		for(Tile t: path)
 		{
-			while(ctx.players.local().tile().distanceTo(t) > 3)
+			while(ctx.players.local().tile().distanceTo(t) > 6)
 			{
 				//shake the camera randomly 5% of the time while moving
 				if(Random.nextInt(0, 100)>94)Camera.Focus.OnRandomObject(ctx);

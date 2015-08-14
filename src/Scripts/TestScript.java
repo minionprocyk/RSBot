@@ -11,6 +11,7 @@ import Chat.Messages;
 import Constants.ItemName;
 import Constants.ObjectName;
 import Engines.ChatEngine;
+import Tasks.SimpleTask;
 
 @Manifest(name = "Test", description = "We do crazy things", properties = "client=6; topic=0;")
 public class TestScript  extends PollingScript<ClientContext> implements MessageListener	{
@@ -27,10 +28,8 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 		switch(getState())
 		{
 		case doThings:
-			if(ctx.backpack.select().name(ItemName.LOGS).count() > 0)
-			{
-				ctx.backpack.select().name(ItemName.LOGS).poll().interact(Constants.Interact.LIGHT);
-			}
+			SimpleTask.Smelt(ctx);
+			ctx.controller.stop();
 			break;
 		case goal:
 			//light the logs
