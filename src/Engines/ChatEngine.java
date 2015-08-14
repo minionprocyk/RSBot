@@ -4,16 +4,37 @@ import org.powerbot.script.rt6.ClientContext;
 
 import Chat.Messages;
 
-public class ChatEngine extends Engine {
+public class ChatEngine extends Thread implements Runnable {
 	private boolean debug=false;
-	Messages messages;
-	public ChatEngine(ClientContext ctx)
+	private static ChatEngine ce;
+	private static ClientContext ctx;
+	private static Messages messages;
+	private ChatEngine()
 	{
-		super(ctx);
+	}
+	public static ChatEngine GetInstance()
+	{
+		if(ce==null)
+		{
+			if(messages==null)
+			{
+				messages = new Messages();
+			}
+			ce = new ChatEngine();
+		}
+		return ce;
+	}
+	public ChatEngine SetContext(ClientContext ctx)
+	{
+		if(ChatEngine.ctx==null)
+		{
+			ChatEngine.ctx=ctx;
+		}
+		return this;
 	}
 	public void run()
 	{
-		while(!ctx.controller.isStopping())
+		while(ChatEngine.ctx.game.loggedIn())
 		{
 			System.out.println(Messages.GetLastReadMessage().getMessage());
 			Utility.Sleep.Wait(5000);
@@ -27,7 +48,6 @@ public class ChatEngine extends Engine {
 	}
 	public ChatEngine build()
 	{
-		this.messages = new Messages();
 		return this;
 	}
 }

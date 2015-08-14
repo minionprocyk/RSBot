@@ -1,110 +1,156 @@
 package Engines;
 
-import java.util.Iterator;
-
 import org.powerbot.script.Area;
-import org.powerbot.script.Random;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
-import org.powerbot.script.rt6.GameObject;
-import org.powerbot.script.rt6.Npc;
-import org.powerbot.script.rt6.Player;
 
-import Constants.Animation;
-import Constants.Interact;
+import Pathing.AvoidObject;
 
-public class MiningEngine extends Engine{
-	//this class should be a standard mining routine that scripts can call
+public class MiningEngine implements Runnable{
+	
+	//important objects
 	private String[] rocksToMine;
+	private AvoidObject[] avoidObjects;
+	
+	//important flags
+	private boolean miningAreaSet=false;
+	private boolean miningLocations=false;
+	private boolean rocksSpecificed=false;
+	
+	private boolean inMiningLocation=false;
+	private boolean closeToRocks=false;
+	private boolean otherPlayersMiningRock=false;
+	private boolean dangerous=false;
+	
 	private boolean interacted=false;
 	private boolean higherLevelWarning=false;
 	private boolean runOnce=true;
+	
 	private Area miningArea;
 	private Tile[] rockLocations;
-	private ClientContext ctx;
-	public MiningEngine(ClientContext ctx)
+	private static ClientContext ctx;
+	private static MiningEngine me;
+	private MiningEngine()
 	{
-		super(ctx);
+	}
+	public static MiningEngine GetInstance()
+	{
+		if(me == null)
+		{
+			me = new MiningEngine();
+		}
+		return me;
+	}
+	public MiningEngine SetContext(ClientContext ctx)
+	{
+		if(MiningEngine.ctx == null)
+		{
+			MiningEngine.ctx = ctx;
+		}
+		return this;
 	}
 	public void run() {
-		//if(runOnce==true)activate timer
-		if(LocalPlayer.Animation.GetPlayerAnimation(ctx)==Animation.PLAYER_IDLE)
+		//determine if we're in a mining location
+		if(miningAreaSet)
 		{
-			//player is idle. we should find something to mine
-			
-			
-			//get a rock name
-			String rock= rocksToMine[Random.nextInt(0, rocksToMine.length)];
-			
-			//find the closest one
-			final GameObject rockObject = ctx.objects.select().name(rock).nearest().poll();
-			
-			if(rockObject.valid())
+			if(LocalPlayer.Location.Within(ctx, miningArea))
 			{
-				//check if there are enemies over there
-				Iterator<Npc> iNpcs = ctx.npcs.select().iterator();
-				while(iNpcs.hasNext())
+				System.out.println("We are within the mining area. Nice");
+				inMiningLocation=true;
+			}
+			else
+			{
+				System.out.println("We are "+Math.round(LocalPlayer.Location.DistanceTo(ctx, miningArea)) +" units away");
+				if(LocalPlayer.Location.DistanceTo(ctx, miningArea) < 40)
 				{
-					if((iNpcs.next().combatLevel() - ctx.players.local().combatLevel()) > 4)
-					{
-						//flag a warning that the npcs combat level is higher than yours
-						higherLevelWarning=true;
-					}
+					//if less than 40 units away. try to walk to it
+					System.out.println("The mining area seems close enough.");
+					Pathing.MoveTowards.Location(ctx, miningArea);
+					return; //we tried to fix the problem. try again
 				}
-				
-				//check if a player is already mining that rock
-				Iterator<Player> iPlayer = ctx.players.select().iterator();
-				while(iPlayer.hasNext())
+				else
 				{
-					if(iPlayer.next().tile().distanceTo(rockObject) < 2)
-					{
-						//we need to find a new rock. someone is probably using this one
-					}
+					System.out.println("The mining area is too far");
+					return;
 				}
-			
-				
-				//interact with it
-				interacted = Actions.Interact.InteractWithObject(ctx, rockObject, Interact.MINE);
-				if(interacted)
+			}
+		}
+		else if(miningLocations)
+		{
+			if(LocalPlayer.Location.DistanceTo(ctx, rockLocations) < 40)
+			{
+				System.out.println("We are within the mining area. Nice");
+				inMiningLocation=true;
+			}
+			else
+			{
+				System.out.println("We are "+Math.round(LocalPlayer.Location.DistanceTo(ctx, rockLocations)) +" units away");
+				if(LocalPlayer.Location.DistanceTo(ctx, rockLocations) < 40)
 				{
-					do
-					{
-						Utility.Sleep.Wait(300);
-					}while(LocalPlayer.Animation.GetPlayerAnimation(ctx) == Animation.PLAYER_MINING);
+					//if less than 40 units away. try to walk to it
+					System.out.println("The mining area seems close enough.");
+					Pathing.MoveTowards.Location(ctx, rockLocations);
+					return; //we tried to fix the problem. try again
+				}
+				else
+				{
+					System.out.println("The mining area is too far");
+					return;
 				}
 			}
 			
 		}
 		else
 		{
-			//player is not idle. Check if were in combat
-			if(ctx.players.local().inCombat())
-			{
-				new FightingEngine(ctx).SetFightingArea(miningArea);
-			}
-			
+			//no mining area is set. We're going rogue
 		}
-		ClearFlags();
+		
+		//we are either in the mining area or it is not set
+		
 	}
 	private void ClearFlags()
 	{
-		this.higherLevelWarning=false;
-		this.interacted=false;
+		higherLevelWarning=false;
+		interacted=false;
+		
+		inMiningLocation=false;
+		closeToRocks=false;
+		otherPlayersMiningRock=false;
+		dangerous=false;
 	}
 	public MiningEngine SetRocks(String[] rocks)
 	{
+		this.rocksSpecificed=true;
 		this.rocksToMine = rocks;
 		return this;
 	}
 	public MiningEngine SetMiningArea(Tile[] area)
 	{
-		this.rockLocations=area;
-		return this;
+		if(this.miningAreaSet || this.miningLocations)
+		{
+			System.out.println("Cannot declare mining area twice");
+			return this;
+		}
+		else
+		{
+			this.miningLocations=true;
+			this.rockLocations=area;
+			return this;	
+		}
 	}
 	public MiningEngine SetMiningArea(Area area)
 	{
-		this.miningArea = area;
-		return this;
+		if(this.miningAreaSet || this.miningLocations)
+		{
+			System.out.println("Cannot declare mining area twice");
+			return this;
+		}
+		else
+		{
+			this.miningAreaSet=true;
+			this.miningArea = area;
+			return this;
+		}
 	}
 	public MiningEngine build()
 	{

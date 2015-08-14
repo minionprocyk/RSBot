@@ -50,7 +50,7 @@ public class Mining extends PollingScript<ClientContext>{
 		switch(getState())
 		{
 		case mining:
-			new MiningEngine(ctx).SetRocks(rocks).SetMiningArea(oreLocations).build().run();
+			MiningEngine.GetInstance().SetContext(ctx).SetRocks(rocks).SetMiningArea(oreLocations).build().run();
 			break;
 		case deposit:
 			//exit the cave

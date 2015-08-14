@@ -10,7 +10,6 @@ import Chat.Messages;
 import Constants.ItemName;
 import Constants.ObjectName;
 import Engines.ChatEngine;
-import Engines.ChoppingEngine;
 
 @Manifest(name = "Test", description = "We do crazy things", properties = "client=6; topic=0;")
 public class TestScript  extends PollingScript<ClientContext> implements MessageListener	{
@@ -22,13 +21,13 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 		if(init)
 		{
 			init=false;
-			new Thread(new ChatEngine(ctx).SetDebug(true).build()).start();
+			ChatEngine.GetInstance().SetContext(ctx).SetDebug(true).build().start();
 		}
 		switch(getState())
 		{
 		case doThings:
 			//System.out.println("Ok were doing things");
-			new ChoppingEngine(ctx).SetTrees(trees).build().run();;
+			//new ChoppingEngine(ctx).SetTrees(trees).build().run();;
 			break;
 		case goal:
 			//light the logs
