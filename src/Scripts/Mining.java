@@ -7,7 +7,6 @@ import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 
 import Constants.Interact;
-import Constants.ItemName;
 import Constants.ObjectName;
 import Engines.MiningEngine;
 import Pathing.ToObject;
@@ -27,7 +26,7 @@ public class Mining extends PollingScript<ClientContext>{
 	Tile exitCave1 = new Tile(2278, 4511, 0);
 	Tile exitCave2 = new Tile(2292, 4516,0);
 	Tile caveEntrance = new Tile(2876,3503,0);
-	Area bankArea = new Area(new Tile(2894, 3535),new Tile(2883, 3536));
+	Area bankArea = new Area(new Tile(2880, 3530),new Tile(2896, 3540));
 	
 	//tiles from bank to cave
 	Tile btc1 = new Tile(2894, 3528, 0);
@@ -48,7 +47,7 @@ public class Mining extends PollingScript<ClientContext>{
 	Tile[] fromFurnaceToCaveEntrance = new Tile[]{furnaceLocation, caveEntrance};
 	Tile[] fromBankToCaveEntrance = new Tile[]{bankLocation, btc1, 
 							btc2, btc3, btc4, btc5, caveEntrance};
-	String[] rocks = new String[]{ObjectName.COPPER_ROCK,ObjectName.TIN_ROCK};
+	String[] rocks = new String[]{ObjectName.COPPER_ROCK};
 	MiningEngine me = MiningEngine.GetInstance().SetContext(ctx).SetRocks(rocks).SetMiningArea(oreLocations).build();
 	public void poll() {
 		switch(currentState=getState())
@@ -155,7 +154,7 @@ public class Mining extends PollingScript<ClientContext>{
 		{
 			return State.mining;
 		}
-		else if(!insideCave() && LocalPlayer.Backpack.hasStuff(ctx) && !LocalPlayer.Location.Within(ctx, bankArea))
+		else if(LocalPlayer.Backpack.hasStuff(ctx) && !LocalPlayer.Location.Within(ctx, bankArea))
 		{
 			return State.walk_to_bank;
 		}
@@ -163,9 +162,13 @@ public class Mining extends PollingScript<ClientContext>{
 		{
 			return State.deposit;
 		}
-		else
+		else if(LocalPlayer.Location.Within(ctx, bankArea) && !LocalPlayer.Backpack.hasStuff(ctx))
 		{
 			return State.walk_to_cave;
+		}
+		else
+		{
+			return null;
 		}
 	}
 	public enum State
