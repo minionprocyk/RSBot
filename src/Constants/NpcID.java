@@ -1,5 +1,5 @@
 package Constants;
 
-public class NpcID {
+public class NpcId {
 
 }

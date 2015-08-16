@@ -8,6 +8,10 @@ public class Backpack {
 	{
 		return ctx.backpack.select().count() == 28 ? true : false;
 	}
+	public static boolean isEmpty(ClientContext ctx)
+	{
+		return ctx.backpack.select().isEmpty();
+	}
 	public static boolean hasStuff(ClientContext ctx)
 	{
 		return ctx.backpack.select().count() > 0 ? true : false;

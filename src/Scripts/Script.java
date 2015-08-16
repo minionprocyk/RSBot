@@ -13,6 +13,7 @@ import Chat.Messages;
 import Tasks.Task;
 import Tasks.WalkToBurd;
 
+//@Manifest(name = "scriptName", description = "scriptDescription", properties = "client=6; topic=0;")
 public class Script extends PollingScript<ClientContext> implements MessageListener{
 	List<Task> tasks  = new ArrayList<Task>();
 	
@@ -34,5 +35,12 @@ public class Script extends PollingScript<ClientContext> implements MessageListe
 	public void messaged(MessageEvent msg) {
 		Messages.AddPastReadMessages(msg.source(), msg.text());
 	}
-
+	public State getState()
+	{
+		return null;
+	}
+	public enum State
+	{
+		start, stop
+	}
 }

@@ -1,5 +1,6 @@
 package Pathing;
 
+import org.powerbot.script.Area;
 import org.powerbot.script.Random;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
@@ -18,6 +19,10 @@ public class Traverse {
 				Utility.Sleep.WhileRunning(ctx);
 			}
 		}
+	}
+	public static void TraversePath(ClientContext ctx, Area area, Tile destination)
+	{
+		//take an area and create a path to a tile
 	}
 	public static void TraversePathInReverse(ClientContext ctx, Tile... path)
 	{

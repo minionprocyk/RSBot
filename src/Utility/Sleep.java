@@ -32,7 +32,8 @@ public class Sleep {
 		Tile currentTile = ctx.players.local().tile();
 		do
 		{
-			
+			System.out.println("In Motion");
+
 			Utility.Sleep.WaitRandomTime(lowRandomWaitTime,highRandomWaitTime);
 			
 			if(currentTile.x() == ctx.players.local().tile().x() &&
@@ -42,15 +43,14 @@ public class Sleep {
 				System.out.println("Seems like we never started moving.");
 				break;
 			}
-			System.out.println("In Motion");
 		}while(ctx.players.local().inMotion());
 	}
 	public static void WhileNotIdle(ClientContext ctx)
 	{
 		do
 		{
-			Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
 			System.out.println("Player not idle");
+			Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
 		}while(LocalPlayer.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
 	}
 	public static void WhilePlayer(ClientContext ctx, int animation)

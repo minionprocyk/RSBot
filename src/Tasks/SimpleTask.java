@@ -34,10 +34,24 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 		{
 			component.click();
 		}
-		Utility.Sleep.WhileNotIdle(ctx);
+		int lastCount = 0;
+		do
+		{
+			
+			lastCount = ctx.backpack.select().count();
+			Utility.Sleep.WhileNotIdle(ctx);
+		}while(lastCount != ctx.backpack.select().count());
+		
 	}
 	public static void Smith()
 	{
 		
 	}
+	public static void Deposit(ClientContext ctx)
+	{
+		if(!ctx.bank.opened())ctx.bank.open();
+		ctx.bank.depositInventory();
+		ctx.bank.close();
+	}
+
 }
