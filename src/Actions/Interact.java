@@ -4,17 +4,20 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
+import Pathing.AvoidNpc;
+import Pathing.AvoidObject;
 import Pathing.ToObject;
 
 public class Interact {
 	private static final int lowDistanceFromObject=4;
-
+	private static final int avoidObjectThreshold=5;
 	private static int adjustPitch=3;
 	
 	
 	private static boolean InteractWithObject(ClientContext ctx,GameObject gameObject, String action, int helper)
 	{
 		if(helper!=0)helper++;
+		if(helper>avoidObjectThreshold)Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
 		if(gameObject.valid())
 		{
 			if(gameObject.inViewport())
@@ -23,6 +26,7 @@ public class Interact {
 				if(ctx.players.local().tile().distanceTo(gameObject) > lowDistanceFromObject)
 				{
 					//distance to the object is greater than 4 tiles. we should move towards it 
+					System.out.println("Were a little far from the object. Lets move in");
 					ToObject.WalkToObject(ctx, gameObject);
 					
 				}
@@ -61,6 +65,7 @@ public class Interact {
 					Pathing.ToObject.WalkToObject(ctx, gameObject);
 				}
 				if(helper >= adjustPitch)Camera.Focus.AdjustPitch(ctx);
+				helper++;
 				InteractWithObject(ctx,gameObject,action,helper);
 				return true;
 			}
@@ -89,7 +94,7 @@ public class Interact {
 	private static boolean InteractWithNPC(ClientContext ctx, Npc npc, String action, int helper)
 	{
 		if(helper!=0)helper++;
-		
+		if(helper>avoidObjectThreshold)Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(npc));
 		if(npc.valid())
 		{
 			if(npc.inViewport())
@@ -138,7 +143,7 @@ public class Interact {
 					ToObject.WalkToObject(ctx, npc);
 				}
 				if(helper > adjustPitch)Camera.Focus.AdjustPitch(ctx);
-				
+				helper++;
 				InteractWithNPC(ctx,npc,action,helper);
 				return true;
 				

@@ -11,7 +11,6 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
-import Chat.Messages;
 import Constants.Animation;
 import Constants.Interact;
 import Constants.ItemName;
@@ -71,16 +70,16 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 		case usebags:
 			//if we have bones bury them
 			System.out.println("Using stuff in our bags");
-			if(Player.Backpack.Contains(ctx, ObjectName.BONES))
+			if(LocalPlayer.Backpack.Has(ctx, ObjectName.BONES))
 			{
 				//bury the bones
-				Player.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
+				LocalPlayer.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
 			}
-			else if(Player.Backpack.Contains(ctx, ObjectName.BURNT_MEAT))
+			else if(LocalPlayer.Backpack.Has(ctx, ObjectName.BURNT_MEAT))
 			{
-				Player.Backpack.Use(ctx, ObjectName.BURNT_MEAT, Interact.DROP);
+				LocalPlayer.Backpack.Use(ctx, ObjectName.BURNT_MEAT, Interact.DROP);
 			}
-			else if(Player.Backpack.Contains(ctx, ObjectName.RAW_BEEF))
+			else if(LocalPlayer.Backpack.Has(ctx, ObjectName.RAW_BEEF))
 			{
 				System.out.println("We have raw beef");
 				//check if we have logs 
@@ -89,27 +88,27 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 				{
 					System.out.println("There's a fire we can use");
 					//theres a fire around to use
-					Player.Backpack.Use(ctx, ObjectName.RAW_BEEF, Interact.USE);
+					LocalPlayer.Backpack.Use(ctx, ObjectName.RAW_BEEF, Interact.USE);
 					Actions.Interact.InteractWithObject(ctx, ObjectName.FIRE, Interact.USE);
 					Utility.Sleep.WaitRandomTime(1000, 3000);
 					if(ctx.widgets.component(1370, 20).valid())ctx.widgets.component(1370, 20).click();
 					do
 					{
 						Utility.Sleep.WaitRandomTime(1000, 2000);
-					}while(Player.Animation.CheckPlayerIdle(ctx)==Animation.PLAYER_NOT_IDLE);
+					}while(LocalPlayer.Animation.CheckPlayerIdle(ctx)==Animation.PLAYER_NOT_IDLE);
 				}
 				else
 				{
 					System.out.println("No fire we can use. Lets make our own");
 					//no fire around. we need to make our own
-					if(Player.Backpack.Contains(ctx, ObjectName.LOGS))
+					if(LocalPlayer.Backpack.Has(ctx, ObjectName.LOGS))
 					{
 						System.out.println("Making a fire");
-						Player.Backpack.Use(ctx, ObjectName.LOGS, Interact.LIGHT);						
+						LocalPlayer.Backpack.Use(ctx, ObjectName.LOGS, Interact.LIGHT);						
 						do
 						{
 							Utility.Sleep.Wait(100);
-						}while(Player.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
+						}while(LocalPlayer.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
 					}
 					else
 					{
@@ -138,15 +137,15 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 				public void run() {
 					while(currentState==State.walk_to_bank)
 					{
-						if(Player.Backpack.Contains(ctx, ObjectName.BONES))
+						if(LocalPlayer.Backpack.Has(ctx, ObjectName.BONES))
 						{
 							//bury the bones
-							Player.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
+							LocalPlayer.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
 						}
-						else if(Player.Backpack.Contains(ctx, ObjectName.BURNT_MEAT))
+						else if(LocalPlayer.Backpack.Has(ctx, ObjectName.BURNT_MEAT))
 						{
 							//drop the meat
-							Player.Backpack.Use(ctx, ObjectName.BURNT_MEAT, Interact.DROP);
+							LocalPlayer.Backpack.Use(ctx, ObjectName.BURNT_MEAT, Interact.DROP);
 						}
 						Utility.Sleep.WaitRandomTime(500, 2000);
 					}
@@ -165,22 +164,22 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 	
 	public State getState()
 	{
-		if(Player.Backpack.isFull(ctx) && !Player.Location.Within(ctx, bankArea))
+		if(LocalPlayer.Backpack.isFull(ctx) && !LocalPlayer.Location.Within(ctx, bankArea))
 		{
 			return State.walk_to_bank;
 		}
-		else if(Player.Backpack.isFull(ctx))
+		else if(LocalPlayer.Backpack.hasStuff(ctx) && LocalPlayer.Location.Within(ctx, bankArea))
 		{
 			return State.deposit;
 		}
-		else if(Player.Location.Within(ctx, bankArea) && !Player.Backpack.isFull(ctx))
+		else if(LocalPlayer.Location.Within(ctx, bankArea) && !LocalPlayer.Backpack.isFull(ctx))
 		{
 			return State.walk_to_cows;
 		}
 		else
 		{
 			//this adds a little bit of randomness and usually will only bury bones randomly 
-			if(Player.Backpack.Count(ctx, ItemName.RAW_BEEF) > Random.nextInt(3, 5))
+			if(LocalPlayer.Backpack.Count(ctx, ItemName.RAW_BEEF) > Random.nextInt(3, 5))
 			{
 				return State.usebags;
 			}
@@ -197,7 +196,8 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 	}
 
 	
-	public void messaged(MessageEvent message) {
-		Messages.AddPastReadMessages(message.source(), message.text());
+	public void messaged(MessageEvent arg0) {
+		
 	}
+
 }

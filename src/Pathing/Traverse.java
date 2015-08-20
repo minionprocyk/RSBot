@@ -1,5 +1,6 @@
 package Pathing;
 
+import org.powerbot.script.Area;
 import org.powerbot.script.Random;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
@@ -9,7 +10,7 @@ public class Traverse {
 	{
 		for(Tile t: path)
 		{
-			while(ctx.players.local().tile().distanceTo(t) > 3)
+			while(ctx.players.local().tile().distanceTo(t) > 6)
 			{
 				//shake the camera randomly 5% of the time while moving
 				if(Random.nextInt(0, 100)>94)Camera.Focus.OnRandomObject(ctx);
@@ -18,6 +19,10 @@ public class Traverse {
 				Utility.Sleep.WhileRunning(ctx);
 			}
 		}
+	}
+	public static void TraversePath(ClientContext ctx, Area area, Tile destination)
+	{
+		//take an area and create a path to a tile
 	}
 	public static void TraversePathInReverse(ClientContext ctx, Tile... path)
 	{

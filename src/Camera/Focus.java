@@ -10,7 +10,9 @@ public class Focus {
 	//high pitch raises camera to look at floor
 	//yaw of 0 is north, >0 is looking more west and <0 is looking more east
 	
-	private static int GoodPitch = 50;
+	private static int goodPitch = 50;
+	private static int lowPitch = 20;
+	private static int highPitch = 80;
 	
 	public static void OnRandomObject(ClientContext ctx)
 	{
@@ -36,7 +38,14 @@ public class Focus {
 				ctx.camera.turnTo(go);
 				
 				//change the pitch 20% of the time
-				if(Random.nextInt(0, 100)>80)ctx.camera.pitch(Random.nextInt(20, 80));
+				if(Random.nextInt(0, 100)>80)
+				{
+					if(Utility.Math.IsBetween(ctx.camera.pitch(),highPitch, lowPitch))
+					{
+						ctx.camera.pitch(Random.nextInt(lowPitch, highPitch));
+	
+					}
+				}
 				break;
 			}
 		}
