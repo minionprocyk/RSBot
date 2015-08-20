@@ -10,5 +10,6 @@ public class GameMessage {
 	public static final String NeedWoodcutting = "You need Woodcutting level ";
 	public static final String AdvancedWoodcutting = "You've just advanced a Woodcutting level! You have reached level ";
 	public static final String GotLogs = "You get some logs.";
+	public static final String CantReach = "You can't reach that.";
 	
 }

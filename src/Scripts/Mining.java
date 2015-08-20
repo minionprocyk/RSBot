@@ -120,7 +120,7 @@ public class Mining extends PollingScript<ClientContext>{
 	private void Desposit()
 	{
 		Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_BOOTH, Interact.BANK);
-		SimpleTask.Deposit(ctx);
+		SimpleTask.Deposit(ctx,true);
 	}
 	private boolean insideCave()
 	{

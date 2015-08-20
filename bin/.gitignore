@@ -1,6 +1,9 @@
-/Scripts/
+/Engines/
 /LocalPlayer/
+/Scripts/
 /Tasks/
-/Pathing/
 /Constants/
-/Utility/
+/Widgets/
+/Pathing/
+/Actions/
+/Tiles/

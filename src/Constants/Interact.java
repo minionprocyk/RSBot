@@ -17,4 +17,6 @@ public class Interact {
 	public static final String EXAMINE="Examine";
 	public static final String CAGE="Cage";
 	public static final String BANK="Bank";
+	public static final String TAKE="Take";
+	public static final String EAT="Eat";
 }

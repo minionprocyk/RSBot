@@ -6,7 +6,7 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 
 public class ToObject {
-	public static void WalkToObject(ClientContext ctx, Locatable locatable)
+	private static void WalkToObject(ClientContext ctx, Locatable locatable, int helper)
 	{
 		if(locatable != null)
 		{
@@ -15,12 +15,24 @@ public class ToObject {
 			//wait until we're close to the object
 			Utility.Sleep.WhileRunning(ctx);
 			
-			if(ctx.players.local().tile().distanceTo(locatable) > 4)WalkToObject(ctx, locatable);
+			if(ctx.players.local().tile().distanceTo(locatable) > 4 && helper < 3)
+			{
+				helper++;
+				WalkToObject(ctx, locatable,helper);
+			}
+			else
+			{
+				return;
+			}
 		}
 		else
 		{
 			System.out.println("WalkToObject: The object doesnt exist. ");
 		}
+	}
+	public static void WalkToObject(ClientContext ctx, Locatable locatable)
+	{
+		WalkToObject(ctx,locatable, 0);
 	}
 	public static void WalkToObject(ClientContext ctx, String GameObject)
 	{

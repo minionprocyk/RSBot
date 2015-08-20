@@ -16,7 +16,7 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 	public static void Smelt(ClientContext ctx)
 	{
 		//search for a widget
-		Widget widget = Widgets.Search.ForWidget(ctx, "smelt");
+		Widget widget = Widgets.Search.ForWidget(ctx, Constants.Widgets.SMELT);
 		if(widget == null)
 		{
 			//we nede to interact with a furnace first. if we do it successfully. try smelting again
@@ -25,7 +25,7 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 				Smelt(ctx);
 			}
 		}
-		Component component = Widgets.Search.ForComponent(ctx, "smelt");
+		Component component = Widgets.Search.ForComponent(ctx, Constants.Widgets.SMELT);
 		if(component == null)
 		{
 			System.out.println("Cannot find component");
@@ -38,20 +38,24 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 		do
 		{
 			
-			lastCount = ctx.backpack.select().count();
+			lastCount = LocalPlayer.Backpack.Count(ctx);
 			Utility.Sleep.WhileNotIdle(ctx);
-		}while(lastCount != ctx.backpack.select().count());
+		}while(lastCount != LocalPlayer.Backpack.Count(ctx));
 		
 	}
 	public static void Smith()
 	{
 		
 	}
-	public static void Deposit(ClientContext ctx)
+	public static void Deposit(ClientContext ctx, boolean closeBank)
 	{
 		if(!ctx.bank.opened())ctx.bank.open();
 		ctx.bank.depositInventory();
-		ctx.bank.close();
+		if(closeBank)ctx.bank.close();
+	}
+	public static void LootAll(ClientContext ctx)
+	{
+		Widgets.Search.ForComponent(ctx, Constants.Widgets.LOOT).click();
 	}
 
 }

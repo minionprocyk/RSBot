@@ -1,6 +1,5 @@
 package Engines;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 
 import org.powerbot.script.Area;
@@ -50,137 +49,147 @@ public class MiningEngine implements Runnable{
 		return this;
 	}
 	public void run() {
-		//determine if we're in a mining location
-		if(miningAreaSet)
+		//if were in combat. that takes priority
+		if(ctx.players.local().inCombat())
 		{
-			if(LocalPlayer.Location.Within(ctx, miningArea))
+			FightingEngine.GetInstance().SetContext(ctx).build().run();
+		}
+		else
+		{
+			//determine if we're in a mining location
+			if(miningAreaSet)
 			{
-				System.out.println("We are within the mining area.");
-				inMiningLocation=true;
-			}
-			else
-			{
-				System.out.println("We are "+Math.round(LocalPlayer.Location.DistanceTo(ctx, miningArea)) +" units away");
-				if(LocalPlayer.Location.DistanceTo(ctx, miningArea) < 40)
+				if(LocalPlayer.Location.Within(ctx, miningArea))
 				{
-					//if less than 40 units away. try to walk to it
-					System.out.println("The mining area seems close enough.");
-					Pathing.MoveTowards.Location(ctx, miningArea);
-					return; //we tried to fix the problem. try again
+					System.out.println("We are within the mining area.");
+					inMiningLocation=true;
 				}
 				else
 				{
-					System.out.println("The mining area is too far");
-					return;
+					System.out.println("We are "+Math.round(LocalPlayer.Location.DistanceTo(ctx, miningArea)) +" units away");
+					if(LocalPlayer.Location.DistanceTo(ctx, miningArea) < 40)
+					{
+						//if less than 40 units away. try to walk to it
+						System.out.println("The mining area seems close enough.");
+						Pathing.MoveTowards.Location(ctx, miningArea);
+						return; //we tried to fix the problem. try again
+					}
+					else
+					{
+						System.out.println("The mining area is too far");
+						return;
+					}
 				}
 			}
-		}
-		else if(miningLocations)
-		{
-			if(LocalPlayer.Location.DistanceTo(ctx, rockLocations) < 40)
+			else if(miningLocations)
 			{
-				System.out.println("We are within the mining area.");
-				inMiningLocation=true;
-			}
-			else
-			{
-				System.out.println("We are "+Math.round(LocalPlayer.Location.DistanceTo(ctx, rockLocations)) +" units away");
 				if(LocalPlayer.Location.DistanceTo(ctx, rockLocations) < 40)
 				{
-					//if less than 40 units away. try to walk to it
-					System.out.println("The mining area seems close enough.");
-					Pathing.MoveTowards.Location(ctx, rockLocations);
-					return; //we tried to fix the problem. try again
+					System.out.println("We are within the mining area.");
+					inMiningLocation=true;
 				}
 				else
 				{
-					System.out.println("The mining area is too far");
-					return;
+					System.out.println("We are "+Math.round(LocalPlayer.Location.DistanceTo(ctx, rockLocations)) +" units away");
+					if(LocalPlayer.Location.DistanceTo(ctx, rockLocations) < 40)
+					{
+						//if less than 40 units away. try to walk to it
+						System.out.println("The mining area seems close enough.");
+						Pathing.MoveTowards.Location(ctx, rockLocations);
+						return; //we tried to fix the problem. try again
+					}
+					else
+					{
+						System.out.println("The mining area is too far");
+						return;
+					}
+				}
+				
+			}
+			else
+			{			
+				//check if there are rocks around us
+				if(LocalPlayer.Location.NearObjects(ctx, rocksToMine))
+				{
+					//close to rocks
+				}
+				else
+				{
+					//find rocks and walk towards them
+					if(!ctx.objects.select().name(allRocks).isEmpty())
+					{
+						//theres rocks somewhere. walk towards it
+						Pathing.MoveTowards.Location(ctx, ctx.objects.select().name(allRocks).nearest().poll().tile());
+					}
 				}
 			}
 			
-		}
-		else
-		{			
-			//check if there are rocks around us
-			if(LocalPlayer.Location.NearObjects(ctx, rocksToMine))
+			//at this point. we assume that we're within the mining location
+			//or at least we are close to some rocks
+			
+			// determine what list we are going to use
+			String[] rockList=null;
+			GameObject rockWeWant=null;		
+			if(rocksSpecificed)
 			{
-				//close to rocks
+				rockList=rocksToMine;
 			}
 			else
 			{
-				//find rocks and walk towards them
-				if(!ctx.objects.select().name(allRocks).isEmpty())
-				{
-					//theres rocks somewhere. walk towards it
-					Pathing.MoveTowards.Location(ctx, ctx.objects.select().name(allRocks).nearest().poll().tile());
-				}
+				rockList=allRocks;
 			}
-		}
-		
-		//at this point. we assume that we're within the mining location
-		//or at least we are close to some rocks
-		
-		// determine what list we are going to use
-		String[] rockList=null;
-		GameObject rockWeWant=null;		
-		if(rocksSpecificed)
-		{
-			rockList=rocksToMine;
-		}
-		else
-		{
-			rockList=allRocks;
-		}
-		
-		//select the nearest rock that isnt on the avoid list
-		Iterator<GameObject> iRocks = ctx.objects.select().name(rockList).nearest().iterator();
-		Iterator<AvoidObject> iAvoid=null;
-		boolean getNextRock=false;
-		while(iRocks.hasNext())
-		{
-			getNextRock=false;
-			iAvoid = AvoidObjects.GetList().iterator();
-			rockWeWant = iRocks.next();
 			
-			//check if the rock is in the avoid list
-			AvoidObject ao = null;
-			while(iAvoid.hasNext())
+			//select the nearest rock that isnt on the avoid list
+			Iterator<GameObject> iRocks = ctx.objects.select().name(rockList).nearest().iterator();
+			Iterator<AvoidObject> iAvoid=null;
+			boolean getNextRock=false;
+			while(iRocks.hasNext())
 			{
-				ao = iAvoid.next();
-				if(ao.getTile().distanceTo(rockWeWant.tile())==0)
+				getNextRock=false;
+				iAvoid = AvoidObjects.GetList().iterator();
+				rockWeWant = iRocks.next();
+				
+				//check if the rock is in the avoid list
+				AvoidObject ao = null;
+				while(iAvoid.hasNext())
 				{
-					System.out.println(rockWeWant.name()+" is in the avoid list. Get the next rock");
-					getNextRock=true;
+					ao = iAvoid.next();
+					if(ao.getTile().distanceTo(rockWeWant.tile())==0)
+					{
+						System.out.println(rockWeWant.name()+" is in the avoid list. Get the next rock");
+						getNextRock=true;
+					}
+				}
+				if(getNextRock==false)break;
+			}
+			
+			System.out.println("We got a rock that is not on the avoid list");
+			if(inMiningLocation)
+			{
+				if(rockWeWant.valid())
+				{				
+					//we found a rock we want. check if someone else is mining it
+					if(Tiles.Calculations.isPlayerNearObject(ctx, rockWeWant.tile()))
+					{
+						System.out.println("Player is near "+rockWeWant.name()+" avoid.");
+						//flag this rock as bad
+						Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(rockWeWant));
+					}
+					else if(LocalPlayer.Location.NearHighLevelMobs(ctx))
+					{
+						System.out.println("It's too dangerous to get this rock");
+						//its dangerous
+						Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(rockWeWant));					
+					}
+					else
+					{
+						Actions.Interact.InteractWithObject(ctx, rockWeWant, Interact.MINE);
+					}
 				}
 			}
-			if(getNextRock==false)break;
 		}
 		
-		System.out.println("We got a rock that is not on the avoid list");
-		if(inMiningLocation)
-		{
-			if(rockWeWant.valid())
-			{				
-				//we found a rock we want. check if someone else is mining it
-				if(Tiles.Calculations.isPlayerNearObject(ctx, rockWeWant.tile()))
-				{
-					System.out.println("Player is near "+rockWeWant.name()+" avoid.");
-					//flag this rock as bad
-					Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(rockWeWant.tile()));
-				}
-				else if(LocalPlayer.Location.NearHighLevelMobs(ctx))
-				{
-					System.out.println("It's too dangerous to get this rock");
-					//its dangerous
-					Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(rockWeWant.tile()));					
-				}
-				else
-				{
-					Actions.Interact.InteractWithObject(ctx, rockWeWant, Interact.MINE);
-				}
-			}
-		}
+		
 	}
 	public MiningEngine SetRocks(String[] rocks)
 	{

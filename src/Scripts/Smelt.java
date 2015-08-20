@@ -41,7 +41,7 @@ public class Smelt extends PollingScript<ClientContext> implements MessageListen
 			break;
 		case deposit:
 			Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_BOOTH, Interact.BANK);
-			SimpleTask.Deposit(ctx);
+			SimpleTask.Deposit(ctx,false);
 			break;
 		case smelt:
 			Actions.Interact.InteractWithObject(ctx, ObjectName.FURNACE, Interact.SMELT);

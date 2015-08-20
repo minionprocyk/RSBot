@@ -1,13 +1,15 @@
 package Pathing;
 
 import org.powerbot.script.Tile;
+import org.powerbot.script.rt6.GameObject;
 
-public class AvoidObject {
+public class AvoidObject implements Avoidable{
 	private long timeCreated;
-	private Tile tile;
-	public AvoidObject(Tile tile)
+	private GameObject gameObject;
+	public AvoidObject(GameObject gameObject)
 	{
-		this.tile = tile;
+		this.gameObject=gameObject;
+		
 		this.timeCreated = System.currentTimeMillis();
 	}
 	public long getTimeCreated()
@@ -16,7 +18,15 @@ public class AvoidObject {
 	}
 	public Tile getTile()
 	{
-		return this.tile;
+		return gameObject.tile();
+	}
+	public int id()
+	{
+		return this.gameObject.id();
+	}
+	public GameObject getGameObject()
+	{
+		return this.gameObject;
 	}
 
 }

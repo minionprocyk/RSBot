@@ -20,13 +20,13 @@ public class Search {
 				{
 					for(Component c2: c.components())
 					{
-						if(c2.text().toLowerCase().equals(name.toLowerCase()))
+						if(c2.text().equals(name))
 						{
 							return c2.widget();
 						}
 					}
 				}
-				if(c.text().toLowerCase().equals(name.toLowerCase()))
+				if(c.text().equals(name))
 				{
 					return c.widget();
 				}
@@ -47,13 +47,13 @@ public class Search {
 				{
 					for(Component c2: c.components())
 					{
-						if(c2.text().toLowerCase().equals(name.toLowerCase()))
+						if(c2.text().equals(name))
 						{
 							return c2;
 						}
 					}
 				}
-				if(c.text().toLowerCase().equals(name.toLowerCase()))
+				if(c.text().equals(name))
 				{
 					return c;
 				}

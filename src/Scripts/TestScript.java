@@ -1,4 +1,5 @@
 package Scripts;
+import org.powerbot.script.Area;
 import org.powerbot.script.MessageEvent;
 import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
@@ -6,12 +7,13 @@ import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 
-import Actions.Interact;
 import Chat.Messages;
 import Constants.ItemName;
+import Constants.NpcName;
 import Constants.ObjectName;
 import Engines.ChatEngine;
-import Tasks.SimpleTask;
+import Engines.FightingEngine;
+import Engines.StatisticsEngine;
 
 @Manifest(name = "Test", description = "We do crazy things", properties = "client=6; topic=0;")
 public class TestScript  extends PollingScript<ClientContext> implements MessageListener	{
@@ -19,22 +21,28 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 	Tile tile = new Tile(3381, 3270, 0);
 	boolean init=true;
 	String[] trees = new String[]{ObjectName.TREE};
+	String[] targets = new String[]{NpcName.DWARF, NpcName.GUARD, NpcName.IMP};
+	String[] food = new String[]{"Cooked Meat"};
+	int timer=0;
+	Area fightingArea = new Area(new Tile(3007,3434,0), new Tile(3027,3458,0));
 	public void poll() {	
 		if(init)
 		{
 			init=false;
 			ChatEngine.GetInstance().SetContext(ctx).SetDebug(true).build().start();
+			StatisticsEngine.GetInstance().SetContext(ctx).build().run();
 		}
 		switch(getState())
 		{
 		case doThings:
-			SimpleTask.Smelt(ctx);
-			ctx.controller.stop();
+			//FightingEngine.GetInstance().SetContext(ctx)
+			//							.SetTargets(targets).SetFood(food).build().run();
+			//SimpleTask.LootAll(ctx);
+			
 			break;
-		case goal:
+		case buryBones:
 			//light the logs
-			System.out.println("Ok we reached out goal");
-			ctx.controller.stop();
+			LocalPlayer.Backpack.Use(ctx, ItemName.BONES, Constants.Interact.BURY);
 			break;
 		}
 		
@@ -43,9 +51,9 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 	public State getState()
 	{
 		
-		if(LocalPlayer.Backpack.Count(ctx, ItemName.LOGS) == 18)
+		if(LocalPlayer.Backpack.Has(ctx, ItemName.BONES))
 		{
-			return State.goal;
+			return State.buryBones;
 		}
 		else
 		{
@@ -54,7 +62,7 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 	}
 	public enum State
 	{
-		doThings,goal
+		doThings,buryBones
 	}
 	
 	public void messaged(MessageEvent msg) {
