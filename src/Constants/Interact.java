@@ -20,4 +20,6 @@ public class Interact {
 	public static final String TAKE="Take";
 	public static final String EAT="Eat";
 	public static final String TALK="Talk";
+	public static final String OFFER="Offer";
+	public static final String EXCHANGE="Exchange";
 }

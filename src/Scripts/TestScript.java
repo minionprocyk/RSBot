@@ -9,8 +9,12 @@ import org.powerbot.script.rt6.ChatOption;
 import org.powerbot.script.rt6.ClientContext;
 
 import Actions.ChatOptions;
+import Actions.GrandExchange;
+import Actions.GrandExchange.Price;
+import Actions.GrandExchange.Quantity;
 import Chat.Messages;
 import Constants.Interact;
+import Constants.ItemId;
 import Constants.ItemName;
 import Constants.NpcId;
 import Constants.NpcName;
@@ -42,7 +46,8 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 		{
 		case doThings:
 			//QuestEngine.GetInstance().SetContext(ctx).SetObjectives(new TheBloodPact(ctx).getObjectives()).build().run();
-			
+			Actions.Interact.InteractWithNPC(ctx, NpcId.GRAND_EXCHANGE_CLERK, Interact.EXCHANGE);
+			GrandExchange.sell(ctx, ItemName.BRONZE_CHAINBODY, Price.TEN_LOW, Quantity.ALL);
 			ctx.controller.stop();
 			break;
 		case buryBones:

@@ -162,7 +162,13 @@ public class Interact {
 		InteractWithNPC(ctx,npc,action,0);
 		return true;	
 	}
-	public static boolean InteractWithNPC(ClientContext ctx, Integer npcId, String action)
+	public static boolean InteractWithNPC(ClientContext ctx, int[] npcId, String action)
+	{
+		final Npc npc = ctx.npcs.select().id(npcId).nearest().poll();
+		InteractWithNPC(ctx,npc,action,0);
+		return true;
+	}
+	public static boolean InteractWithNPC(ClientContext ctx, int npcId, String action)
 	{
 		final Npc npc = ctx.npcs.select().id(npcId).nearest().poll();
 		InteractWithNPC(ctx,npc,action,0);
