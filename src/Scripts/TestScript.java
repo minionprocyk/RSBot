@@ -5,15 +5,21 @@ import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
+import org.powerbot.script.rt6.ChatOption;
 import org.powerbot.script.rt6.ClientContext;
 
+import Actions.ChatOptions;
 import Chat.Messages;
+import Constants.Interact;
 import Constants.ItemName;
+import Constants.NpcId;
 import Constants.NpcName;
 import Constants.ObjectName;
+import Constants.WidgetId;
 import Engines.ChatEngine;
-import Engines.FightingEngine;
+import Engines.QuestEngine;
 import Engines.StatisticsEngine;
+import Quests.TheBloodPact;
 
 @Manifest(name = "Test", description = "We do crazy things", properties = "client=6; topic=0;")
 public class TestScript  extends PollingScript<ClientContext> implements MessageListener	{
@@ -29,16 +35,15 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 		if(init)
 		{
 			init=false;
-			ChatEngine.GetInstance().SetContext(ctx).SetDebug(true).build().start();
-			StatisticsEngine.GetInstance().SetContext(ctx).build().run();
+			//ChatEngine.GetInstance().SetContext(ctx).SetDebug(true).build().start();
+			//StatisticsEngine.GetInstance().SetContext(ctx).build().run();
 		}
 		switch(getState())
 		{
 		case doThings:
-			//FightingEngine.GetInstance().SetContext(ctx)
-			//							.SetTargets(targets).SetFood(food).build().run();
-			//SimpleTask.LootAll(ctx);
+			//QuestEngine.GetInstance().SetContext(ctx).SetObjectives(new TheBloodPact(ctx).getObjectives()).build().run();
 			
+			ctx.controller.stop();
 			break;
 		case buryBones:
 			//light the logs

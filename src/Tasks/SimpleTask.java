@@ -16,7 +16,7 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 	public static void Smelt(ClientContext ctx)
 	{
 		//search for a widget
-		Widget widget = Widgets.Search.ForWidget(ctx, Constants.Widgets.SMELT);
+		Widget widget = Widgets.Search.ForWidget(ctx, Constants.WidgetSearchName.SMELT);
 		if(widget == null)
 		{
 			//we nede to interact with a furnace first. if we do it successfully. try smelting again
@@ -25,7 +25,7 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 				Smelt(ctx);
 			}
 		}
-		Component component = Widgets.Search.ForComponent(ctx, Constants.Widgets.SMELT);
+		Component component = Widgets.Search.ForComponent(ctx, Constants.WidgetSearchName.SMELT);
 		if(component == null)
 		{
 			System.out.println("Cannot find component");
@@ -55,7 +55,7 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 	}
 	public static void LootAll(ClientContext ctx)
 	{
-		Widgets.Search.ForComponent(ctx, Constants.Widgets.LOOT).click();
+		Widgets.Search.ForComponent(ctx, Constants.WidgetSearchName.LOOT).click();
 	}
 
 }
