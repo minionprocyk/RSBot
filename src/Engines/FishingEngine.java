@@ -9,6 +9,7 @@ import org.powerbot.script.rt6.Npc;
 import Constants.Animation;
 import Constants.Interact;
 import Constants.ObjectName;
+import Exceptions.NoValidObjectsException;
 
 public class FishingEngine implements Runnable{
 	//this class should be a standard mining routine that scripts can call
@@ -56,7 +57,6 @@ public class FishingEngine implements Runnable{
 				}
 				
 					
-				//interact with it
 				interacted = Actions.Interact.InteractWithObject(ctx, ObjectName.FISHING_SPOT, Interact.CAGE);
 				if(interacted)
 				{

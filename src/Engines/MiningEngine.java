@@ -9,6 +9,7 @@ import org.powerbot.script.rt6.GameObject;
 
 import Constants.Interact;
 import Constants.ObjectName;
+import Exceptions.NoValidObjectsException;
 import Pathing.AvoidObject;
 import Pathing.AvoidObjects;
 public class MiningEngine implements Runnable{

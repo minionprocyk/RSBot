@@ -1,5 +1,12 @@
-/Constants/
-/Actions/
-/Scripts/
-/Utility/
 /Quests/
+/Actions/
+/Utility/
+/Camera/
+/Scripts/
+/Constants/
+/Pathing/
+/GameObject/
+/Engines/
+/GameObjects/
+/Exceptions/
+/Tasks/

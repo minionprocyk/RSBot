@@ -4,6 +4,7 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
+import Exceptions.NoValidObjectsException;
 import Pathing.AvoidNpc;
 import Pathing.AvoidObject;
 import Pathing.ToObject;
@@ -18,7 +19,7 @@ public class Interact {
 	{
 		if(helper!=0)helper++;
 		if(helper>avoidObjectThreshold)Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
-		if(gameObject.valid())
+		if(gameObject!=null && gameObject.valid())
 		{
 			if(gameObject.inViewport())
 			{
@@ -72,9 +73,8 @@ public class Interact {
 		}
 		else
 		{
+			throw new NullPointerException();
 			//game object not valid. nothing we can do
-			System.out.println("InteractWithObject failed to find a valid game object");
-			return false;
 		}
 	}
 	public static boolean InteractWithObject(ClientContext ctx,GameObject gameObject, String action)
@@ -97,7 +97,7 @@ public class Interact {
 		if(helper>avoidObjectThreshold)Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(npc));
 		if(npc.valid())
 		{
-			if(npc.inViewport())
+			if(npc !=null && npc.inViewport())
 			{
 				//npc is valid and in viewport
 				if(ctx.players.local().tile().distanceTo(npc) > lowDistanceFromObject)

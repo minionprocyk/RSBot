@@ -13,6 +13,7 @@ import org.powerbot.script.rt6.Npc;
 import Chat.Messages;
 import Constants.GameMessage;
 import Constants.Interact;
+import Constants.WidgetId;
 import Pathing.AvoidNpc;
 import Pathing.AvoidNpcs;
 
@@ -22,13 +23,16 @@ public class FightingEngine implements Runnable{
 	private static ClientContext ctx;
 	private String[] targetNames;
 	private String[] foodNames;
-	private Integer[] foodIds;
-	private Integer[] targetIds;
+	private String textHealth;
+	private int[] foodIds;
+	private int[] targetIds;
 	private boolean attackAtRandom=false;
 	private boolean usePrayer=false;
 	private boolean fightAnyway=false;
-	private Integer lowHealth=60;
-	private Integer currentHealth=100;
+	private int lowHealth=60;
+	private int currentHealth=100;
+	private int maxHealth=100;
+	private double currentHealthPercent=100;
 	private Timer timer;
 	private FightingEngine()
 	{
@@ -58,18 +62,24 @@ public class FightingEngine implements Runnable{
 		if(ctx.players.local().inCombat())
 		{
 			//were in combat. make sure we dont die
-			currentHealth = ctx.players.local().healthPercent();
-			if(currentHealth < lowHealth)
+			textHealth = ctx.widgets.select().id(WidgetId.COMBAT_BAR).poll().component(WidgetId.COMBAT_BAR_HEALTH).
+									component(WidgetId.COMBAT_BAR_HEALTH_TEXT).text();
+			maxHealth = Integer.parseInt(textHealth.split("/")[1]);
+			currentHealth = Integer.parseInt(textHealth.split("/")[0]);
+			currentHealthPercent = (currentHealth*100)/maxHealth;
+			System.out.println("Player current health = "+currentHealthPercent + " ["+
+					currentHealth+" / "+maxHealth+"]");
+			if(currentHealthPercent < lowHealth)
 			{
 				EatFood();
 			}
 			//determine if were going to lose this fight. if we are then run
-			Utility.Sleep.WaitRandomTime(1000, 4000);
+			Utility.Sleep.WaitRandomTime(1000, 2000);
 		}
 		else
 		{
 			//find a target if our last actual known health was over 50%
-			if(currentHealth > 50 || fightAnyway)
+			if(currentHealthPercent > 50 || fightAnyway)
 			{
 				fightAnyway=false;
 				Iterator<Npc> iNpc = ctx.npcs.select().nearest().iterator();
@@ -112,6 +122,10 @@ public class FightingEngine implements Runnable{
 									break;
 								}
 							}
+						}
+						else
+						{
+							throw new NullPointerException("Targets are not specified");
 						}
 					}
 					
@@ -188,12 +202,12 @@ public class FightingEngine implements Runnable{
 		}
 		return false;
 	}
-	public FightingEngine SetTargets(String[] targets)
+	public FightingEngine SetTargets(String... targets)
 	{
 		this.targetNames = targets;
 		return this;
 	}
-	public FightingEngine SetTargets(Integer[] targets)
+	public FightingEngine SetTargets(int... targets)
 	{
 		targetIds = targets;
 		return this;
@@ -208,12 +222,12 @@ public class FightingEngine implements Runnable{
 		this.lowHealth = health;
 		return this;
 	}
-	public FightingEngine SetFood(String[] food)
+	public FightingEngine SetFood(String... food)
 	{
 		this.foodNames = food;
 		return this;
 	}
-	public FightingEngine Setfood(Integer[] food)
+	public FightingEngine SetFood(int... food)
 	{
 		this.foodIds = food;
 		return this;

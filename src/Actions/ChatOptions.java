@@ -12,6 +12,7 @@ public class ChatOptions {
 		while(!(co = ctx.chat.select().text(option).first().poll()).valid())
 		{
 			Actions.Widgets.Click(ctx, WidgetId.CHATWINDOW,WidgetId.CHATWINDOW_CONTINUE);
+			Utility.Sleep.WaitRandomTime(300,750);
 			co = ctx.chat.select().text(option).first().poll();
 		}
 		co.select(true);

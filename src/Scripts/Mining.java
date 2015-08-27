@@ -9,6 +9,7 @@ import org.powerbot.script.rt6.ClientContext;
 import Constants.Interact;
 import Constants.ObjectName;
 import Engines.MiningEngine;
+import Exceptions.NoValidObjectsException;
 import Pathing.ToObject;
 import Pathing.Traverse;
 import Tasks.SimpleTask;
@@ -104,7 +105,6 @@ public class Mining extends PollingScript<ClientContext>{
 		Utility.Sleep.WaitRandomTime(1000, 3000);
 		if(insideCave())
 		{
-			//we are still in the cave
 			Actions.Interact.InteractWithObject(ctx, ObjectName.CAVE_EXIT, Interact.EXIT);		
 		}
 	}

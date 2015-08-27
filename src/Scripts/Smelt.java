@@ -13,6 +13,7 @@ import Constants.Interact;
 import Constants.ItemId;
 import Constants.ItemName;
 import Constants.ObjectName;
+import Exceptions.NoValidObjectsException;
 import Pathing.ToObject;
 import Tasks.SimpleTask;
 @Manifest(name = "Smelting", description = "go to bank and smelt stuff", properties = "client=6; topic=0;")

@@ -35,7 +35,7 @@ public class Focus {
 			else
 			{
 				//turn the camera to face that object
-				ctx.camera.turnTo(go);
+				Camera.Focus.OnObject(ctx, go);
 				
 				//change the pitch 20% of the time
 				if(Random.nextInt(0, 100)>80)
@@ -43,7 +43,7 @@ public class Focus {
 					if(Utility.Math.IsBetween(ctx.camera.pitch(),highPitch, lowPitch))
 					{
 						ctx.camera.pitch(Random.nextInt(lowPitch, highPitch));
-	
+						Utility.Sleep.WaitRandomTime(250, 750);	
 					}
 				}
 				break;
@@ -55,6 +55,7 @@ public class Focus {
 		double modifier = Random.nextDouble(.8, 1.2);
 		ctx.camera.turnTo(locatable);
 		ctx.camera.angle((int) (ctx.camera.yaw() * modifier));
+		Utility.Sleep.WaitRandomTime(250, 750);
 	}
 	public static void OnObject(ClientContext ctx, String objectName)
 	{

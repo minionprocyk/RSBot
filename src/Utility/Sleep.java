@@ -8,7 +8,7 @@ import Constants.Animation;
 
 public class Sleep {
 	private static final int lowRandomWaitTime=500;
-	private static final int highRandomWaitTime=1500;
+	private static final int highRandomWaitTime=1000;
 	
 	public static void WaitRandomTime(int arg1, int arg2)
 	{

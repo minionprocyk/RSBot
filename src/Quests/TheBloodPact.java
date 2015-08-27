@@ -72,6 +72,8 @@ public class TheBloodPact extends ClientAccessor{
 			ChatOptions.SelectNextOption(ctx, "What help do you need?");
 			ChatOptions.SelectNextOption(ctx, "I'll help you.");
 			
+			//accept the quest
+			
 		}
 		
 	}

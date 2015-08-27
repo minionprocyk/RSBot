@@ -5,11 +5,10 @@ import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
-import org.powerbot.script.rt6.ChatOption;
+import org.powerbot.script.rt6.Bank.Amount;
 import org.powerbot.script.rt6.ClientContext;
+import org.powerbot.script.rt6.Hud.Menu;
 
-import Actions.ChatOptions;
-import Actions.GrandExchange;
 import Actions.GrandExchange.Price;
 import Actions.GrandExchange.Quantity;
 import Chat.Messages;
@@ -20,10 +19,7 @@ import Constants.NpcId;
 import Constants.NpcName;
 import Constants.ObjectName;
 import Constants.WidgetId;
-import Engines.ChatEngine;
-import Engines.QuestEngine;
-import Engines.StatisticsEngine;
-import Quests.TheBloodPact;
+import Tasks.SimpleTask;
 
 @Manifest(name = "Test", description = "We do crazy things", properties = "client=6; topic=0;")
 public class TestScript  extends PollingScript<ClientContext> implements MessageListener	{
@@ -45,9 +41,14 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 		switch(getState())
 		{
 		case doThings:
-			//QuestEngine.GetInstance().SetContext(ctx).SetObjectives(new TheBloodPact(ctx).getObjectives()).build().run();
-			Actions.Interact.InteractWithNPC(ctx, NpcId.GRAND_EXCHANGE_CLERK, Interact.EXCHANGE);
-			GrandExchange.sell(ctx, ItemName.BRONZE_CHAINBODY, Price.TEN_LOW, Quantity.ALL);
+			/*
+			ctx.bank.open();
+			ctx.bank.withdrawMode(false);
+			ctx.bank.withdraw(ItemId.COWHIDE, Amount.ALL);
+			ctx.bank.close();
+			*/
+			String text = ctx.widgets.select().id(WidgetId.COMBAT_BAR).poll().component(WidgetId.COMBAT_BAR_HEALTH).component(WidgetId.COMBAT_BAR_HEALTH_TEXT).text();
+			System.out.println(text);
 			ctx.controller.stop();
 			break;
 		case buryBones:

@@ -10,6 +10,7 @@ import org.powerbot.script.rt6.Npc;
 
 import Constants.Animation;
 import Constants.Interact;
+import Exceptions.NoValidObjectsException;
 
 public class ChoppingEngine implements Runnable{
 	//this class should be a standard mining routine that scripts can call
@@ -66,7 +67,6 @@ public class ChoppingEngine implements Runnable{
 				}
 				
 				
-				//interact with it
 				interacted = Actions.Interact.InteractWithObject(ctx, treeObject, Interact.CHOP);
 				if(interacted)
 				{

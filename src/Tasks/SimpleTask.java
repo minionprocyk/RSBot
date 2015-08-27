@@ -7,6 +7,7 @@ import org.powerbot.script.rt6.Widget;
 
 import Constants.Interact;
 import Constants.ObjectName;
+import Exceptions.NoValidObjectsException;
 
 public class SimpleTask extends ClientAccessor<ClientContext>{
 	public SimpleTask(ClientContext ctx)
@@ -19,7 +20,6 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 		Widget widget = Widgets.Search.ForWidget(ctx, Constants.WidgetSearchName.SMELT);
 		if(widget == null)
 		{
-			//we nede to interact with a furnace first. if we do it successfully. try smelting again
 			if(Actions.Interact.InteractWithObject(ctx, ObjectName.FURNACE, Interact.SMELT))
 			{
 				Smelt(ctx);
@@ -56,6 +56,10 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 	public static void LootAll(ClientContext ctx)
 	{
 		Widgets.Search.ForComponent(ctx, Constants.WidgetSearchName.LOOT).click();
+	}
+	public static void WorldHop(ClientContext ctx, int world)
+	{
+		
 	}
 
 }

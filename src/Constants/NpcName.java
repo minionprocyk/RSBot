@@ -10,5 +10,6 @@ public class NpcName {
 	public static final String IMP = "Imp";
 	public static final String GRAND_EXCHANGE_CLERK = "Grand Exchance clerk";
 	public static final String BANKER = "Banker";
+	public static final String SCORPION = "Scorpion";
 	
 }
