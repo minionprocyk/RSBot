@@ -81,9 +81,16 @@ public class WidgetId {
 	public static final int CHOOSE_A_TOOL_COOK=17;
 	public static final int CHOOSE_A_TOOL_COOK_SELECT = 1;
 
-	//combar bar
+	//combat bar
 	public static final int COMBAT_BAR = 1430;
 	public static final int COMBAT_BAR_HEALTH = 4;
 	public static final int COMBAT_BAR_HEALTH_TEXT = 7;
+	
+	//player examine
+	public static final int EXAMINE_PORTRAIT = 1560;
+	public static final int EXAMINE_PORTRAIT_TITLE=20;
+	public static final int EXAMINE_PORTRAIT_TITLE_TEXT=14;
+	public static final int EXAMINE_PORTRAIT_CLOSE=22;
+	public static final int EXAMINE_PORTRAIT_CLOSE_BUTTON=1;
 	
 }

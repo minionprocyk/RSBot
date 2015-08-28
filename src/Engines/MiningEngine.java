@@ -1,6 +1,8 @@
 package Engines;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.powerbot.script.Area;
 import org.powerbot.script.Tile;
@@ -9,7 +11,6 @@ import org.powerbot.script.rt6.GameObject;
 
 import Constants.Interact;
 import Constants.ObjectName;
-import Exceptions.NoValidObjectsException;
 import Pathing.AvoidObject;
 import Pathing.AvoidObjects;
 public class MiningEngine implements Runnable{
@@ -36,7 +37,6 @@ public class MiningEngine implements Runnable{
 	{
 		if(me == null)
 		{
-			System.out.println("Creating Mining Engine");
 			me = new MiningEngine();
 		}
 		return me;
@@ -55,6 +55,7 @@ public class MiningEngine implements Runnable{
 		{
 			FightingEngine.GetInstance().SetContext(ctx).build().run();
 		}
+		if(LocalPlayer.Backpack.isFull(ctx))return;//do nothing if backpack is full
 		else
 		{
 			//determine if we're in a mining location
@@ -113,6 +114,7 @@ public class MiningEngine implements Runnable{
 				if(LocalPlayer.Location.NearObjects(ctx, rocksToMine))
 				{
 					//close to rocks
+					inMiningLocation=true;
 				}
 				else
 				{
@@ -130,7 +132,6 @@ public class MiningEngine implements Runnable{
 			
 			// determine what list we are going to use
 			String[] rockList=null;
-			GameObject rockWeWant=null;		
 			if(rocksSpecificed)
 			{
 				rockList=rocksToMine;
@@ -141,28 +142,9 @@ public class MiningEngine implements Runnable{
 			}
 			
 			//select the nearest rock that isnt on the avoid list
-			Iterator<GameObject> iRocks = ctx.objects.select().name(rockList).nearest().iterator();
-			Iterator<AvoidObject> iAvoid=null;
-			boolean getNextRock=false;
-			while(iRocks.hasNext())
-			{
-				getNextRock=false;
-				iAvoid = AvoidObjects.GetList().iterator();
-				rockWeWant = iRocks.next();
-				
-				//check if the rock is in the avoid list
-				AvoidObject ao = null;
-				while(iAvoid.hasNext())
-				{
-					ao = iAvoid.next();
-					if(ao.getTile().distanceTo(rockWeWant.tile())==0)
-					{
-						System.out.println(rockWeWant.name()+" is in the avoid list. Get the next rock");
-						getNextRock=true;
-					}
-				}
-				if(getNextRock==false)break;
-			}
+			List<GameObject> collection = new ArrayList<GameObject>();
+			ctx.objects.select().name(rockList).nearest().addTo(collection);
+			GameObject rockWeWant = Pathing.AvoidObjects.GetNearestNonAvoidableObject(collection);
 			
 			System.out.println("We got a rock that is not on the avoid list");
 			if(inMiningLocation)
@@ -184,7 +166,15 @@ public class MiningEngine implements Runnable{
 					}
 					else
 					{
-						Actions.Interact.InteractWithObject(ctx, rockWeWant, Interact.MINE);
+						try
+						{
+							Actions.Interact.InteractWithObject(ctx, rockWeWant, Interact.MINE);	
+						}
+						catch(NullPointerException e)
+						{
+							//object doesnt exist. avoid it for a bit
+							Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(rockWeWant));
+						}
 					}
 				}
 			}
@@ -192,7 +182,7 @@ public class MiningEngine implements Runnable{
 		
 		
 	}
-	public MiningEngine SetRocks(String[] rocks)
+	public MiningEngine SetRocks(String... rocks)
 	{
 		this.rocksSpecificed=true;
 		this.rocksToMine = rocks;

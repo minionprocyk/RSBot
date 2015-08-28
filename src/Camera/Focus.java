@@ -65,8 +65,11 @@ public class Focus {
 
 	public static void OnNpc(ClientContext ctx, String npcName)
 	{
+		double modifier = Random.nextDouble(.8,1.2);
 		final Npc npc = ctx.npcs.select().name(npcName).nearest().poll();
 		ctx.camera.turnTo(npc);
+		ctx.camera.angle((int) (ctx.camera.yaw() * modifier));
+		Utility.Sleep.WaitRandomTime(250, 750);
 	}
 	public static void AdjustPitch(ClientContext ctx)
 	{

@@ -1,7 +1,11 @@
 package LocalPlayer;
 
+import java.util.Iterator;
+
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Item;
+
+import Constants.Interact;
 
 public class Backpack {
 	public static boolean isFull(ClientContext ctx)
@@ -47,6 +51,13 @@ public class Backpack {
 	{
 		final Item item = ctx.backpack.select().id(id).first().poll();
 		Use(ctx,item,action);
+	}
+	public static void DropItems(ClientContext ctx, int... ids)
+	{
+		for(Iterator<Item> items = ctx.backpack.select().id(ids).iterator();items.hasNext();)
+		{
+			Use(ctx,items.next().id(),Interact.DROP);
+		}
 	}
 
 }

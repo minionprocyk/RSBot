@@ -45,11 +45,9 @@ public class Location {
 	}
 	public static boolean NearObjects(ClientContext ctx, String... names)
 	{
-		ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
-		ctx.objects.select().name(names).addTo(gameObjects);
-		
-		for(GameObject go: gameObjects)
+		for(Iterator<GameObject> iGameObject = ctx.objects.select().name(names).nearest().iterator(); iGameObject.hasNext();)
 		{
+			GameObject go = iGameObject.next();
 			if(LocalPlayer.Location.DistanceTo(ctx, go.tile()) < notfar || go.inViewport())
 			{
 				return true;

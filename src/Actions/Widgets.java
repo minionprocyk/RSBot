@@ -3,7 +3,7 @@ package Actions;
 import org.powerbot.script.rt6.ClientContext;
 
 public class Widgets {
-	public static boolean Click(ClientContext ctx, Integer...ids)
+	public static boolean Click(ClientContext ctx, int...ids)
 	{
 		switch(ids.length)
 		{
@@ -28,7 +28,7 @@ public class Widgets {
 			break;
 		}
 		System.out.println("Could not find widget with the following ids: ");
-		for(Integer id: ids)
+		for(int id: ids)
 		{
 			System.out.println(id);
 		}

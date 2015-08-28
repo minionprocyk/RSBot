@@ -2,6 +2,7 @@ package Engines;
 
 import org.powerbot.script.rt6.ClientContext;
 
+import Chat.Message;
 import Chat.Messages;
 
 public class ChatEngine extends Thread implements Runnable {
@@ -9,6 +10,7 @@ public class ChatEngine extends Thread implements Runnable {
 	private static ChatEngine ce;
 	private static ClientContext ctx;
 	private static Messages messages;
+	private Message lastMessage;
 	private ChatEngine()
 	{
 	}
@@ -36,8 +38,17 @@ public class ChatEngine extends Thread implements Runnable {
 	{
 		while(!ChatEngine.ctx.controller.isStopping())
 		{
-			System.out.println(Messages.GetLastReadMessage().getMessage());
-			Utility.Sleep.Wait(5000);
+			lastMessage = Messages.GetLastReadMessage();
+			if(Messages.GetLastReadMessage().getMessage().equals(lastMessage.getMessage()))
+			{
+				//if the last message was the same do nothing
+				Utility.Sleep.Wait(2500);
+			}
+			else
+			{
+				System.out.println(Messages.GetLastReadMessage().getMessage());
+			}
+			Utility.Sleep.Wait(2500);
 		}
 		
 	}

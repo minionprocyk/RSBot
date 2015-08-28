@@ -6,12 +6,10 @@ import java.util.List;
 
 import org.powerbot.script.rt6.GameObject;
 
-import Exceptions.NoValidObjectsException;
-
 public class AvoidObjects {
 	private static List<AvoidObject> avoidObjects = new ArrayList<AvoidObject>();
 	
-	private static GameObject GetNearestNonAvoidableObject(List<GameObject> gameObjects)
+	public static GameObject GetNearestNonAvoidableObject(List<GameObject> gameObjects)
 	{
 		UpdateAvoidedObjects();
 		boolean getNextObject=false;
@@ -32,18 +30,7 @@ public class AvoidObjects {
 			}
 			if(getNextObject==false)return goodObject;
 		}
-		throw new NullPointerException("All objects are being ignored");
-	}
-	public static GameObject GetNearestNonAvoidableObject(List<GameObject> gameObjects, String... name)
-	{
-		try
-		{
-			return GetNearestNonAvoidableObject(gameObjects);
-		}
-		catch(NullPointerException e)
-		{
-			return gameObjects.get(0);
-		}
+		return gameObjects.get(0);
 	}
 	public static void AddAvoidableObject(AvoidObject avoidable)
 	{
@@ -57,10 +44,10 @@ public class AvoidObjects {
 	private static void UpdateAvoidedObjects()
 	{
 		//removes messages sent more than 30 seconds ago
-		Iterator<AvoidObject> iAvoidable = avoidObjects.iterator();
-		while(iAvoidable.hasNext()){
+		for(Iterator<AvoidObject> iAvoidable = avoidObjects.iterator(); iAvoidable.hasNext();)
+		{
 			AvoidObject nextAvoidable = iAvoidable.next();				
-			if((int) (System.currentTimeMillis()-nextAvoidable.getTimeCreated())>((int) 30*1000)){
+			if(Math.abs(System.currentTimeMillis()-nextAvoidable.getTimeCreated())>(30*1000)){
 				//if current time in mili > message.time in mili 
 				System.out.println("Removing avoidable object at coords: "+nextAvoidable.getTile().x() + ", "+nextAvoidable.getTile().y());
 				iAvoidable.remove();
