@@ -24,9 +24,16 @@ public class Backpack {
 	{
 		return ctx.backpack.select().name(name).first().poll().valid() ? true:false;
 	}
-	public static boolean Has(ClientContext ctx, Integer id)
+	public static boolean Has(ClientContext ctx, int... id)
 	{
-		return ctx.backpack.select().id(id).first().poll().valid() ? true:false;
+		//if theres more than 1 id. check if we have at least 1 of each
+		int numItems=0;
+		for(int i:id)
+		{
+			if(ctx.backpack.select().id(i).first().poll().valid())numItems++;
+			if(numItems==id.length)return true;
+		}
+		return false;
 	}
 	public static int Count(ClientContext ctx, String name)
 	{

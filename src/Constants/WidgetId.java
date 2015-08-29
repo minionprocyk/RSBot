@@ -93,4 +93,23 @@ public class WidgetId {
 	public static final int EXAMINE_PORTRAIT_CLOSE=22;
 	public static final int EXAMINE_PORTRAIT_CLOSE_BUTTON=1;
 	
+	//crafting progress bar
+	public static final int CRAFTING_PROGRESS = 1251;
+	
+	//World select
+	public static final int WORLD_SELECT=1587;
+	public static final int WORLD_SELECT_CURRENT_WORLD_TEXT=39;
+	public static final int WORLD_SELECT_CLOSE=42;
+	public static final int WORLD_SELECT_CLOSE_BUTTON=1;
+	public static final int WORLD_SELECT_WORLD=24;
+	public static final int WORLD_SELECT_WORLD_NUMBER=2;
+	public static final int WORLD_SELECT_WORLD_PLAYERS=3;
+	public static final int WORLD_SELECT_WORLD_LOCATION=5;
+	public static final int WORLD_SELECT_WORLD_TYPE=6;
+	public static final int WORLD_SELECT_CONFIRM_NO=96;
+	public static final int WORLD_SELECT_CONFIRM_YES=87;
+	
+	//friends list
+	public static final int FRIENDS_LIST = 550;
+	public static final int FRIENDS_LIST_WORLDNUMBER = 53;
 }

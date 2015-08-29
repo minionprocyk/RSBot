@@ -7,6 +7,7 @@ public class TestGui {
 	public TestGui()
 	{
 		jframe.setVisible(true);
+		jframe.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		jframe.setSize(800, 600);
 		jframe.pack();
 	}

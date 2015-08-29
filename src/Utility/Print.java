@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 
-import org.powerbot.script.AbstractScript;
+import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GeItem;
 
 import Scripts.TestScript;
@@ -38,6 +38,15 @@ public class Print {
 			e.printStackTrace();
 		}
 		
+	}
+	public static void PrintSkillIds(ClientContext ctx)
+	{
+		for(int i =0;i<ctx.skills.levels().length;i++)
+		{
+			System.out.println("Skill ["+i+"]:");
+			System.out.println("   Level = "+ctx.skills.level(i));
+			System.out.println("   Experience = "+ctx.skills.experience(i));
+		}
 	}
 	public static void test()
 	{

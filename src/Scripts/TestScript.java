@@ -1,6 +1,8 @@
 package Scripts;
 import java.io.File;
 
+import javax.swing.SwingUtilities;
+
 import org.powerbot.script.Area;
 import org.powerbot.script.MessageEvent;
 import org.powerbot.script.MessageListener;
@@ -9,38 +11,41 @@ import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 
+import Actions.GrandExchange;
 import Chat.Messages;
+import Constants.ItemId;
 import Constants.ItemName;
-import Constants.NpcName;
-import Constants.ObjectName;
+import Engines.ChatEngine;
+import Engines.StatisticsEngine;
+import GUI.TestGui;
 
 @Manifest(name = "Test", description = "We do crazy things", properties = "client=6; topic=0;")
 public class TestScript  extends PollingScript<ClientContext> implements MessageListener	{
-	String[] rocks = new String[]{ObjectName.COPPER_ROCKS, ObjectName.TIN_ROCKS, ObjectName.IRON_ROCKS};
-	Tile tile = new Tile(3381, 3270, 0);
-	boolean init=true;
-	String[] trees = new String[]{ObjectName.TREE};
-	String[] targets = new String[]{NpcName.DWARF, NpcName.GUARD, NpcName.IMP};
-	String[] food = new String[]{"Cooked Meat"};
+	
 	int timer=0;
 	Area fightingArea = new Area(new Tile(3007,3434,0), new Tile(3027,3458,0));
 	public static File storageDirectory;
+	public int setThisInt=0;
+	boolean canRun=false;
 	public void start()
 	{
-		
+		ChatEngine.GetInstance().SetContext(ctx).SetDebug(true).build().start();
+		StatisticsEngine.GetInstance().SetContext(ctx).build().run();
+		storageDirectory = this.getStorageDirectory();
+		SwingUtilities.invokeLater(new Runnable() {
+			
+			public void run() {
+				TestGui gui = new TestGui();
+			}
+		});
 	}
+	
 	public void stop()
 	{
 		
 	}
 	public void poll() {	
-		if(init)
-		{
-			init=false;
-			//ChatEngine.GetInstance().SetContext(ctx).SetDebug(true).build().start();
-			//StatisticsEngine.GetInstance().SetContext(ctx).build().run();
-			storageDirectory = this.getStorageDirectory();
-		}
+		if(canRun==false)return;
 		switch(getState())
 		{
 		case doThings:
@@ -50,7 +55,7 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 			ctx.bank.withdraw(ItemId.COWHIDE, Amount.ALL);
 			ctx.bank.close();
 			*/
-			Utility.Print.PrintItemIds(0,6000);
+			GrandExchange.GetPrice(ItemId.YEW_LOGS);
 			ctx.controller.stop();
 			break;
 		case buryBones:

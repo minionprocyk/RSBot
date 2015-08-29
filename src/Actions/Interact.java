@@ -4,7 +4,6 @@ import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Component;
 import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
-import org.powerbot.script.rt6.Widget;
 
 import Constants.WidgetId;
 import Pathing.AvoidNpc;
@@ -27,7 +26,7 @@ public class Interact {
 		if(widget!= null && widget.valid() && widget.visible() && !widget.text().isEmpty())
 		{
 			//close it
-			ctx.widgets.component(WidgetId.EXAMINE_PORTRAIT, WidgetId.EXAMINE_PORTRAIT_CLOSE).component(WidgetId.EXAMINE_PORTRAIT_CLOSE_BUTTON).click();
+			Actions.Widgets.Click(ctx, WidgetId.EXAMINE_PORTRAIT, WidgetId.EXAMINE_PORTRAIT_CLOSE, WidgetId.EXAMINE_PORTRAIT_CLOSE_BUTTON);
 		}	
 		if(helper>avoidObjectThreshold)Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
 		if(gameObject!=null && gameObject.valid())

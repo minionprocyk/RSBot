@@ -10,6 +10,7 @@ public class ObjectName {
 	public static final String LOGS="Logs";
 	public static final String FIRE="Fire";
 	public static final String OAK="Oak";
+	public static final String WILLOW="Willow";
 	//world objects
 	public static final String TREE="Tree";
 	public static final String FURNACE="Furnace";

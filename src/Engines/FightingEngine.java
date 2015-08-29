@@ -115,7 +115,7 @@ public class FightingEngine implements Runnable{
 					currentTarget=AvoidNpcs.GetNearestNonAvoidableNpc(collection);
 			
 					System.out.println("We found "+currentTarget.name()+" to fight!");
-					if(Tiles.Calculations.isPlayerNearObject(ctx, currentTarget.tile()))
+					if(Tiles.Calculations.isPlayerNearTile(ctx, currentTarget.tile()))
 					{
 						System.out.println("Player is near "+currentTarget.name()+". avoid!");
 						Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
@@ -221,6 +221,10 @@ public class FightingEngine implements Runnable{
 	public FightingEngine SetFightingArea(Area area)
 	{
 		this.fightingArea = area;
+		return this;
+	}
+	public FightingEngine FindTarget()
+	{
 		return this;
 	}
 	public FightingEngine build()

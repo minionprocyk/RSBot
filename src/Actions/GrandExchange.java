@@ -3,9 +3,8 @@ package Actions;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GeItem;
 
-import Constants.ItemId;
-import Constants.WidgetId;
 import Constants.Interact;
+import Constants.WidgetId;
 
 public class GrandExchange {
 	public static boolean buy(ClientContext ctx, String itemName)
@@ -68,6 +67,10 @@ public class GrandExchange {
 		}
 		return false;
 	}
+	public static void collect(ClientContext ctx)
+	{
+		
+	}
 	public static void openSellWindow(ClientContext ctx)
 	{
 		Integer[] sellButtons = new Integer[]{WidgetId.GRAND_EXCHANGE_SELL1,WidgetId.GRAND_EXCHANGE_SELL2,WidgetId.GRAND_EXCHANGE_SELL3,
@@ -93,7 +96,7 @@ public class GrandExchange {
 		{
 			System.out.println("Grand Exchange is not open. Cannot perform operation");
 		}
-		
+		throw new NullPointerException("Cannot open sell window");
 		
 	}
 	private static void openBuyWindow(ClientContext ctx)
@@ -123,8 +126,7 @@ public class GrandExchange {
 		{
 			System.out.println("Grand Exchange is not open. Cannot perform operation");
 		}
-		
-		
+		throw new NullPointerException("Cannot open buy window");
 	}
 	public static void TestWindowOpen(ClientContext ctx)
 	{

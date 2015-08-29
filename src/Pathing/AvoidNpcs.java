@@ -13,8 +13,7 @@ private static List<AvoidNpc> avoidNpcs = new ArrayList<AvoidNpc>();
 	{
 		UpdateAvoidedNpcs();
 		if(npcs==null || npcs.size()==0)throw new NullPointerException("No npcs in GetNearestNonAvoidableNpc");
-		boolean getNextNpc=false;
-		for(Iterator<Npc> iNpcs = npcs.iterator();iNpcs.hasNext();)
+		loopNpcs: for(Iterator<Npc> iNpcs = npcs.iterator();iNpcs.hasNext();)
 		{
 			Npc goodNpc = iNpcs.next();
 			for(Iterator<AvoidNpc> iAvoidNpc = avoidNpcs.iterator();iAvoidNpc.hasNext();)
@@ -25,14 +24,14 @@ private static List<AvoidNpc> avoidNpcs = new ArrayList<AvoidNpc>();
 						an.getNpc().name().equals(goodNpc.name()))
 				{
 					System.out.println(goodNpc.name()+" is on the avoid list. Getting next npc");
-					getNextNpc=true;
-					break;
+					continue loopNpcs;
 				}
 			}
-			if(getNextNpc==false)return goodNpc;
+			return goodNpc;
 		}
 		
 		//all npcs are being ignored. returning the first one
+		System.out.println("All npcs are being ignored. Pulling the top");
 		return npcs.get(0);
 		
 	}

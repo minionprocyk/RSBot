@@ -8,8 +8,8 @@ import org.powerbot.script.rt6.ClientContext;
 
 import Constants.Interact;
 import Constants.ObjectName;
-import Engines.MiningEngine;
-import Exceptions.NoValidObjectsException;
+import Engines.SkillsEngine;
+import Engines.SkillsEngine.SkillType;
 import Pathing.ToObject;
 import Pathing.Traverse;
 import Tasks.SimpleTask;
@@ -37,24 +37,20 @@ public class Mining extends PollingScript<ClientContext>{
 	Tile btc5 = new Tile(2879, 3502, 0);
 	
 	//rock locations inside the cave
-	Tile ore1 = new Tile(2274, 4515, 0);
-	Tile ore2 = new Tile(2272, 4526, 0);
-	Tile ore3 = new Tile(2264, 4515, 0);
-	Tile ore4 = new Tile(2258, 4503, 0);
-	Tile ore5 = new Tile(2267, 4496, 0);
+	Area miningArea = new Area(new Tile(2274, 4515, 0), new Tile(2267, 4496, 0));
 	
-	Tile[] oreLocations = new Tile[]{ore1, ore2, ore3, ore4, ore5};
 	Tile[] exitCave = new Tile[]{exitCave1, exitCave2};
 	Tile[] fromFurnaceToCaveEntrance = new Tile[]{furnaceLocation, caveEntrance};
 	Tile[] fromBankToCaveEntrance = new Tile[]{bankLocation, btc1, 
 							btc2, btc3, btc4, btc5, caveEntrance};
 	String[] rocks = new String[]{ObjectName.COPPER_ROCK};
-	MiningEngine me = MiningEngine.GetInstance().SetContext(ctx).SetRocks(rocks).SetMiningArea(oreLocations).build();
+	
 	public void poll() {
 		switch(currentState=getState())
 		{
 		case mining:
-			me.run();
+			SkillsEngine.GetInstance().SetContext(ctx).SetSkill(SkillType.Mining)
+				.SetObject(rocks).SetArea(miningArea).build();
 			break;
 		case deposit:
 			//deposit everything into the bank

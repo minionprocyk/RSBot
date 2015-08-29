@@ -19,7 +19,8 @@ import Constants.Interact;
 import Constants.ItemId;
 import Constants.ObjectName;
 import Engines.ChatEngine;
-import Engines.MiningEngine;
+import Engines.SkillsEngine;
+import Engines.SkillsEngine.SkillType;
 import Pathing.Traverse;
 import Tasks.SimpleTask;
 
@@ -28,9 +29,8 @@ import Tasks.SimpleTask;
 public class AlakardTraining extends PollingScript<ClientContext> implements MessageListener{
 	State currentState=null, previousState=null;
 	Area killSite = new Area(new Tile(3289, 3270, 0), new Tile(3321, 3318, 0));
-	//ObjectName.BANK_CHEST Interact.USE
-	//withdraw ItemId.COOKED_MEAT Amount.ALL
-	Area bankSite = new Area(new Tile(3373, 3265, 0), new Tile(3384, 3273, 0));
+
+	Area bankSite = new Area(new Tile(3373, 3265, 0), new Tile(33855, 3276, 0));
 	Tile[] bankToKillSite = new Tile[]{new Tile(3380, 3270, 0), new Tile(3346, 3274, 0), 
 						 	new Tile(3318, 3280, 0), new Tile(3302, 3283, 0)};
 	long now = System.currentTimeMillis();
@@ -41,7 +41,7 @@ public class AlakardTraining extends PollingScript<ClientContext> implements Mes
 		new Timer(1000,new ActionListener() {
 			
 			public void actionPerformed(ActionEvent e) {
-				if(Math.abs(now-System.currentTimeMillis()) > 1000*60*15)
+				if(Math.abs(now-System.currentTimeMillis()) > 1000*60*10)
 				{
 					System.out.println("Timer is up. Stopping execution");
 					ctx.controller.stop();
@@ -57,7 +57,9 @@ public class AlakardTraining extends PollingScript<ClientContext> implements Mes
 		case kill:
 			//FightingEngine.GetInstance().SetContext(ctx).SetFightingArea(killSite).SetFood(ItemId.COOKED_MEAT).SetTargets(NpcName.SCORPION).build().run();
 			
-			MiningEngine.GetInstance().SetContext(ctx).SetMiningArea(killSite).SetRocks(ObjectName.IRON_ROCKS).build().run();
+			SkillsEngine.GetInstance().SetContext(ctx).SetSkill(SkillType.Mining)
+				.SetArea(killSite).SetObject(ObjectName.IRON_ROCKS).build().run();
+			
 			break;
 		case withdraw:
 			Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_CHEST, Interact.USE);
@@ -66,6 +68,7 @@ public class AlakardTraining extends PollingScript<ClientContext> implements Mes
 			ctx.bank.close();
 			break;
 		case deposit:
+			Actions.Interact.InteractWithObject(ctx, ObjectName.BANK_CHEST, Interact.USE);
 			SimpleTask.Deposit(ctx, true);
 			break;
 		case walk_to_bank:
@@ -76,6 +79,7 @@ public class AlakardTraining extends PollingScript<ClientContext> implements Mes
 			break;
 		}
 		previousState = currentState;
+		System.out.println("Last state = "+previousState.toString());
 	}
 
 	private State getState()

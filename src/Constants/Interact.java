@@ -21,4 +21,5 @@ public class Interact {
 	public static final String TALK="Talk";
 	public static final String OFFER="Offer";
 	public static final String EXCHANGE="Exchange";
+	public static final String NET="Net";
 }

@@ -12,8 +12,8 @@ public class AvoidObjects {
 	public static GameObject GetNearestNonAvoidableObject(List<GameObject> gameObjects)
 	{
 		UpdateAvoidedObjects();
-		boolean getNextObject=false;
-		for(Iterator<GameObject> iGameObject = gameObjects.iterator();iGameObject.hasNext();)
+		if(gameObjects==null || gameObjects.size()==0)throw new NullPointerException("No objects in GetNearestNonAvoidableObject");
+		loopGameObjects: for(Iterator<GameObject> iGameObject = gameObjects.iterator();iGameObject.hasNext();)
 		{
 			GameObject goodObject = iGameObject.next();
 			for(Iterator<AvoidObject> iAvoidObject = avoidObjects.iterator();iAvoidObject.hasNext();)
@@ -24,12 +24,12 @@ public class AvoidObjects {
 						ao.getGameObject().name().equals(goodObject.name()))
 				{
 					System.out.println(goodObject.name()+" is on the avoid list. Getting next object");
-					getNextObject=true;
-					break;
+					continue loopGameObjects;
 				}
 			}
-			if(getNextObject==false)return goodObject;
+			return goodObject;
 		}
+		System.out.println("All objects are being avoided. Pulling the top");
 		return gameObjects.get(0);
 	}
 	public static void AddAvoidableObject(AvoidObject avoidable)

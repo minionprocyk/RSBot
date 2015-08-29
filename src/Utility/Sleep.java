@@ -8,7 +8,7 @@ import Constants.Animation;
 
 public class Sleep {
 	private static final int lowRandomWaitTime=500;
-	private static final int highRandomWaitTime=1000;
+	private static final int highRandomWaitTime=750;
 	
 	public static void WaitRandomTime(int arg1, int arg2)
 	{
@@ -58,7 +58,6 @@ public class Sleep {
 		do
 		{
 			Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
-			System.out.println("Player is doing that animation");
-		}while(LocalPlayer.Animation.GetPlayerAnimation(ctx) == animation);
+		}while(LocalPlayer.Animation.PlayerAnimation(ctx) == animation);
 	}
 }

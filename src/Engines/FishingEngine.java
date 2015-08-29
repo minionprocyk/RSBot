@@ -41,7 +41,7 @@ public class FishingEngine implements Runnable{
 		}
 		public void run() {
 			//if(runOnce==true)activate timer
-			if(LocalPlayer.Animation.GetPlayerAnimation(ctx)==Animation.PLAYER_IDLE)
+			if(LocalPlayer.Animation.PlayerAnimation(ctx)==Animation.PLAYER_IDLE)
 			{
 				//player is idle. we should find something to mine
 				

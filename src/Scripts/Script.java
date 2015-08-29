@@ -15,13 +15,18 @@ import Tasks.WalkToBurd;
 
 //@Manifest(name = "scriptName", description = "scriptDescription", properties = "client=6; topic=0;")
 public class Script extends PollingScript<ClientContext> implements MessageListener{
+	State currentState=null, previousState=null;
+
 	List<Task> tasks  = new ArrayList<Task>();
 	
 	public void start()
 	{
 		tasks.addAll(Arrays.asList( new WalkToBurd(ctx)));
 	}
-	
+	public void stop()
+	{
+		
+	}
 	public void poll() {
 		for(Task t: tasks)
 		{
@@ -30,6 +35,17 @@ public class Script extends PollingScript<ClientContext> implements MessageListe
 				t.execute();
 			}
 		}
+		switch(currentState=getState())
+		{
+		case start:
+			break;
+		case stop:
+			break;
+		default:
+			break;
+		
+		}
+		previousState=currentState;
 	}
 	
 	public void messaged(MessageEvent msg) {

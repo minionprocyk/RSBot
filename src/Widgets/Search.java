@@ -20,20 +20,15 @@ public class Search {
 				{
 					for(Component c2: c.components())
 					{
-						if(c2.text().equals(name))
-						{
-							return c2.widget();
-						}
+						if(c2.text().equals(name))return c2.widget();
+						if(c2.itemName().equals(name))return c2.widget();
 					}
 				}
-				if(c.text().equals(name))
-				{
-					return c.widget();
-				}
+				if(c.text().equals(name))return c.widget();
+				if(c.itemName().equals(name))return c.widget();
 			}
 		}
-		System.out.println("No widget found based on criteria: "+name);
-		return null;
+		throw new NullPointerException("No widget found based on criteria "+name);
 	}
 	public static Component ForComponent(ClientContext ctx, String name)
 	{
@@ -47,19 +42,14 @@ public class Search {
 				{
 					for(Component c2: c.components())
 					{
-						if(c2.text().equals(name))
-						{
-							return c2;
-						}
+						if(c2.text().equals(name))return c2;
+						if(c2.itemName().equals(name))return c2;
 					}
 				}
-				if(c.text().equals(name))
-				{
-					return c;
-				}
+				if(c.text().equals(name))return c;
+				if(c.itemName().equals(name))return c;
 			}
 		}
-		System.out.println("No component found based on criteria: "+name);
-		return null;
+		throw new NullPointerException("No component found based on criteria: "+name);
 	}
 }
