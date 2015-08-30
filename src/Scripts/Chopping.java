@@ -39,7 +39,7 @@ public class Chopping extends PollingScript<ClientContext> implements MessageLis
 			SkillsEngine.GetInstance().SetContext(ctx).SetSkill(SkillType.Woodcutting)
 				.SetObject(trees).SetArea(chopSite).build().run();
 			
-			if(ctx.skills.level(Constants.Skills.WOODCUTTING) == 40)
+			if(ctx.skills.level(Constants.Skills.WOODCUTTING) == 50)
 			{
 				System.out.println("Woodcutting is at skill = 40 | Stopping");
 				ctx.controller.stop();

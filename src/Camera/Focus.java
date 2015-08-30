@@ -10,7 +10,7 @@ public class Focus {
 	//high pitch raises camera to look at floor
 	//yaw of 0 is north, >0 is looking more west and <0 is looking more east
 	
-	private static int goodPitch = 50;
+	private static int goodPitch = 40;
 	private static int lowPitch = 20;
 	private static int highPitch = 80;
 	
@@ -82,11 +82,11 @@ public class Focus {
 		}
 		else if(currentPitch>=20 && currentPitch < 50)
 		{
-			ctx.camera.pitch(Random.nextInt(50, 90));
+			ctx.camera.pitch(Random.nextInt(lowPitch, highPitch));
 		}
 		else if(currentPitch >= 50 && currentPitch < 100)
 		{
-			ctx.camera.pitch(Random.nextInt(20, 60));
+			ctx.camera.pitch(Random.nextInt(lowPitch, goodPitch));
 		}
 	}
 }

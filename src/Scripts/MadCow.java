@@ -119,7 +119,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 						System.out.println("Chopping some trees");
 						//chop a tree for some wood
 						long now = System.currentTimeMillis();
-						final GameObject tree = GameObjects.Select.WithinArea(ctx, cowArea, ObjectName.TREE);
+						final GameObject tree = GameObjects.Select.WithinArea(ctx, cowArea, ObjectName.TREE).get(0);
 						Actions.Interact.InteractWithObject(ctx, tree, Interact.CHOP);
 						do
 						{

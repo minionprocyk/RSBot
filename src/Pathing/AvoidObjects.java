@@ -29,8 +29,8 @@ public class AvoidObjects {
 			}
 			return goodObject;
 		}
-		System.out.println("All objects are being avoided. Pulling the top");
-		return gameObjects.get(0);
+		throw new NullPointerException("Pathing.AvoidObjects.GetNearestNonAvoidableObject: All objects are being avoided.");
+		
 	}
 	public static void AddAvoidableObject(AvoidObject avoidable)
 	{

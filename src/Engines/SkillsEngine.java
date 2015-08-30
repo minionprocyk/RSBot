@@ -1,16 +1,19 @@
 package Engines;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.powerbot.script.Area;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
+import org.powerbot.script.rt6.Player;
 
 import Constants.Animation;
 import Constants.Interact;
 import Pathing.AvoidObject;
 import Pathing.AvoidObjects;
+import Tasks.SimpleTask;
 
 public class SkillsEngine implements Runnable{
 	private static SkillsEngine se;
@@ -20,7 +23,8 @@ public class SkillsEngine implements Runnable{
 	private int[] objectIds;
 	private Area site;
 	private boolean runOnce=true;
-	
+	private boolean worldHopping=false;
+	private int worldHoppingThreshold=100;
 	//skill specific variables
 	String interact;
 	int animation;
@@ -101,56 +105,79 @@ public class SkillsEngine implements Runnable{
 			}
 		}
 		
+		if(worldHopping)
+		{
+			int numPlayerAroundMe=0;
+			for(Iterator<Player> iPlayer = ctx.players.select().nearest().iterator(); iPlayer.hasNext();)
+			{
+				if(iPlayer.next().tile().distanceTo(ctx.players.local().tile()) < 7)
+				{
+					numPlayerAroundMe++;
+				}
+			}
+			if(numPlayerAroundMe > worldHoppingThreshold)SimpleTask.WorldHop(ctx, 0);
+		}
+		
+		
 		//perform the actual skill
 		List<GameObject> collection = new ArrayList<GameObject>();
 		if(objectNames == null)
 		{
-			ctx.objects.select().id(objectIds).nearest().addTo(collection);
+			collection.addAll(GameObjects.Select.WithinArea(ctx, site, objectIds));
 		}
 		else
 		{
-			ctx.objects.select().name(objectNames).nearest().addTo(collection);
+			collection.addAll(GameObjects.Select.WithinArea(ctx, site, objectNames));
 		}
 
-		//select the nearest tree that isnt on the avoid list
-		GameObject gameObject = AvoidObjects.GetNearestNonAvoidableObject(collection);
-		
-		System.out.println("We got an object that is not on the avoid list");
-		if(gameObject.valid())
+		try
 		{
-			//we found a rock we want. check if someone else is mining it
-			if(Tiles.Calculations.isPlayerNearTile(ctx, gameObject.tile()))
+			GameObject gameObject = AvoidObjects.GetNearestNonAvoidableObject(collection);
+			//select the nearest tree that isnt on the avoid list
+			
+			System.out.println("We got an object that is not on the avoid list");
+			if(gameObject.valid())
 			{
-				System.out.println("Player is near "+gameObject.name()+" avoid.");
-				AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
-			}
-			else if(LocalPlayer.Location.NearHighLevelMobs(ctx))
-			{
-				System.out.println("It's too dangerous to get this "+gameObject.name());
-				AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));					
-			}
-			else
-			{
-				try
+				//we found a rock we want. check if someone else is mining it
+				if(Tiles.Calculations.isPlayerNearTile(ctx, gameObject.tile()))
 				{
-					int currentBackpackCount = LocalPlayer.Backpack.Count(ctx);
-					Actions.Interact.InteractWithObject(ctx, gameObject, interact);
-					
-					if(expectBagIncrease && currentBackpackCount == LocalPlayer.Backpack.Count(ctx))
-					{
-						System.out.println("Bags did not increase. Avoiding");
-						AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
-							
-						
-					}
-				}
-				catch(NullPointerException e)
-				{
-					//object doesn't exist. avoid it
+					System.out.println("Player is near "+gameObject.name()+" avoid.");
 					AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
+				}
+				else if(LocalPlayer.Location.NearHighLevelMobs(ctx))
+				{
+					System.out.println("It's too dangerous to get this "+gameObject.name());
+					AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));					
+				}
+				else
+				{
+					try
+					{
+						int currentBackpackCount = LocalPlayer.Backpack.Count(ctx);
+						Actions.Interact.InteractWithObject(ctx, gameObject, interact);
+						
+						if(expectBagIncrease && currentBackpackCount == LocalPlayer.Backpack.Count(ctx))
+						{
+							System.out.println("Bags did not increase. Avoiding");
+							AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
+								
+							
+						}
+					}
+					catch(NullPointerException e)
+					{
+						//object doesn't exist. avoid it
+						AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
+					}
 				}
 			}
 		}
+		catch(NullPointerException e)
+		{
+			//every object is flagged as avoidable. world hop
+			SimpleTask.WorldHop(ctx, 0);
+		}
+		
 	}
 	public SkillsEngine SetSkill(SkillType st)
 	{
@@ -170,6 +197,10 @@ public class SkillsEngine implements Runnable{
 	public SkillsEngine SetArea(Area site)
 	{
 		this.site = site;
+		return this;
+	}
+	public SkillsEngine EnableWorldHopping(int threshold)
+	{
 		return this;
 	}
 	public SkillsEngine build()

@@ -30,9 +30,8 @@ private static List<AvoidNpc> avoidNpcs = new ArrayList<AvoidNpc>();
 			return goodNpc;
 		}
 		
-		//all npcs are being ignored. returning the first one
-		System.out.println("All npcs are being ignored. Pulling the top");
-		return npcs.get(0);
+		throw new NullPointerException("Pathing.AvoidNpcs.GetNearestNonAvoidableNpc: All npcs are being avoided.");
+
 		
 	}
 	public static boolean IsAvoided(Npc npc)

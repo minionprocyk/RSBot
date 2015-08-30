@@ -66,28 +66,41 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 		//select hop worlds
 		//hop a world
 		//from the 'World_Select_World' each world has 8 components
-		int worldModifier=8;
-		int currentWorld= Integer.parseInt(ctx.widgets.component(WidgetId.FRIENDS_LIST, WidgetId.FRIENDS_LIST_WORLDNUMBER).text().split("RuneScape ")[1]);
-		System.out.println("Current World = "+currentWorld);
-		ctx.hud.open(Menu.OPTIONS);
-		Widgets.Search.ForComponent(ctx, "Hop Worlds").click();
-		Utility.Sleep.Wait(1500);
-		for(int i=0;i<10;i++)
+		try
 		{
-			Component worldPlayers = ctx.widgets.component(WidgetId.WORLD_SELECT, WidgetId.WORLD_SELECT_WORLD).component(WidgetId.WORLD_SELECT_WORLD_PLAYERS +i*worldModifier);
-			Component worldNumber = ctx.widgets.component(WidgetId.WORLD_SELECT, WidgetId.WORLD_SELECT_WORLD).component(WidgetId.WORLD_SELECT_WORLD_NUMBER);
-			System.out.println("World Players = "+worldPlayers.text());
-			if(Integer.parseInt(worldPlayers.text()) < 200 && Integer.parseInt(worldNumber.text()) != currentWorld)
+			int worldModifier=8;
+			int currentWorld= Integer.parseInt(ctx.widgets.component(WidgetId.FRIENDS_LIST, WidgetId.FRIENDS_LIST_WORLDNUMBER).text().split("RuneScape ")[1].trim());
+			System.out.println("Current World = "+currentWorld);
+			ctx.hud.open(Menu.OPTIONS);
+			Widgets.Search.ForComponent(ctx, "Hop Worlds").click();
+			Utility.Sleep.Wait(1500);
+			for(int i=0;i<10;i++)
 			{
-				//click the row
-				Actions.Widgets.Click(ctx, WidgetId.WORLD_SELECT,WidgetId.WORLD_SELECT_WORLD, (i * worldModifier));
-				
-				//click yes
-				Actions.Widgets.Click(ctx, WidgetId.WORLD_SELECT,WidgetId.WORLD_SELECT_CONFIRM_YES);
-				break;
+				if(world>0)
+				{
+					world--;
+					continue;
+				}
+				Component worldPlayers = ctx.widgets.component(WidgetId.WORLD_SELECT, WidgetId.WORLD_SELECT_WORLD).component(WidgetId.WORLD_SELECT_WORLD_PLAYERS +i*worldModifier);
+				Component worldNumber = ctx.widgets.component(WidgetId.WORLD_SELECT, WidgetId.WORLD_SELECT_WORLD).component(WidgetId.WORLD_SELECT_WORLD_NUMBER +i*worldModifier);
+				System.out.println("World "+worldNumber.text()+" | Players = "+worldPlayers.text());
+				if(Integer.parseInt(worldPlayers.text().trim()) < 200 && Integer.parseInt(worldNumber.text()) != currentWorld)
+				{
+					//click the row
+					Actions.Widgets.Click(ctx, WidgetId.WORLD_SELECT,WidgetId.WORLD_SELECT_WORLD, (i * worldModifier));
+					
+					//click yes
+					Actions.Widgets.Click(ctx, WidgetId.WORLD_SELECT,WidgetId.WORLD_SELECT_CONFIRM_YES);
+					break;
+				}
 			}
+			Utility.Sleep.Wait(10000);
 		}
-		Utility.Sleep.Wait(10000);
+		catch(NumberFormatException e)
+		{
+			System.out.println("Integer.parseInt failed to read a value");
+		}
+		
 	}
 
 }
