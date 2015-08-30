@@ -16,6 +16,8 @@ import Constants.Interact;
 import Constants.ItemName;
 import Constants.NpcName;
 import Constants.ObjectName;
+import Constants.WidgetId;
+import Exceptions.NoValidObjectsException;
 import Pathing.ToObject;
 import Pathing.Traverse;
 
@@ -27,7 +29,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 	boolean interacted=false;
 	boolean init=true;
 	Area bankArea = new Area(new Tile(3177, 3290, 0),new Tile(3160, 3271, 0));
-	Area cowArea = new Area(new Tile(3201, 3313,0), new Tile(3160, 3328, 0));
+	Area cowArea = new Area(new Tile(3156, 3316,0), new Tile(3193, 3330, 0));
 
 	Tile tcfb1 = new Tile(3168, 3296, 0);
 	Tile tcfb2 = new Tile(3176, 3313, 0);
@@ -90,7 +92,9 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 					//theres a fire around to use
 					LocalPlayer.Backpack.Use(ctx, ObjectName.RAW_BEEF, Interact.USE);
 					Actions.Interact.InteractWithObject(ctx, ObjectName.FIRE, Interact.USE);
-					Utility.Sleep.WaitRandomTime(1000, 3000);
+					Utility.Sleep.WaitRandomTime(1000, 2000);
+					if(ctx.widgets.component(WidgetId.CHOOSE_A_TOOL, WidgetId.CHOOSE_A_TOOL_COOK).component(1).valid())
+						ctx.widgets.component(WidgetId.CHOOSE_A_TOOL, WidgetId.CHOOSE_A_TOOL_COOK).component(1).click();
 					if(ctx.widgets.component(1370, 20).valid())ctx.widgets.component(1370, 20).click();
 					do
 					{
@@ -115,7 +119,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 						System.out.println("Chopping some trees");
 						//chop a tree for some wood
 						long now = System.currentTimeMillis();
-						final GameObject tree = ctx.objects.select().name(ObjectName.TREE).nearest().poll();
+						final GameObject tree = GameObjects.Select.WithinArea(ctx, cowArea, ObjectName.TREE).get(0);
 						Actions.Interact.InteractWithObject(ctx, tree, Interact.CHOP);
 						do
 						{
@@ -137,17 +141,20 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 				public void run() {
 					while(currentState==State.walk_to_bank)
 					{
-						if(LocalPlayer.Backpack.Has(ctx, ObjectName.BONES))
+						if(ctx.players.local().inMotion())
 						{
-							//bury the bones
-							LocalPlayer.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
+							if(LocalPlayer.Backpack.Has(ctx, ObjectName.BONES))
+							{
+								//bury the bones
+								LocalPlayer.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
+							}
+							else if(LocalPlayer.Backpack.Has(ctx, ObjectName.BURNT_MEAT))
+							{
+								//drop the meat
+								LocalPlayer.Backpack.Use(ctx, ObjectName.BURNT_MEAT, Interact.DROP);
+							}
+							Utility.Sleep.WaitRandomTime(500, 2000);
 						}
-						else if(LocalPlayer.Backpack.Has(ctx, ObjectName.BURNT_MEAT))
-						{
-							//drop the meat
-							LocalPlayer.Backpack.Use(ctx, ObjectName.BURNT_MEAT, Interact.DROP);
-						}
-						Utility.Sleep.WaitRandomTime(500, 2000);
 					}
 				}
 			}).start();

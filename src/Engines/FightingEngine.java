@@ -2,7 +2,8 @@ package Engines;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Timer;
 
@@ -13,23 +14,27 @@ import org.powerbot.script.rt6.Npc;
 import Chat.Messages;
 import Constants.GameMessage;
 import Constants.Interact;
+import Constants.WidgetId;
 import Pathing.AvoidNpc;
 import Pathing.AvoidNpcs;
 
 public class FightingEngine implements Runnable{
-	Area fightingArea;
+	private Area fightingArea;
 	private static FightingEngine fe;
 	private static ClientContext ctx;
 	private String[] targetNames;
 	private String[] foodNames;
-	private Integer[] foodIds;
-	private Integer[] targetIds;
+	private int[] foodIds;
+	private int[] targetIds;
 	private boolean attackAtRandom=false;
 	private boolean usePrayer=false;
 	private boolean fightAnyway=false;
-	private Integer lowHealth=60;
-	private Integer currentHealth=100;
+	private String textHealth;
+	private int lowHealth=60, currentHealth=100, maxHealth=100, currentHealthPercent=100;
+	private int enemyCurrentHealth=100, enemyMaxHealth=100, enemyCurrentHealthPercent=100;
 	private Timer timer;
+	private Npc currentTarget;
+	private Npc previousTarget;
 	private FightingEngine()
 	{
 	}
@@ -57,91 +62,79 @@ public class FightingEngine implements Runnable{
 		}
 		if(ctx.players.local().inCombat())
 		{
-			//were in combat. make sure we dont die
-			currentHealth = ctx.players.local().healthPercent();
-			if(currentHealth < lowHealth)
+			if(currentTarget != null && currentTarget.inCombat() && currentTarget.healthPercent() > 0)
 			{
-				EatFood();
+				//were in combat. make sure we dont die
+				textHealth = ctx.widgets.select().id(WidgetId.COMBAT_BAR).poll().component(WidgetId.COMBAT_BAR_HEALTH).
+										component(WidgetId.COMBAT_BAR_HEALTH_TEXT).text();
+				maxHealth = Integer.parseInt(textHealth.split("/")[1]);
+				currentHealth = Integer.parseInt(textHealth.split("/")[0]);
+				currentHealthPercent = (currentHealth*100)/maxHealth;
+				System.out.println("Player current health = "+currentHealthPercent + " ["+
+						currentHealth+" / "+maxHealth+"]");
+				
+				System.out.println("Enemy Current Health = "+currentTarget.healthPercent());
+				if(currentHealthPercent < lowHealth)
+				{
+					EatFood();
+				}
+				//determine if were going to lose this fight. if we are then run
+				Utility.Sleep.WaitRandomTime(250,500);
 			}
-			//determine if were going to lose this fight. if we are then run
-			Utility.Sleep.WaitRandomTime(1000, 4000);
+			else
+			{
+				//current target is either not instantiated, not in combat, or dead
+				
+			}
 		}
 		else
 		{
 			//find a target if our last actual known health was over 50%
-			if(currentHealth > 50 || fightAnyway)
+			if(currentHealthPercent > 50 || fightAnyway)
 			{
-				fightAnyway=false;
-				Iterator<Npc> iNpc = ctx.npcs.select().nearest().iterator();
-				Npc nextNpc=null;
-				boolean targetFound=false;
-				boolean getNextNpc=false;
-				while(iNpc.hasNext())
+				do
 				{
-					nextNpc = iNpc.next();
-					getNextNpc=false;
-					Iterator<AvoidNpc> iAvoidNpcs = AvoidNpcs.GetList().iterator();
-					while(iAvoidNpcs.hasNext())
+					fightAnyway=false;
+					List<Npc> collection= new ArrayList<Npc>();
+					if(targetNames != null)
 					{
-						if(iAvoidNpcs.next().id()==nextNpc.id())
-						{
-							getNextNpc=true;
-							break;
-						}
+						ctx.npcs.select().name(targetNames).nearest().addTo(collection);
 					}
-					if(getNextNpc==false)
+					else if(targetIds != null)
 					{
-						if(targetNames != null)
-						{
-							for(String n: targetNames)
-							{
-								if(nextNpc.name().equals(n))
+						ctx.npcs.select().id(targetIds).nearest().addTo(collection);
+					}
+					if(collection.size()==0)
+					{
+						System.out.println("No targets found. Trying again");
+						Utility.Sleep.Wait(1000);
+						return;
+					}
+					System.out.println("Fighting Engine: Collection list has "+collection.size()+" items");
+					previousTarget=currentTarget;
+					currentTarget=AvoidNpcs.GetNearestNonAvoidableNpc(collection);
+			
+					System.out.println("We found "+currentTarget.name()+" to fight!");
+					if(Tiles.Calculations.isPlayerNearTile(ctx, currentTarget.tile()))
+					{
+						System.out.println("Player is near "+currentTarget.name()+". avoid!");
+						Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
+					}
+					else
+					{
+						Actions.Interact.InteractWithNPC(ctx, currentTarget, Interact.ATTACK);
+						if(timer!=null)timer.stop();
+						timer = new Timer(100,new ActionListener() {
+							
+							public void actionPerformed(ActionEvent arg0) {
+								if(Messages.GetLastReadMessage().getMessage().equals(GameMessage.CantReach))
 								{
-									targetFound=true;
-									break;
+									Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
 								}
 							}
-						}
-						else if(targetIds != null)
-						{
-							for(Integer id: targetIds)
-							{
-								if(nextNpc.id() == id)
-								{
-									targetFound=true;
-									break;
-								}
-							}
-						}
+						});
 					}
-					
-					
-					if(targetFound)break;
-				}
-				final Npc npc = nextNpc;
-				System.out.println("We found "+npc.name()+" to fight!");
-				if(Tiles.Calculations.isPlayerNearObject(ctx, npc.tile()))
-				{
-					System.out.println("Player is near "+npc.name()+". avoid!");
-					Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(npc));
-				}
-				else
-				{
-					Actions.Interact.InteractWithNPC(ctx, npc, Interact.ATTACK);
-					if(timer!=null)timer.stop();
-					timer = new Timer(100,new ActionListener() {
-						
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							if(Messages.GetLastReadMessage().getMessage().equals(GameMessage.CantReach))
-							{
-								Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(npc));
-							}
-						}
-					});
-				}
-				
-				
+				}while(currentTarget==null || currentTarget.equals(previousTarget) || Pathing.AvoidNpcs.IsAvoided(currentTarget));
 			}
 			else
 			{
@@ -158,8 +151,6 @@ public class FightingEngine implements Runnable{
 					fightAnyway=true;
 				}
 			}
-			
-			
 		}
 	}
 	private boolean EatFood()
@@ -186,14 +177,18 @@ public class FightingEngine implements Runnable{
 				}
 			}
 		}
+		else
+		{
+			throw new NullPointerException("No food has been specified using SetFood context");
+		}
 		return false;
 	}
-	public FightingEngine SetTargets(String[] targets)
+	public FightingEngine SetTargets(String... targets)
 	{
 		this.targetNames = targets;
 		return this;
 	}
-	public FightingEngine SetTargets(Integer[] targets)
+	public FightingEngine SetTargets(int... targets)
 	{
 		targetIds = targets;
 		return this;
@@ -208,12 +203,12 @@ public class FightingEngine implements Runnable{
 		this.lowHealth = health;
 		return this;
 	}
-	public FightingEngine SetFood(String[] food)
+	public FightingEngine SetFood(String... food)
 	{
 		this.foodNames = food;
 		return this;
 	}
-	public FightingEngine Setfood(Integer[] food)
+	public FightingEngine SetFood(int... food)
 	{
 		this.foodIds = food;
 		return this;
@@ -226,6 +221,10 @@ public class FightingEngine implements Runnable{
 	public FightingEngine SetFightingArea(Area area)
 	{
 		this.fightingArea = area;
+		return this;
+	}
+	public FightingEngine FindTarget()
+	{
 		return this;
 	}
 	public FightingEngine build()

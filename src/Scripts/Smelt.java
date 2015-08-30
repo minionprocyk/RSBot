@@ -6,22 +6,27 @@ import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.Script.Manifest;
 import org.powerbot.script.Tile;
+import org.powerbot.script.rt6.Bank.Amount;
 import org.powerbot.script.rt6.ClientContext;
 
 import Chat.Messages;
 import Constants.Interact;
 import Constants.ItemId;
-import Constants.ItemName;
 import Constants.ObjectName;
 import Pathing.ToObject;
 import Tasks.SimpleTask;
 @Manifest(name = "Smelting", description = "go to bank and smelt stuff", properties = "client=6; topic=0;")
 public class Smelt extends PollingScript<ClientContext> implements MessageListener{
-	Area bankArea = new Area(new Tile(2880,3532,0), new Tile(2892, 3541, 0));
-	Tile[] pathToBank = new Tile[]{new Tile(2888, 3518,0), new Tile(2891, 3530, 0)};
-	Area furnaceArea = new Area(new Tile(2880, 3499, 0), new Tile(2895, 3510, 0));
-	String barToMake = ItemName.BRONZE_BAR;
-	String[] oreRequired = new String[]{ItemName.COPPER_ORE, ItemName.TIN_ORE};
+	Area bankArea = new Area(new Tile(3267,3158,0), new Tile(3276, 3175, 0));
+	Tile[] pathToBank = new Tile[]{new Tile(3275, 3190,0), new Tile(3271, 3168, 0)};
+	Area furnaceArea = new Area(new Tile(3270, 3186, 0), new Tile(3280, 3194, 0));
+	int ItemToMake = ItemId.IRON_BAR;
+	int oreRequired = ItemId.IRON_ORE;
+	public void start()
+	{
+		//itemtomake = blag blah
+		//orerequired = blag bla blag
+	}
 	public void poll() {
 		switch(getState())
 		{
@@ -30,9 +35,17 @@ public class Smelt extends PollingScript<ClientContext> implements MessageListen
 			{
 				//get the items, not a note
 				if(ctx.bank.withdrawMode())ctx.bank.withdrawMode(false);
-				ctx.bank.withdraw(ItemId.COPPER_ORE, 14);
-				ctx.bank.withdraw(ItemId.TIN_ORE, 14);
-				ctx.bank.close();
+				if(ctx.bank.select().id(oreRequired).poll().valid())
+				{
+					ctx.bank.withdraw(oreRequired,Amount.ALL);
+					ctx.bank.close();
+				}
+				else
+				{
+					System.out.println("No more ore to smelt. stopping");
+					ctx.controller.stop();
+				}
+				
 			}
 			else
 			{
@@ -44,7 +57,6 @@ public class Smelt extends PollingScript<ClientContext> implements MessageListen
 			SimpleTask.Deposit(ctx,false);
 			break;
 		case smelt:
-			Actions.Interact.InteractWithObject(ctx, ObjectName.FURNACE, Interact.SMELT);
 			SimpleTask.Smelt(ctx);
 			break;
 		case walk_to_bank:
@@ -66,24 +78,22 @@ public class Smelt extends PollingScript<ClientContext> implements MessageListen
 	}
 	public State getState()
 	{
-		if(LocalPlayer.Location.Within(ctx, bankArea) && LocalPlayer.Backpack.Has(ctx, barToMake))
+		if(LocalPlayer.Location.Within(ctx, bankArea) && LocalPlayer.Backpack.Has(ctx, ItemToMake))
 		{
 			System.out.println("Depositing");
 			return State.deposit;
 		}
-		else if(!LocalPlayer.Location.Within(ctx, furnaceArea) && LocalPlayer.Backpack.Has(ctx, ItemName.TIN_ORE)
-														       && LocalPlayer.Backpack.Has(ctx, ItemName.COPPER_ORE))
+		else if(!LocalPlayer.Location.Within(ctx, furnaceArea) && LocalPlayer.Backpack.Has(ctx, ItemId.IRON_ORE))
 		{
 			System.out.println("Walking to furnace");
 			return State.walk_to_furnace;
 		}
-		else if(LocalPlayer.Location.Within(ctx, furnaceArea) && LocalPlayer.Backpack.Has(ctx, ItemName.TIN_ORE)
-															  && LocalPlayer.Backpack.Has(ctx, ItemName.COPPER_ORE))
+		else if(LocalPlayer.Location.Within(ctx, furnaceArea) && LocalPlayer.Backpack.Has(ctx, ItemId.IRON_ORE))
 		{
 			System.out.println("Smelting");
 			return State.smelt;
 		}
-		else if(!LocalPlayer.Location.Within(ctx, bankArea) && LocalPlayer.Backpack.Has(ctx, barToMake))
+		else if(!LocalPlayer.Location.Within(ctx, bankArea) && LocalPlayer.Backpack.Has(ctx, ItemToMake))
 		{
 			System.out.println("Walking to bank");
 			return State.walk_to_bank;

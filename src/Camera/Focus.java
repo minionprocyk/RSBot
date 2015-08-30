@@ -10,7 +10,7 @@ public class Focus {
 	//high pitch raises camera to look at floor
 	//yaw of 0 is north, >0 is looking more west and <0 is looking more east
 	
-	private static int goodPitch = 50;
+	private static int goodPitch = 40;
 	private static int lowPitch = 20;
 	private static int highPitch = 80;
 	
@@ -35,7 +35,7 @@ public class Focus {
 			else
 			{
 				//turn the camera to face that object
-				ctx.camera.turnTo(go);
+				Camera.Focus.OnObject(ctx, go);
 				
 				//change the pitch 20% of the time
 				if(Random.nextInt(0, 100)>80)
@@ -43,7 +43,7 @@ public class Focus {
 					if(Utility.Math.IsBetween(ctx.camera.pitch(),highPitch, lowPitch))
 					{
 						ctx.camera.pitch(Random.nextInt(lowPitch, highPitch));
-	
+						Utility.Sleep.WaitRandomTime(250, 750);	
 					}
 				}
 				break;
@@ -55,6 +55,7 @@ public class Focus {
 		double modifier = Random.nextDouble(.8, 1.2);
 		ctx.camera.turnTo(locatable);
 		ctx.camera.angle((int) (ctx.camera.yaw() * modifier));
+		Utility.Sleep.WaitRandomTime(250, 750);
 	}
 	public static void OnObject(ClientContext ctx, String objectName)
 	{
@@ -64,8 +65,11 @@ public class Focus {
 
 	public static void OnNpc(ClientContext ctx, String npcName)
 	{
+		double modifier = Random.nextDouble(.8,1.2);
 		final Npc npc = ctx.npcs.select().name(npcName).nearest().poll();
 		ctx.camera.turnTo(npc);
+		ctx.camera.angle((int) (ctx.camera.yaw() * modifier));
+		Utility.Sleep.WaitRandomTime(250, 750);
 	}
 	public static void AdjustPitch(ClientContext ctx)
 	{
@@ -78,11 +82,11 @@ public class Focus {
 		}
 		else if(currentPitch>=20 && currentPitch < 50)
 		{
-			ctx.camera.pitch(Random.nextInt(50, 90));
+			ctx.camera.pitch(Random.nextInt(lowPitch, highPitch));
 		}
 		else if(currentPitch >= 50 && currentPitch < 100)
 		{
-			ctx.camera.pitch(Random.nextInt(20, 60));
+			ctx.camera.pitch(Random.nextInt(lowPitch, goodPitch));
 		}
 	}
 }

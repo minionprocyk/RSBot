@@ -3,7 +3,6 @@ package Constants;
 public class Interact {
 	public static final String EXIT="Exit";
 	public static final String ENTER="Enter";
-	
 	public static final String MINE="Mine";
 	public static final String SMELT="Smelt";
 	public static final String LIGHT="Light";
@@ -19,4 +18,8 @@ public class Interact {
 	public static final String BANK="Bank";
 	public static final String TAKE="Take";
 	public static final String EAT="Eat";
+	public static final String TALK="Talk";
+	public static final String OFFER="Offer";
+	public static final String EXCHANGE="Exchange";
+	public static final String NET="Net";
 }

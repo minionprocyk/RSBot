@@ -16,7 +16,10 @@ public class Traverse {
 				if(Random.nextInt(0, 100)>94)Camera.Focus.OnRandomObject(ctx);
 				
 				ctx.movement.step(t);
-				Utility.Sleep.WhileRunning(ctx);
+				while(ctx.players.local().tile().distanceTo(t) > 6 && ctx.players.local().inMotion())
+				{
+					Utility.Sleep.Wait(100);
+				}
 			}
 		}
 	}

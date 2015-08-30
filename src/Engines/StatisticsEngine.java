@@ -5,17 +5,33 @@ import org.powerbot.script.rt6.ClientContext;
 public class StatisticsEngine extends Thread implements Runnable{
 	private static StatisticsEngine se;
 	private static ClientContext ctx;
-	private StatisticsEngine()
-	{
-	}
+	int[] skillStartExperiences = new int[26];
+	int[] skillStartLevels = new int[26];
+	int startCombatLevel;
+	boolean runOnce=true;
+	private StatisticsEngine(){}
 	public void run()
 	{
-		for(int i=0;i<ctx.skills.levels().length;i++)
+		Utility.Sleep.Wait(5000);
+		if(runOnce)init();
+		while(!ctx.controller.isStopping())
 		{
-			System.out.println("Skill ["+i+"]:");
-			System.out.println("   Level = "+ctx.skills.level(i));
-			System.out.println("   Experience = "+ctx.skills.experience(i));
+			
 		}
+	}
+	private void init()
+	{
+		//load skill information
+		for(int i =0;i<ctx.skills.levels().length;i++)
+		{
+			skillStartExperiences[i]=ctx.skills.experience(i);
+			skillStartLevels[i]=ctx.skills.level(i);
+		}
+		startCombatLevel=ctx.players.local().combatLevel();
+	}
+	private void UpdateSkills()
+	{
+		
 	}
 	public static StatisticsEngine GetInstance()
 	{

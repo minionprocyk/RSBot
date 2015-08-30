@@ -24,7 +24,7 @@ public class Calculations {
 		}
 		return closestTile;
 	}
-	public static boolean isPlayerNearObject(ClientContext ctx, Tile tile)
+	public static boolean isPlayerNearTile(ClientContext ctx, Tile tile)
 	{
 		//check 1 tile around the tile for a player
 		Iterator<Player> iPlayer = ctx.players.select().iterator();
@@ -32,7 +32,7 @@ public class Calculations {
 		while(iPlayer.hasNext())
 		{
 			player = iPlayer.next();
-			if(player.name()!= ctx.players.local().name() && player.tile().distanceTo(tile) < 2)
+			if(player.name()!= ctx.players.local().name() && player.tile().distanceTo(tile) < 4)
 			{
 				return true;
 			}
