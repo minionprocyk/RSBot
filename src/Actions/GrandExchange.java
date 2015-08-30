@@ -86,7 +86,7 @@ public class GrandExchange {
 			{
 				Widgets.Click(ctx, WidgetId.GRAND_EXCHANGE, WidgetId.GRAND_EXCHANGE_BACK_BUTTON);
 			}
-			//if were at the main window. find a button we didnt already use and use that
+			//if were at the main window. find a button we didn't already use and use that
 			for(Integer buttons:sellButtons)
 			{
 				if(ctx.widgets.select().id(WidgetId.GRAND_EXCHANGE).poll().component(buttons).visible())
