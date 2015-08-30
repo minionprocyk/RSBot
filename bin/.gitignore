@@ -1,11 +1,5 @@
-/Actions/
-/Camera/
-/Constants/
-/Engines/
-/Exceptions/
-/GameObjects/
-/LocalPlayer/
-/Manager/
-/Pathing/
-/Quests/
 /Scripts/
+/Tasks/
+/Tiles/
+/Utility/
+/Widgets/

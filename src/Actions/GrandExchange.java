@@ -69,7 +69,11 @@ public class GrandExchange {
 	}
 	public static void collect(ClientContext ctx)
 	{
-		
+		if(isOpen(ctx))
+		{
+			//check if there is a completed progress bar to collect an item
+			//new line
+		}
 	}
 	public static void openSellWindow(ClientContext ctx)
 	{
