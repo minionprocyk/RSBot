@@ -29,7 +29,7 @@ public class SkillsEngine implements Runnable{
 	String interact;
 	int animation;
 	boolean expectBagIncrease=true;
-	
+	boolean isBanking=true;
 	private SkillsEngine(){}
 	
 	public static SkillsEngine GetInstance()
@@ -79,8 +79,16 @@ public class SkillsEngine implements Runnable{
 			FightingEngine.GetInstance().SetContext(ctx)
 				.SetTargets(ctx.npcs.select().nearest().poll().id()).build().run();
 		}
-		
-		if(LocalPlayer.Backpack.isFull(ctx))return;
+		//if were going to be banking. keep the items in our backpack, otherwise drop them
+		if(LocalPlayer.Backpack.isFull(ctx) && isBanking)
+		{
+			return;
+		}
+		else if(LocalPlayer.Backpack.isFull(ctx) && isBanking==false)
+		{
+			if(objectNames==null)LocalPlayer.Backpack.DropItems(ctx, objectIds);
+			if(objectIds==null)LocalPlayer.Backpack.DropItems(ctx, objectNames);
+		}
 		//check to make sure we're within the requested site
 		if(LocalPlayer.Location.Within(ctx, site))
 		{
@@ -201,6 +209,12 @@ public class SkillsEngine implements Runnable{
 	}
 	public SkillsEngine EnableWorldHopping(int threshold)
 	{
+		this.worldHoppingThreshold = threshold;
+		return this;
+	}
+	public SkillsEngine SetBanking(boolean isBanking)
+	{
+		this.isBanking=isBanking;
 		return this;
 	}
 	public SkillsEngine build()

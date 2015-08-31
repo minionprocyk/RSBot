@@ -27,6 +27,7 @@ public class TestGui extends JFrame{
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	
 	//Variables that need to be carried over
+	private TextArea txtDebug;
 	String skillArea="";
 	boolean isBanking=false;
 	SkillType skill=null;
@@ -90,7 +91,7 @@ public class TestGui extends JFrame{
 		rdbtnWoodcutting.setBounds(6, 70, 109, 23);
 		rdoPanel.add(rdbtnWoodcutting);
 		
-		TextArea txtDebug = new TextArea();
+		txtDebug = new TextArea();
 		txtDebug.setBounds(140, 92, 270, 84);
 		contentPane.add(txtDebug);
 		
@@ -123,6 +124,10 @@ public class TestGui extends JFrame{
 	{
 		dispose();
 		gui=null;
+	}
+	public void AppendDebugText(String text)
+	{
+		txtDebug.append(text);
 	}
 	public String getSkillArea()
 	{

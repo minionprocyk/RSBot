@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GeItem;
 
+import Constants.ObjectName;
+import Scripts.Script;
 import Scripts.TestScript;
 
 public class Print {
@@ -14,7 +16,7 @@ public class Print {
 	{
 				
 		try {
-			File editFile = new File(TestScript.storageDirectory,"edit.txt");
+			File editFile = new File(Script.STORAGE_DIRECTORY,"edit.txt");
 			
 			PrintWriter pw = new PrintWriter(editFile);
 			while(startingId < max)

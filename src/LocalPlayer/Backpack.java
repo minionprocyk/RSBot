@@ -66,5 +66,12 @@ public class Backpack {
 			Use(ctx,items.next().id(),Interact.DROP);
 		}
 	}
+	public static void DropItems(ClientContext ctx, String... names)
+	{
+		for(Iterator<Item> items = ctx.backpack.select().name(names).iterator();items.hasNext();)
+		{
+			Use(ctx,items.next().id(),Interact.DROP);
+		}
+	}
 
 }

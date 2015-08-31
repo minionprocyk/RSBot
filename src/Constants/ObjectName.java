@@ -1,7 +1,10 @@
 package Constants;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ObjectName {
-	
+	public static List<String> objectNames = new ArrayList<String>();
 	//world items
 	public static final String RAW_BEEF="Raw beef";
 	public static final String BURNT_MEAT="Burnt meat";

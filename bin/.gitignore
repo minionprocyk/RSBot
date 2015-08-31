@@ -1,9 +1,9 @@
 /Scripts/
-/Tasks/
-/Tiles/
-/Utility/
-/Widgets/
-/Actions/
+/GUI/
 /Engines/
-/GameObjects/
-/Manager/
+/LocalPlayer/
+/Utility/
+/Constants/
+/Build.class
+/Actions/
+/Builder/
