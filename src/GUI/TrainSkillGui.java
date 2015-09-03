@@ -1,5 +1,4 @@
 package GUI;
-
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -8,7 +7,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -21,7 +20,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.TitledBorder;
 
@@ -30,7 +28,6 @@ import org.powerbot.script.Tile;
 
 import Constants.Areas;
 import Constants.FarmableLocationNames;
-import Constants.Paths;
 import Engines.SkillsEngine.SkillType;
 
 public class TrainSkillGui extends JFrame {
@@ -73,7 +70,7 @@ public class TrainSkillGui extends JFrame {
 			}
 		});
 		cboLocation = new JComboBox<String>();
-		cboLocation.setBounds(270, 8, 140, 20);
+		cboLocation.setBounds(192, 8, 218, 20);
 		contentPane.add(cboLocation);
 		for(Field f: FarmableLocationNames.class.getFields())
 		{
@@ -116,7 +113,7 @@ public class TrainSkillGui extends JFrame {
 		
 		JComboBox<String> cboFarmObject = new JComboBox<String>();
 		cboFarmObject.setEditable(true);
-		cboFarmObject.setBounds(270, 33, 140, 20);
+		cboFarmObject.setBounds(258, 33, 152, 20);
 		contentPane.add(cboFarmObject);
 		cboFarmObject.getEditor().getEditorComponent().addKeyListener(new KeyListener() {
 			public void keyTyped(KeyEvent e) {}
@@ -148,7 +145,7 @@ public class TrainSkillGui extends JFrame {
 		
 		JLabel lblLocation = new JLabel("Location: ");
 		lblLocation.setHorizontalAlignment(SwingConstants.RIGHT);
-		lblLocation.setBounds(204, 11, 56, 14);
+		lblLocation.setBounds(138, 11, 56, 14);
 		contentPane.add(lblLocation);
 
 		btnadd = new JButton("Add");
@@ -171,7 +168,8 @@ public class TrainSkillGui extends JFrame {
 		contentPane.add(btnRemove);
 		
 		JCheckBox chckbxBank = new JCheckBox("Bank");
-		chckbxBank.setBounds(137, 7, 56, 23);
+		chckbxBank.setSelected(true);
+		chckbxBank.setBounds(142, 32, 56, 23);
 		contentPane.add(chckbxBank);
 		btnadd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
