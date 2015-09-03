@@ -15,6 +15,7 @@ import org.powerbot.script.rt6.ClientContext;
 
 import Chat.Messages;
 import Engines.ChatEngine;
+import Engines.SkillsEngine;
 import Engines.SkillsEngine.SkillType;
 import Engines.StatisticsEngine;
 import GUI.TrainSkillGui;
@@ -61,13 +62,7 @@ public class TrainSkill extends PollingScript<ClientContext> implements MessageL
 		switch(currentState=getState())
 		{
 		case start:
-			System.out.println("Site Area = "+siteArea.toString());
-			System.out.println("Bank Area = "+bankArea.toString());
-			System.out.println("SkillType = "+skillType.toString());
-			System.out.println("objects = "+objects.toString());
-			System.out.println("pathToBank = "+pathToBank.toString());
-			ctx.controller.stop();
-			//SkillsEngine.GetInstance().SetContext(ctx).SetSkill(skillType).SetArea(siteArea).SetBanking(isBanking).SetObject(objects).build().run();
+			SkillsEngine.GetInstance().SetContext(ctx).SetSkill(skillType).SetArea(siteArea).SetBanking(isBanking).SetObject(objects).build().run();
 			break;
 		case stop:
 			break;
@@ -89,7 +84,8 @@ public class TrainSkill extends PollingScript<ClientContext> implements MessageL
 	}
 	public State getState()
 	{
-		return null;
+		
+		return State.start;
 	}
 	public enum State
 	{
