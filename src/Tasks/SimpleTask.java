@@ -56,6 +56,13 @@ public class SimpleTask extends ClientAccessor<ClientContext>{
 		ctx.bank.depositInventory();
 		if(closeBank)ctx.bank.close();
 	}
+	public static void Loot(ClientContext ctx, String... item)
+	{
+		
+		ctx.groundItems.select().name(item).nearest().poll().interact(Interact.TAKE);
+		Utility.Sleep.WhileRunning(ctx);
+		if(ctx.widgets.component(1622, 14).valid())ctx.widgets.component(1622, 14).click();//loot all
+	}
 	public static void LootAll(ClientContext ctx)
 	{
 		Widgets.Search.ForComponent(ctx, Constants.WidgetSearchName.LOOT).click();

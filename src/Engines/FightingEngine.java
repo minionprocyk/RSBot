@@ -17,6 +17,7 @@ import Constants.Interact;
 import Constants.WidgetId;
 import Pathing.AvoidNpc;
 import Pathing.AvoidNpcs;
+import Tasks.SimpleTask;
 
 public class FightingEngine implements Runnable{
 	private Area fightingArea;
@@ -26,6 +27,7 @@ public class FightingEngine implements Runnable{
 	private String[] foodNames;
 	private int[] foodIds;
 	private int[] targetIds;
+	private String[] loot;
 	private boolean attackAtRandom=false;
 	private boolean usePrayer=false;
 	private boolean fightAnyway=false;
@@ -83,13 +85,17 @@ public class FightingEngine implements Runnable{
 			}
 			else
 			{
-				//current target is either not instantiated, not in combat, or dead
-				
+				System.out.println("Current target is either not instantiated, not in combat, or dead");
 			}
 		}
 		else
 		{
 			//find a target if our last actual known health was over 50%
+			if(currentTarget!=null && currentTarget.healthPercent()==-1 && loot!=null)
+			{
+				System.out.println("Current Target is dead.");
+				SimpleTask.Loot(ctx, loot);	
+			}	
 			if(currentHealthPercent > 50 || fightAnyway)
 			{
 				do
@@ -113,7 +119,7 @@ public class FightingEngine implements Runnable{
 					System.out.println("Fighting Engine: Collection list has "+collection.size()+" items");
 					previousTarget=currentTarget;
 					currentTarget=AvoidNpcs.GetNearestNonAvoidableNpc(collection);
-			
+					if(currentTarget==null)Pathing.MoveTowards.Location(ctx,this.fightingArea.getRandomTile());
 					System.out.println("We found "+currentTarget.name()+" to fight!");
 					if(Tiles.Calculations.isPlayerNearTile(ctx, currentTarget.tile()))
 					{
@@ -211,6 +217,11 @@ public class FightingEngine implements Runnable{
 	public FightingEngine SetFood(int... food)
 	{
 		this.foodIds = food;
+		return this;
+	}
+	public FightingEngine SetLoot(String... items)
+	{
+		this.loot = items;
 		return this;
 	}
 	public FightingEngine SetPrayer(boolean usePrayer)

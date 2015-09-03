@@ -1,9 +1,6 @@
+/Constants/
 /Scripts/
 /GUI/
 /Engines/
 /LocalPlayer/
-/Utility/
-/Constants/
-/Build.class
-/Actions/
-/Builder/
+/Tasks/

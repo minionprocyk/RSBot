@@ -9,9 +9,9 @@ public class Animation {
 	}
 	public static int PlayerAnimation(ClientContext ctx)
 	{
-		int currentAnimation=0;
-		int[] animationValues = new int[25];
-		for(int i=0;i<25;i++)
+		int currentAnimation=0, numTests=15;
+		int[] animationValues = new int[numTests];
+		for(int i=0;i<numTests;i++)
 		{
 			currentAnimation = ctx.players.local().animation();
 			animationValues[i]=currentAnimation;

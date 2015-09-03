@@ -1,8 +1,6 @@
 package Scripts;
 
 import org.powerbot.script.Area;
-import org.powerbot.script.MessageEvent;
-import org.powerbot.script.MessageListener;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.Random;
 import org.powerbot.script.Script.Manifest;
@@ -17,17 +15,15 @@ import Constants.ItemName;
 import Constants.NpcName;
 import Constants.ObjectName;
 import Constants.WidgetId;
-import Exceptions.NoValidObjectsException;
 import Pathing.ToObject;
 import Pathing.Traverse;
 
-@Manifest(name = "Cow Killing", description = "kill cows and shit", properties = "client=6; topic=0;")
+@Manifest(name = "Cow Killing", description = "kill cows and stuff", properties = "client=6; topic=0;")
 
-public class MadCow extends PollingScript<ClientContext> implements MessageListener{
+public class MadCow extends PollingScript<ClientContext>{
 	State previousState=null;
 	State currentState=null;
 	boolean interacted=false;
-	boolean init=true;
 	Area bankArea = new Area(new Tile(3177, 3290, 0),new Tile(3160, 3271, 0));
 	Area cowArea = new Area(new Tile(3156, 3316,0), new Tile(3193, 3330, 0));
 
@@ -36,11 +32,6 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 	
 	Tile[] fromBankToCows = new Tile[]{tcfb1, tcfb2};
 	public void poll() {
-		if(init)
-		{
-			//i can initialize stuff here
-			//like .... new ChatEngine().run();
-		}
 		switch(currentState=getState())
 		{
 		case kill:
@@ -53,6 +44,7 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 				return;
 			}
 			interacted = Actions.Interact.InteractWithNPC(ctx, NpcName.NULL, Interact.ATTACK);
+			//FightingEngine.GetInstance().SetContext(ctx).SetFightingArea(cowArea).SetFood(ItemId.COOKED_MEAT).SetTargets(NpcName.NULL).build().run();
 			
 			//wait until the cow is dead and loot it
 			if(interacted)
@@ -201,10 +193,4 @@ public class MadCow extends PollingScript<ClientContext> implements MessageListe
 	{
 		kill, usebags, walk_to_bank, walk_to_cows, deposit
 	}
-
-	
-	public void messaged(MessageEvent arg0) {
-		
-	}
-
 }
