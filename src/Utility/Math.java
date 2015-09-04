@@ -7,5 +7,10 @@ public class Math {
 		if(x>=a && x<=b)return true;
 		return false;
 	}
+
+	public static boolean IsBetween(double distanceTo, int a, int b) {
+		if(distanceTo>=a && distanceTo<=b)return true;
+		return false;
+	}
 	
 }

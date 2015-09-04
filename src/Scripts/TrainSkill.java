@@ -34,6 +34,7 @@ public class TrainSkill extends PollingScript<ClientContext> implements MessageL
 	String[] objects;
 	Tile[] pathToBank;
 	boolean isBanking=true;
+	int stopAtLevel=100;
 	public void start()
 	{
 		ChatEngine.GetInstance().SetContext(ctx).build().start();
@@ -67,6 +68,7 @@ public class TrainSkill extends PollingScript<ClientContext> implements MessageL
 		switch(currentState=getState())
 		{
 		case start:
+			
 			SkillsEngine.GetInstance().SetContext(ctx).SetSkill(skillType).SetArea(siteArea).SetBanking(isBanking).SetObject(objects).build().run();
 			break;
 		case stop:

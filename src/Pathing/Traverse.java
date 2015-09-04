@@ -1,22 +1,26 @@
 package Pathing;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import org.powerbot.script.Area;
 import org.powerbot.script.Random;
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 
 public class Traverse {
+	private static int distanceThreshold=6;
 	public static void TraversePath(ClientContext ctx,Tile... path)
 	{
 		for(Tile t: path)
 		{
-			while(ctx.players.local().tile().distanceTo(t) > 6)
+			while(ctx.players.local().tile().distanceTo(t) > distanceThreshold)
 			{
-				//shake the camera randomly 5% of the time while moving
+				//focus on a random object 5% of the time
 				if(Random.nextInt(0, 100)>94)Camera.Focus.OnRandomObject(ctx);
 				
 				ctx.movement.step(t);
-				while(ctx.players.local().tile().distanceTo(t) > 6 && ctx.players.local().inMotion())
+				while(ctx.players.local().tile().distanceTo(t) > distanceThreshold && ctx.players.local().inMotion())
 				{
 					Utility.Sleep.Wait(100);
 				}
@@ -26,6 +30,38 @@ public class Traverse {
 	public static void TraversePath(ClientContext ctx, Area area, Tile destination)
 	{
 		//take an area and create a path to a tile
+		
+		//get a random tile, check if it brings you closer to the destination.
+		Area currentArea=null;
+		Tile startingLocation = ctx.players.local().tile();
+		Tile lastTile = startingLocation;
+		Tile randomTile = null;
+		boolean gotNextTile=false;
+		List<Tile> path = new ArrayList<Tile>();
+		double distance=100d;
+		while(lastTile.distanceTo(destination) > distanceThreshold)
+		{
+			//define an area to choose a tile from
+			currentArea = new Area(new Tile(lastTile.x()-30,lastTile.y()-30), new Tile(lastTile.x()+30,lastTile.y()+30));
+			distance = lastTile.distanceTo(destination);
+			while(!gotNextTile)
+			{
+				randomTile = currentArea.getRandomTile();
+				if(Utility.Math.IsBetween(randomTile.distanceTo(lastTile), 10, 20) && randomTile.distanceTo(destination) < distance)
+				{
+					lastTile = randomTile;
+					path.add(lastTile);
+					gotNextTile=true;
+				}
+			}
+			gotNextTile=false;
+		}
+		//now we should have our path. traverse it.
+		for(Tile t: path)
+		{
+			TraversePath(ctx,t);
+		}
+		
 	}
 	public static void TraversePathInReverse(ClientContext ctx, Tile... path)
 	{
