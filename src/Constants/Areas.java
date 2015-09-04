@@ -12,4 +12,10 @@ public class Areas {
 															  	   new Tile(3101, 3216, 0));
 	public static final Area SOUTH_DRAYNOR_VILLAGE_BANKSITE = new Area(new Tile(3077, 3241, 0),
 																	   new Tile(3099, 3248, 0));
+	public static final Area NORTH_DRAYNOR_VILLAGE_SITE = new Area(new Tile(3084,3284,0), 
+																   new Tile(3121,3315,0));
+	public static final Area NORTH_DRAYNOR_VILLAGE_BANKSITE = new Area(new Tile(3077, 3241, 0),
+																	   new Tile(3099, 3248, 0));
+	
+
 }

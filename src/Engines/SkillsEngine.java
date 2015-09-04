@@ -11,9 +11,9 @@ import org.powerbot.script.rt6.Player;
 
 import Constants.Animation;
 import Constants.Interact;
+import Manager.WorldHopManager;
 import Pathing.AvoidObject;
 import Pathing.AvoidObjects;
-import Tasks.SimpleTask;
 
 public class SkillsEngine implements Runnable{
 	private static SkillsEngine se;
@@ -76,6 +76,7 @@ public class SkillsEngine implements Runnable{
 		//if we're in combat. deal with that first
 		if(ctx.players.local().inCombat())
 		{
+			System.out.println("We're in combat. Starting fighting engine");
 			FightingEngine.GetInstance().SetContext(ctx)
 				.SetTargets(ctx.npcs.select().nearest().poll().id()).build().run();
 		}
@@ -86,8 +87,11 @@ public class SkillsEngine implements Runnable{
 		}
 		else if(LocalPlayer.Backpack.isFull(ctx) && isBanking==false)
 		{
-			if(objectNames==null)LocalPlayer.Backpack.DropItems(ctx, objectIds);
-			if(objectIds==null)LocalPlayer.Backpack.DropItems(ctx, objectNames);
+			System.out.println("Backpack is full. Dropping items");
+			while(LocalPlayer.Backpack.hasStuff(ctx))
+			{
+				LocalPlayer.Backpack.DropItems(ctx, ctx.backpack.select().poll().id());
+			}
 		}
 		//check to make sure we're within the requested site
 		if(LocalPlayer.Location.Within(ctx, site))
@@ -97,7 +101,7 @@ public class SkillsEngine implements Runnable{
 		else
 		{
 			System.out.println("We are "+Math.round(LocalPlayer.Location.DistanceTo(ctx, site)) +" units away");
-			if(LocalPlayer.Location.DistanceTo(ctx, site) < 40)
+			if(LocalPlayer.Location.DistanceTo(ctx, site) < 100)
 			{
 				//if less than 40 units away. try to walk to it
 				System.out.println("The site seems close enough. Lets walk");
@@ -123,7 +127,8 @@ public class SkillsEngine implements Runnable{
 					numPlayerAroundMe++;
 				}
 			}
-			if(numPlayerAroundMe > worldHoppingThreshold)SimpleTask.WorldHop(ctx, 0);
+			if(numPlayerAroundMe > worldHoppingThreshold)
+				WorldHopManager.GetInstance().SetContext(ctx).build().WorldHop(ctx);
 		}
 		
 		
@@ -183,7 +188,7 @@ public class SkillsEngine implements Runnable{
 		catch(NullPointerException e)
 		{
 			//every object is flagged as avoidable. world hop
-			SimpleTask.WorldHop(ctx, 0);
+			WorldHopManager.GetInstance().SetContext(ctx).build().WorldHop(ctx);
 		}
 		
 	}

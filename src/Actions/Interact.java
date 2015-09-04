@@ -45,7 +45,6 @@ public class Interact {
 				//Camera.Focus.OnObject(ctx, gameObject);
 				System.out.println("Interacting with "+gameObject.name());
 				gameObject.interact(action);
-				
 				//wait for the player to not be doing things
 				//check if were running
 				Utility.Sleep.WhileRunning(ctx);
@@ -119,7 +118,6 @@ public class Interact {
 				//Camera.Focus.OnNpc(ctx, npc.name());
 				System.out.println("Interacting with "+npc.name());
 				npc.interact(action);
-				
 				//wait for the player to not be doing things
 				//check if were running
 				Utility.Sleep.WhileRunning(ctx);

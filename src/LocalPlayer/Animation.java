@@ -5,11 +5,11 @@ public class Animation {
 	public static int PREVIOUS_ANIMATION=-1;
 	public static int CheckPlayerIdle(ClientContext ctx)
 	{
-		return PlayerAnimation(ctx) != -1 ? Constants.Animation.PLAYER_NOT_IDLE : Constants.Animation.PLAYER_IDLE;
+		return PlayerAnimation(ctx) != Constants.Animation.PLAYER_IDLE ? Constants.Animation.PLAYER_NOT_IDLE : Constants.Animation.PLAYER_IDLE;
 	}
 	public static int PlayerAnimation(ClientContext ctx)
 	{
-		int currentAnimation=0, numTests=15;
+		int currentAnimation=0, numTests=10;
 		int[] animationValues = new int[numTests];
 		for(int i=0;i<numTests;i++)
 		{

@@ -30,6 +30,8 @@ public class Sleep {
 	{		
 		//check if were actually moving. if were not then we have a problem
 		Tile currentTile = ctx.players.local().tile();
+		long now = System.currentTimeMillis();
+		Utility.Sleep.Wait(1000);
 		do
 		{
 			System.out.println("In Motion");
@@ -43,21 +45,39 @@ public class Sleep {
 				System.out.println("Seems like we never started moving.");
 				break;
 			}
+			if(java.lang.Math.abs(System.currentTimeMillis()-now) > 1000*60)
+			{
+				System.out.println("Timer exceeded 60 seconds, cancelling");
+				break;
+			}
 		}while(ctx.players.local().inMotion());
 	}
 	public static void WhileNotIdle(ClientContext ctx)
 	{
+		long now = System.currentTimeMillis();
+		Utility.Sleep.Wait(1000);
 		do
 		{
 			System.out.println("Player not idle");
 			Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
+			if(java.lang.Math.abs(System.currentTimeMillis()-now) > 1000*60)
+			{
+				System.out.println("Timer exceeded 60 seconds, cancelling");
+				break;
+			}
 		}while(LocalPlayer.Animation.CheckPlayerIdle(ctx) == Animation.PLAYER_NOT_IDLE);
 	}
 	public static void WhilePlayer(ClientContext ctx, int animation)
 	{
+		long now = System.currentTimeMillis();
 		do
 		{
 			Utility.Sleep.WaitRandomTime(lowRandomWaitTime, highRandomWaitTime);
+			if(java.lang.Math.abs(System.currentTimeMillis()-now) > 1000*60)
+			{
+				System.out.println("Timer exceeded 60 seconds, cancelling");
+				break;
+			}
 		}while(LocalPlayer.Animation.PlayerAnimation(ctx) == animation);
 	}
 }

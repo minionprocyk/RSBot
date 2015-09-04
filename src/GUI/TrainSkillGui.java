@@ -7,7 +7,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -26,6 +25,7 @@ import javax.swing.border.TitledBorder;
 import org.powerbot.script.Area;
 import org.powerbot.script.Tile;
 
+import Constants.Paths;
 import Constants.Areas;
 import Constants.FarmableLocationNames;
 import Engines.SkillsEngine.SkillType;
@@ -44,6 +44,7 @@ public class TrainSkillGui extends JFrame {
 	private JButton btnadd;
 	private JComboBox<String> cboLocation;
 	private java.awt.List objectList;
+	private JCheckBox chckbxBank;
 	String skillArea="";
 	boolean isBanking=false;
 	SkillType skill=null;
@@ -167,7 +168,7 @@ public class TrainSkillGui extends JFrame {
 		btnRemove.setBounds(321, 95, 89, 33);
 		contentPane.add(btnRemove);
 		
-		JCheckBox chckbxBank = new JCheckBox("Bank");
+		chckbxBank = new JCheckBox("Bank");
 		chckbxBank.setSelected(true);
 		chckbxBank.setBounds(142, 32, 56, 23);
 		contentPane.add(chckbxBank);
@@ -282,6 +283,7 @@ public class TrainSkillGui extends JFrame {
 				System.out.println(f.get(null).toString()+" | "+cboLocation.getSelectedItem().toString());
 				if(((String)f.get(null)).equals(cboLocation.getSelectedItem().toString()))
 				{
+					
 					pathName = f.getName()+"_SITE_TO_BANK";
 					for(Field f2 : Paths.class.getFields())
 					{

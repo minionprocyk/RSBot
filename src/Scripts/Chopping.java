@@ -52,7 +52,7 @@ public class Chopping extends PollingScript<ClientContext> implements MessageLis
 					numNpcsAroundMe++;
 				}
 			}
-			if(numNpcsAroundMe > 4)SimpleTask.WorldHop(ctx, 0);
+			if(numNpcsAroundMe > 4)SimpleTask.WorldHop(ctx);
 			break;
 		case walk_to_bank:
 			Traverse.TraversePath(ctx, chopSiteToBank);

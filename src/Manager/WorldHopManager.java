@@ -83,14 +83,6 @@ public class WorldHopManager {
 		}
 		System.out.println("Avoidable objects updated.");
 	}
-	public void testEquals()
-	{
-		World world1 = new World(1,50);
-		World world2 = new World(2,60);
-		previousWorlds.add(world2);
-		previousWorlds.add(world1);
-		System.out.println("World1 contained in list? : "+previousWorlds.contains(new World(1,200)));
-	}
 	public WorldHopManager build()
 	{
 		return this;

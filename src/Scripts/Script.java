@@ -1,5 +1,6 @@
 package Scripts;
 
+import java.awt.Graphics;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
@@ -7,6 +8,7 @@ import javax.swing.SwingUtilities;
 
 import org.powerbot.script.MessageEvent;
 import org.powerbot.script.MessageListener;
+import org.powerbot.script.PaintListener;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.rt6.ClientContext;
 
@@ -16,7 +18,7 @@ import Engines.StatisticsEngine;
 import GUI.TestGui;
 
 //@Manifest(name = "scriptName", description = "scriptDescription", properties = "client=6; topic=0;")
-public class Script extends PollingScript<ClientContext> implements MessageListener{
+public class Script extends PollingScript<ClientContext> implements MessageListener, PaintListener{
 	State currentState=null, previousState=null;
 	boolean runonce=true;
 	public static File STORAGE_DIRECTORY;
@@ -28,7 +30,7 @@ public class Script extends PollingScript<ClientContext> implements MessageListe
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
-					TestGui.GetInstance();
+					TestGui.GetInstance().setVisible(true);;
 				}
 			});
 		} catch (InvocationTargetException e) {
@@ -76,5 +78,9 @@ public class Script extends PollingScript<ClientContext> implements MessageListe
 	}
 	public void messaged(MessageEvent msg) {
 		Messages.AddPastReadMessages(msg.source(), msg.text());
+	}
+	
+	public void repaint(Graphics arg0) {
+		
 	}
 }
