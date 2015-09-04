@@ -5,13 +5,16 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.powerbot.script.Area;
+import org.powerbot.script.Random;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
+import org.powerbot.script.rt6.Npc;
 import org.powerbot.script.rt6.Player;
 
 import Constants.Animation;
 import Constants.Interact;
 import Manager.WorldHopManager;
+import Pathing.AvoidNpcs;
 import Pathing.AvoidObject;
 import Pathing.AvoidObjects;
 
@@ -133,21 +136,24 @@ public class SkillsEngine implements Runnable{
 		
 		
 		//perform the actual skill
-		List<GameObject> collection = new ArrayList<GameObject>();
-		if(objectNames == null)
-		{
-			collection.addAll(GameObjects.Select.WithinArea(ctx, site, objectIds));
-		}
-		else
-		{
-			collection.addAll(GameObjects.Select.WithinArea(ctx, site, objectNames));
-		}
 
 		try
-		{
-			GameObject gameObject = AvoidObjects.GetNearestNonAvoidableObject(collection);
-			//select the nearest tree that isnt on the avoid list
+			{
 			
+			if(skillType.equals(SkillType.Fishing))throw new NullPointerException("Fishing");
+			List<GameObject> collection = new ArrayList<GameObject>();
+			ctx.objects.select().name("name").addTo(collection);
+			if(objectNames == null)
+			{
+				collection.addAll(GameObjects.Select.WithinArea(ctx, site, objectIds));
+			}
+			else
+			{
+				collection.addAll(GameObjects.Select.WithinArea(ctx, site, objectNames));
+			}
+
+			GameObject gameObject = AvoidObjects.GetNearestNonAvoidableObject(collection);
+
 			System.out.println("We got an object that is not on the avoid list");
 			if(gameObject.valid())
 			{
@@ -188,6 +194,11 @@ public class SkillsEngine implements Runnable{
 		catch(NullPointerException e)
 		{
 			//every object is flagged as avoidable. world hop
+			if(skillType.equals(SkillType.Fishing))
+			{
+				Actions.Interact.InteractWithNPC(ctx, objectNames[Random.nextInt(0, objectNames.length)], Interact.NET);
+				return;
+			}
 			WorldHopManager.GetInstance().SetContext(ctx).build().WorldHop(ctx);
 		}
 		

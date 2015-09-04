@@ -9,6 +9,8 @@ import org.powerbot.script.rt6.ClientContext;
 
 import Chat.Messages;
 import Constants.Areas;
+import Constants.Interact;
+import Engines.StatisticsEngine;
 import Pathing.Traverse;
 
 @Manifest(name = "Test", description = "We do crazy things", properties = "client=6; topic=0;")
@@ -17,6 +19,10 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 	Area area = Areas.VARROCK;
 	Tile destination = new Tile(3217,3415,0);
 
+	public void start()
+	{
+		StatisticsEngine.GetInstance().SetContext(ctx).build().start();
+	}
 	public void stop()
 	{
 		System.out.println("Stopping script");
@@ -26,7 +32,7 @@ public class TestScript  extends PollingScript<ClientContext> implements Message
 		switch(getState())
 		{
 		case doThings:
-			Traverse.TraversePath(ctx, area, destination);
+			Utility.Sleep.Wait(20000);
 			ctx.controller.stop();
 			break;
 		case buryBones:

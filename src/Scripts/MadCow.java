@@ -1,3 +1,4 @@
+
 package Scripts;
 
 import org.powerbot.script.Area;

@@ -5,17 +5,20 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.lang.reflect.Field;
 
 import org.powerbot.script.PaintListener;
 import org.powerbot.script.rt6.ClientContext;
+
+import Constants.Skills;
 
 public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 	private static StatisticsEngine se;
 	private static ClientContext ctx;
 	long start;
-	int[] skillStartExperiences = new int[26];
-	int[] skillStartLevels = new int[26];
-	int[] skillExperiencePerHour = new int[26];
+	static int[] skillStartExperiences = new int[26];
+	static int[] skillStartLevels = new int[26];
+	static int[] skillExperiencePerHour = new int[26];
 	int startCombatLevel;
 	int skill=0;
 	boolean runOnce=true;
@@ -33,10 +36,12 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 	private void init()
 	{
 		//load skill information
+		runOnce=false;
 		for(int i =0;i<ctx.skills.levels().length;i++)
 		{
 			skillStartExperiences[i]=ctx.skills.experience(i);
 			skillStartLevels[i]=ctx.skills.level(i);
+			System.out.println("Skill "+i+" : "+skillStartLevels[i]+": "+skillStartExperiences[i]);
 		}
 		startCombatLevel=ctx.players.local().combatLevel();
 		start = System.currentTimeMillis();
@@ -67,20 +72,20 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 		Graphics2D g = (Graphics2D) graphics;
 		
 		Rectangle rect = ctx.client().getCanvas().getBounds();
-		int rectX = (int) rect.getWidth()-200;
+		int rectX = (int) rect.getWidth()-210;
 		int rectY = (int) rect.getHeight()-150;
 		g.setColor(Color.white);
 		
-		g.fillRect(rectX, rectY, 250, 100);
+		g.fillRect(rectX, rectY, 200, 100);
 		
 		int textModHeight = 15;
 		int depth=1;
 		g.setColor(Color.black);
 		g.setFont(new Font("Arial", 1, 18));
 		g.drawString("Train Skills", rectX+10, rectY+textModHeight*depth++);
-		depth++;
 		g.setFont(new Font("Arial", 1, 14));
 		g.drawString("Runtime = "+getRuntimeString((int)Math.abs(System.currentTimeMillis()-start)), rectX+2, rectY+textModHeight*depth++);
+		g.drawString("Leveling "+getSkill(skill), rectX+2, rectY+textModHeight*depth++);
 		g.drawString("Levels Gained = "+getLevelsGained(skill), rectX+2, rectY+textModHeight*depth++);
 		g.drawString("EXP Gained = "+getXPGained(skill)+"xp", rectX+2, rectY+textModHeight*depth++);
 		g.drawString("EXP/HR = "+skillExperiencePerHour[skill]+"xp/hr", rectX+2, rectY+textModHeight*depth++);
@@ -98,14 +103,13 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 		//now - start
 		long now = System.currentTimeMillis();
 		int xpGained=0;
-		int time = (int) (now-start);
+		double time = Math.abs(now-start);
 		int max=0;
 		int skillIndex=0;
 		for(int i=0; i < skillExperiencePerHour.length;i++)
 		{
 			xpGained =(ctx.skills.experience(i) - skillStartExperiences[i]);
-			skillExperiencePerHour[i] = xpGained/(time*1000*60*60);
-			
+			skillExperiencePerHour[i] = (int) ((xpGained*1.0/(time))*1000*60*60);
 			if(skillExperiencePerHour[i] > max)
 			{
 				skillIndex=i;
@@ -122,6 +126,21 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 	private int getLevelsGained(int stat)
 	{
 		return ctx.skills.level(stat) - skillStartLevels[stat];
+	}
+	private String getSkill(int skill)
+	{
+		for(Field f: Skills.class.getFields())
+		{
+			try {
+				if((int)f.get(null) == skill)
+				{
+					return f.getName();
+				}
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
+		}
+		return "UNKNOWN";
 	}
 	
 }

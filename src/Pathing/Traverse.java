@@ -9,7 +9,7 @@ import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.ClientContext;
 
 public class Traverse {
-	private static int distanceThreshold=6;
+	private static int distanceThreshold=4;
 	public static void TraversePath(ClientContext ctx,Tile... path)
 	{
 		for(Tile t: path)
@@ -27,7 +27,7 @@ public class Traverse {
 			}
 		}
 	}
-	public static void TraversePath(ClientContext ctx, Area area, Tile destination)
+	public static void TraversePath(ClientContext ctx, Tile destination)
 	{
 		//take an area and create a path to a tile
 		
