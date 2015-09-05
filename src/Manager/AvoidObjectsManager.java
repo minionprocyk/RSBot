@@ -1,4 +1,4 @@
-package Pathing;
+package Manager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.powerbot.script.rt6.GameObject;
 
-public class AvoidObjects {
+public class AvoidObjectsManager {
 	private static List<AvoidObject> avoidObjects = new ArrayList<AvoidObject>();
 	
 	public static GameObject GetNearestNonAvoidableObject(List<GameObject> gameObjects)

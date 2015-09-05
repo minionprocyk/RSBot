@@ -6,8 +6,10 @@ import org.powerbot.script.rt6.GameObject;
 import org.powerbot.script.rt6.Npc;
 
 import Constants.WidgetId;
-import Pathing.AvoidNpc;
-import Pathing.AvoidObject;
+import Manager.AvoidNpc;
+import Manager.AvoidNpcsManager;
+import Manager.AvoidObject;
+import Manager.AvoidObjectsManager;
 import Pathing.ToObject;
 
 public class Interact {
@@ -28,7 +30,7 @@ public class Interact {
 			//close it
 			Actions.Widgets.Click(ctx, WidgetId.EXAMINE_PORTRAIT, WidgetId.EXAMINE_PORTRAIT_CLOSE, WidgetId.EXAMINE_PORTRAIT_CLOSE_BUTTON);
 		}	
-		if(helper>avoidObjectThreshold)Pathing.AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
+		if(helper>avoidObjectThreshold)AvoidObjectsManager.AddAvoidableObject(new AvoidObject(gameObject));
 		if(gameObject!=null && gameObject.valid())
 		{
 			if(gameObject.inViewport())
@@ -75,6 +77,7 @@ public class Interact {
 					Pathing.ToObject.WalkToObject(ctx, gameObject);
 				}
 				if(helper >= adjustPitch)Camera.Focus.AdjustPitch(ctx);
+				if(helper > adjustPitch+1)Pathing.Traverse.TraversePath(ctx, gameObject.tile());
 				helper++;
 				InteractWithObject(ctx,gameObject,action,helper);
 				return true;
@@ -103,7 +106,7 @@ public class Interact {
 	private static boolean InteractWithNPC(ClientContext ctx, Npc npc, String action, int helper)
 	{
 		if(helper!=0)helper++;
-		if(helper>avoidObjectThreshold)Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(npc));
+		if(helper>avoidObjectThreshold)AvoidNpcsManager.AddAvoidableNpc(new AvoidNpc(npc));
 		if(npc.valid())
 		{
 			if(npc !=null && npc.inViewport())
@@ -153,6 +156,7 @@ public class Interact {
 					ToObject.WalkToObject(ctx, npc);
 				}
 				if(helper > adjustPitch)Camera.Focus.AdjustPitch(ctx);
+				if(helper > adjustPitch+1)Pathing.Traverse.TraversePath(ctx, npc.tile());
 				helper++;
 				InteractWithNPC(ctx,npc,action,helper);
 				return true;

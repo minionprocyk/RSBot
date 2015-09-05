@@ -1,4 +1,4 @@
-package Pathing;
+package Manager;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.powerbot.script.rt6.Npc;
 
-public class AvoidNpcs {
+public class AvoidNpcsManager {
 private static List<AvoidNpc> avoidNpcs = new ArrayList<AvoidNpc>();
 	
 	public static Npc GetNearestNonAvoidableNpc(List<Npc> npcs)

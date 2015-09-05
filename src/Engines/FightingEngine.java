@@ -1,8 +1,7 @@
 package Engines;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Timer;
@@ -11,12 +10,10 @@ import org.powerbot.script.Area;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Npc;
 
-import Chat.Messages;
-import Constants.GameMessage;
 import Constants.Interact;
 import Constants.WidgetId;
-import Pathing.AvoidNpc;
-import Pathing.AvoidNpcs;
+import Manager.AvoidNpc;
+import Manager.AvoidNpcsManager;
 import Tasks.SimpleTask;
 
 public class FightingEngine implements Runnable{
@@ -28,10 +25,8 @@ public class FightingEngine implements Runnable{
 	private int[] foodIds;
 	private int[] targetIds;
 	private String[] loot;
-	private boolean attackAtRandom=false;
-	private boolean usePrayer=false;
-	private boolean fightAnyway=false;
 	private boolean inCombat=false;
+	private boolean usePrayer=false;
 	private String textHealth;
 	private int lowHealth=60, currentHealth=100, maxHealth=100, currentHealthPercent=100;
 	private int enemyCurrentHealth=100, enemyMaxHealth=100, enemyCurrentHealthPercent=100;
@@ -57,20 +52,53 @@ public class FightingEngine implements Runnable{
 		}
 		return this;
 	}
-	public void run() {
-		//if were not in combat. find a target
-		inCombat = ctx.players.local().inCombat() && (currentTarget!=null && currentTarget.inCombat() && currentTarget.healthPercent()>0);
-		if(fightingArea!=null && !LocalPlayer.Location.Within(ctx, fightingArea))
-		{		
-			Pathing.MoveTowards.Location(ctx, fightingArea);
-		}
-		if(inCombat)
+	public void run() 
+	{
+		if(currentTarget==null)
 		{
-			if(currentTarget != null && currentTarget.inCombat() && currentTarget.healthPercent() > 0)
+			//check if we're already in combat
+			inCombat = ctx.players.local().inCombat();
+			
+			//find the closest npc that is in combat, 
+			for(Iterator<Npc> npc = ctx.npcs.select().iterator(); npc.hasNext();)
 			{
-				//were in combat. make sure we dont die
+				Npc nextNpc = npc.next();
+				if(nextNpc.valid() && nextNpc.inCombat()   
+								   && nextNpc.tile().distanceTo(ctx.players.local().tile())< 4)
+				{
+					currentTarget = nextNpc;
+					inCombat = true;
+				}
+			}
+		}
+		
+		/*
+		 * we can be in combat because ctx.player.local.inCombat is feeding us bull shit.
+		 * we cna also be in combat because we just set a target
+		 * check if we have a current target
+		 *
+		 */
+		if(inCombat && currentTarget!=null)
+		{
+			//we have a target and we're in combat. treat this as if we were actually in combat
+			//collect combat stats
+			while(inCombat)
+			{
+				//make sure we've interacted with the target
+				try
+				{
+					if(!ctx.players.local().inCombat())Actions.Interact.InteractWithNPC(ctx, currentTarget, Interact.ATTACK);
+					Utility.Sleep.Wait(1000);
+				}
+				catch(NullPointerException e)
+				{
+					inCombat=false;
+				}
+				
+				
 				textHealth = ctx.widgets.select().id(WidgetId.COMBAT_BAR).poll().component(WidgetId.COMBAT_BAR_HEALTH).
 										component(WidgetId.COMBAT_BAR_HEALTH_TEXT).text();
+				
 				maxHealth = Integer.parseInt(textHealth.split("/")[1]);
 				currentHealth = Integer.parseInt(textHealth.split("/")[0]);
 				currentHealthPercent = (currentHealth*100)/maxHealth;
@@ -83,90 +111,65 @@ public class FightingEngine implements Runnable{
 					EatFood();
 				}
 				//determine if were going to lose this fight. if we are then run
-				Utility.Sleep.WaitRandomTime(250,500);
+				Utility.Sleep.WaitRandomTime(500,1000);
+				if(inCombat && !currentTarget.valid() || currentTarget.healthPercent()==-1 || currentTarget.actions().length==0)inCombat=false;
 			}
-			else
+			//target is dead. loot if set
+			if(loot!=null)
 			{
-				System.out.println("Current target is either not instantiated, not in combat, or dead");
-				
+				System.out.println("Current Target is dead.");
+				Utility.Sleep.Wait(1000);
+				SimpleTask.Loot(ctx, loot);	
 			}
+			previousTarget=currentTarget;
+			currentTarget=null;
 		}
 		else
 		{
-			//find a target if our last actual known health was over 50%
-			if(currentTarget!=null && currentTarget.healthPercent()==-1 && loot!=null)
-			{
-				System.out.println("Current Target is dead.");
-				SimpleTask.Loot(ctx, loot);	
-			}	
+			
+			/*
+			 * we're not in combat or the target is null
+			 * This should only happen if we want to find a target for the purposes of training
+			 */
 			try
 			{
-				if(currentHealthPercent > 50 || fightAnyway)
+				List<Npc> collection = new ArrayList<Npc>();
+				if(targetNames == null)
 				{
-					do
-					{
-						fightAnyway=false;
-						List<Npc> collection= new ArrayList<Npc>();
-						if(targetNames != null)
-						{
-							ctx.npcs.select().name(targetNames).nearest().addTo(collection);
-						}
-						else if(targetIds != null)
-						{
-							ctx.npcs.select().id(targetIds).nearest().addTo(collection);
-						}
-						if(collection.size()==0)
-						{
-							System.out.println("No targets found. Trying again");
-							Utility.Sleep.Wait(1000);
-							return;
-						}
-						System.out.println("Fighting Engine: Collection list has "+collection.size()+" items");
-						previousTarget=currentTarget;
-						currentTarget=AvoidNpcs.GetNearestNonAvoidableNpc(collection);
-						if(currentTarget==null)Pathing.MoveTowards.Location(ctx,this.fightingArea.getRandomTile());
-						System.out.println("We found "+currentTarget.name()+" to fight!");
-						if(Tiles.Calculations.isPlayerNearTile(ctx, currentTarget.tile()))
-						{
-							System.out.println("Player is near "+currentTarget.name()+". avoid!");
-							Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
-						}
-						else
-						{
-							Actions.Interact.InteractWithNPC(ctx, currentTarget, Interact.ATTACK);
-							if(timer!=null)timer.stop();
-							timer = new Timer(100,new ActionListener() {
-								
-								public void actionPerformed(ActionEvent arg0) {
-									if(Messages.GetLastReadMessage().getMessage().equals(GameMessage.CantReach))
-									{
-										Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
-									}
-								}
-							});
-						}
-					}while(currentTarget==null || currentTarget.equals(previousTarget) || Pathing.AvoidNpcs.IsAvoided(currentTarget));
+					collection.addAll(GameObjects.Select.NpcWithinArea(ctx, fightingArea, targetIds));
 				}
 				else
 				{
-					//current health is less than 50. its too dangerous
-					System.out.println("Our health is less than 50. What do we do?");
-					if(EatFood()==false)
+					collection.addAll(GameObjects.Select.NpcWithinArea(ctx, fightingArea, targetNames));
+				}
+
+				Npc npc = AvoidNpcsManager.GetNearestNonAvoidableNpc(collection);
+				System.out.println("We got an object that is not on the avoid list");
+				if(npc.valid())
+				{
+					//we found an npc to fight
+					if(Tiles.Calculations.isPlayerNearTile(ctx, npc.tile()))
 					{
-						System.out.println("There's northing we can do. Stopping.");
-						if(ctx.game.loggedIn())ctx.game.logout(true);
-						ctx.controller.stop();
+						System.out.println("Player is near "+npc.name()+" avoid.");
+						AvoidNpcsManager.AddAvoidableNpc(new AvoidNpc(npc));
+					}
+					else if(LocalPlayer.Location.NearHighLevelMobs(ctx))
+					{
+						System.out.println("It's too dangerous to get this "+npc.name());
+						AvoidNpcsManager.AddAvoidableNpc(new AvoidNpc(npc));					
 					}
 					else
 					{
-						fightAnyway=true;
+						//set the current target. allow the next iteration to handle this target
+						currentTarget = npc;
+						inCombat=true;
 					}
 				}
 			}
 			catch(NullPointerException e)
 			{
-				//all npcs being avoided, find something to loot instead
-				if(loot!=null)SimpleTask.Loot(ctx, loot);
+				System.out.println("No npcs found within area.");
+				if(fightingArea!=null)Pathing.Traverse.TraversePath(ctx, fightingArea.getRandomTile());
 			}
 			
 		}
@@ -209,11 +212,6 @@ public class FightingEngine implements Runnable{
 	public FightingEngine SetTargets(int... targets)
 	{
 		targetIds = targets;
-		return this;
-	}
-	public FightingEngine AttackAtRandom(boolean aar)
-	{
-		attackAtRandom=true;
 		return this;
 	}
 	public FightingEngine SetLowHealth(Integer health)

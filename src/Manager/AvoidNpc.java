@@ -1,4 +1,4 @@
-package Pathing;
+package Manager;
 
 import org.powerbot.script.Tile;
 import org.powerbot.script.rt6.Npc;

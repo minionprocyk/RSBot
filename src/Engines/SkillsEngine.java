@@ -8,15 +8,13 @@ import org.powerbot.script.Area;
 import org.powerbot.script.Random;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.GameObject;
-import org.powerbot.script.rt6.Npc;
 import org.powerbot.script.rt6.Player;
 
 import Constants.Animation;
 import Constants.Interact;
+import Manager.AvoidObject;
+import Manager.AvoidObjectsManager;
 import Manager.WorldHopManager;
-import Pathing.AvoidNpcs;
-import Pathing.AvoidObject;
-import Pathing.AvoidObjects;
 
 public class SkillsEngine implements Runnable{
 	private static SkillsEngine se;
@@ -136,13 +134,12 @@ public class SkillsEngine implements Runnable{
 		
 		
 		//perform the actual skill
-
 		try
 			{
 			
-			if(skillType.equals(SkillType.Fishing))throw new NullPointerException("Fishing");
+			if(skillType.equals(SkillType.Fishing))throw new NullPointerException("Fishing");//this is an awful hotfix
+			
 			List<GameObject> collection = new ArrayList<GameObject>();
-			ctx.objects.select().name("name").addTo(collection);
 			if(objectNames == null)
 			{
 				collection.addAll(GameObjects.Select.WithinArea(ctx, site, objectIds));
@@ -152,7 +149,7 @@ public class SkillsEngine implements Runnable{
 				collection.addAll(GameObjects.Select.WithinArea(ctx, site, objectNames));
 			}
 
-			GameObject gameObject = AvoidObjects.GetNearestNonAvoidableObject(collection);
+			GameObject gameObject = AvoidObjectsManager.GetNearestNonAvoidableObject(collection);
 
 			System.out.println("We got an object that is not on the avoid list");
 			if(gameObject.valid())
@@ -161,12 +158,12 @@ public class SkillsEngine implements Runnable{
 				if(Tiles.Calculations.isPlayerNearTile(ctx, gameObject.tile()))
 				{
 					System.out.println("Player is near "+gameObject.name()+" avoid.");
-					AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
+					AvoidObjectsManager.AddAvoidableObject(new AvoidObject(gameObject));
 				}
 				else if(LocalPlayer.Location.NearHighLevelMobs(ctx))
 				{
 					System.out.println("It's too dangerous to get this "+gameObject.name());
-					AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));					
+					AvoidObjectsManager.AddAvoidableObject(new AvoidObject(gameObject));					
 				}
 				else
 				{
@@ -178,7 +175,7 @@ public class SkillsEngine implements Runnable{
 						if(expectBagIncrease && currentBackpackCount == LocalPlayer.Backpack.Count(ctx))
 						{
 							System.out.println("Bags did not increase. Avoiding");
-							AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
+							AvoidObjectsManager.AddAvoidableObject(new AvoidObject(gameObject));
 								
 							
 						}
@@ -186,7 +183,7 @@ public class SkillsEngine implements Runnable{
 					catch(NullPointerException e)
 					{
 						//object doesn't exist. avoid it
-						AvoidObjects.AddAvoidableObject(new AvoidObject(gameObject));
+						AvoidObjectsManager.AddAvoidableObject(new AvoidObject(gameObject));
 					}
 				}
 			}
@@ -194,7 +191,7 @@ public class SkillsEngine implements Runnable{
 		catch(NullPointerException e)
 		{
 			//every object is flagged as avoidable. world hop
-			if(skillType.equals(SkillType.Fishing))
+			if(skillType.equals(SkillType.Fishing))//awful hotfix
 			{
 				Actions.Interact.InteractWithNPC(ctx, objectNames[Random.nextInt(0, objectNames.length)], Interact.NET);
 				return;

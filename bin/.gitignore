@@ -1,11 +1,10 @@
-/Constants/
 /Scripts/
-/GUI/
-/Engines/
-/LocalPlayer/
 /Tasks/
+/Tiles/
 /Utility/
+/Widgets/
+/Engines/
+/GameObjects/
 /Manager/
 /Actions/
 /Pathing/
-/GameObjects/
