@@ -27,7 +27,7 @@ public class Traverse {
 			}
 		}
 	}
-	public static void TraversePath(ClientContext ctx, Tile destination)
+	public static void TraversePath(ClientContext ctx, Area area, Tile destination)
 	{
 		//take an area and create a path to a tile
 		

@@ -20,8 +20,10 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 	static int[] skillStartLevels = new int[26];
 	static int[] skillExperiencePerHour = new int[26];
 	int startCombatLevel;
-	int skill=0;
+	public static int skill=0;
 	boolean runOnce=true;
+	private String paintTitle="name";
+	private String[] stringsToDraw;
 	private StatisticsEngine(){}
 	public void run()
 	{
@@ -62,13 +64,22 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 		}
 		return this;
 	}
+	public StatisticsEngine SetName(String name)
+	{
+		this.paintTitle = name;
+		return this;
+	}
+	public StatisticsEngine SetStringsToDraw(String... strings)
+	{
+		this.stringsToDraw = strings;
+		return this;
+	}
 	public StatisticsEngine build()
 	{
 		return this;
 	}
 	
 	public void repaint(Graphics graphics) {
-		//paint on the client to show exp
 		Graphics2D g = (Graphics2D) graphics;
 		
 		Rectangle rect = ctx.client().getCanvas().getBounds();
@@ -80,15 +91,18 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 		
 		int textModHeight = 15;
 		int depth=1;
+		
 		g.setColor(Color.black);
 		g.setFont(new Font("Arial", 1, 18));
-		g.drawString("Train Skills", rectX+10, rectY+textModHeight*depth++);
+		g.drawString(paintTitle, rectX+100-(5*paintTitle.length()), rectY+textModHeight*depth++);
 		g.setFont(new Font("Arial", 1, 14));
 		g.drawString("Runtime = "+getRuntimeString((int)Math.abs(System.currentTimeMillis()-start)), rectX+2, rectY+textModHeight*depth++);
-		g.drawString("Leveling "+getSkill(skill), rectX+2, rectY+textModHeight*depth++);
-		g.drawString("Levels Gained = "+getLevelsGained(skill), rectX+2, rectY+textModHeight*depth++);
-		g.drawString("EXP Gained = "+getXPGained(skill)+"xp", rectX+2, rectY+textModHeight*depth++);
-		g.drawString("EXP/HR = "+skillExperiencePerHour[skill]+"xp/hr", rectX+2, rectY+textModHeight*depth++);
+		
+		for(String s: stringsToDraw)
+		{
+			g.drawString(s, rectX+2, rectY+textModHeight*depth++);
+		}
+		
 	}
 	private String getRuntimeString(int ms)
 	{
@@ -119,15 +133,19 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 		}
 		skill = skillIndex;
 	}
-	private int getXPGained(int stat)
+	public int getXPGained(int stat)
 	{
 		return ctx.skills.experience(stat) - skillStartExperiences[stat];
 	}
-	private int getLevelsGained(int stat)
+	public int getLevelsGained(int stat)
 	{
 		return ctx.skills.level(stat) - skillStartLevels[stat];
 	}
-	private String getSkill(int skill)
+	public int getExperiencePerHour(int stat)
+	{
+		return skillExperiencePerHour[stat];
+	}
+	public String getSkill(int skill)
 	{
 		for(Field f: Skills.class.getFields())
 		{
@@ -141,6 +159,10 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 			}
 		}
 		return "UNKNOWN";
+	}
+	public int getCombatLevelsGained()
+	{
+		return ctx.players.local().combatLevel()-this.startCombatLevel;
 	}
 	
 }

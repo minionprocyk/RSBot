@@ -1,7 +1,10 @@
 
 package Scripts;
 
+import java.awt.Graphics;
+
 import org.powerbot.script.Area;
+import org.powerbot.script.PaintListener;
 import org.powerbot.script.PollingScript;
 import org.powerbot.script.Random;
 import org.powerbot.script.Script.Manifest;
@@ -12,18 +15,22 @@ import org.powerbot.script.rt6.Npc;
 
 import Constants.Animation;
 import Constants.Interact;
+import Constants.ItemId;
 import Constants.ItemName;
 import Constants.NpcName;
 import Constants.ObjectName;
 import Constants.WidgetId;
+import Engines.FightingEngine;
+import Engines.StatisticsEngine;
 import Pathing.ToObject;
 import Pathing.Traverse;
 
-@Manifest(name = "Cow Killing", description = "kill cows and stuff", properties = "client=6; topic=0;")
+@Manifest(name = "Cow Killing", description = "starts next to bank in lumbridge or in cow farm", properties = "client=6; topic=0;")
 
-public class MadCow extends PollingScript<ClientContext>{
+public class MadCow extends PollingScript<ClientContext> implements PaintListener{
 	State previousState=null;
 	State currentState=null;
+
 	boolean interacted=false;
 	Area bankArea = new Area(new Tile(3177, 3290, 0),new Tile(3160, 3271, 0));
 	Area cowArea = new Area(new Tile(3156, 3316,0), new Tile(3193, 3330, 0));
@@ -32,6 +39,20 @@ public class MadCow extends PollingScript<ClientContext>{
 	Tile tcfb2 = new Tile(3176, 3313, 0);
 	
 	Tile[] fromBankToCows = new Tile[]{tcfb1, tcfb2};
+	int cowHides=0;
+	int bonesBuried=0;
+	int meatsCooked=0;
+	int lastMeatCount=0;
+	int lastHideCount=0;
+	private volatile boolean running=true;
+	public void start()
+	{
+		StatisticsEngine.GetInstance().SetContext(ctx).SetName("Cow Killing").build().start();
+	}
+	public void stop()
+	{
+		System.out.println("Script is stopping");
+	}
 	public void poll() {
 		switch(currentState=getState())
 		{
@@ -44,22 +65,13 @@ public class MadCow extends PollingScript<ClientContext>{
 				Traverse.TraversePath(ctx, cowArea.getRandomTile());
 				return;
 			}
-			interacted = Actions.Interact.InteractWithNPC(ctx, NpcName.NULL, Interact.ATTACK);
-			//FightingEngine.GetInstance().SetContext(ctx).SetFightingArea(cowArea).SetFood(ItemId.COOKED_MEAT).SetTargets(NpcName.NULL).build().run();
-			
-			//wait until the cow is dead and loot it
-			if(interacted)
+			FightingEngine.GetInstance().SetContext(ctx).SetFightingArea(cowArea).SetLoot(ObjectName.RAW_BEEF, ObjectName.COWHIDE).
+										SetFood(ItemId.COOKED_MEAT).SetTargets(NpcName.NULL).build().run();
+			//stats during the run
+			if(LocalPlayer.Backpack.Count(ctx, ItemId.COWHIDE) != lastHideCount)
 			{
-				//wait for this cow to not exist or for 30 seconds
-				long now = System.currentTimeMillis();
-				do
-				{
-					Utility.Sleep.Wait(100);
-				}while(npc.valid() && (Math.abs(now-System.currentTimeMillis())) < 1000*30);
-				System.out.println("Cow dead.");
-				ctx.groundItems.select().name(ObjectName.RAW_BEEF).nearest().poll().interact("Take");
-				Utility.Sleep.WaitRandomTime(1000, 3000);
-				if(ctx.widgets.component(1622, 14).valid())ctx.widgets.component(1622, 14).click();//loot all
+				lastHideCount = LocalPlayer.Backpack.Count(ctx,ItemId.COWHIDE);
+				if(lastHideCount!=0)cowHides++;//don't add when depositing hides
 			}
 			break;
 		case usebags:
@@ -68,6 +80,7 @@ public class MadCow extends PollingScript<ClientContext>{
 			if(LocalPlayer.Backpack.Has(ctx, ObjectName.BONES))
 			{
 				//bury the bones
+				bonesBuried++;
 				LocalPlayer.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
 			}
 			else if(LocalPlayer.Backpack.Has(ctx, ObjectName.BURNT_MEAT))
@@ -89,10 +102,26 @@ public class MadCow extends PollingScript<ClientContext>{
 					if(ctx.widgets.component(WidgetId.CHOOSE_A_TOOL, WidgetId.CHOOSE_A_TOOL_COOK).component(1).valid())
 						ctx.widgets.component(WidgetId.CHOOSE_A_TOOL, WidgetId.CHOOSE_A_TOOL_COOK).component(1).click();
 					if(ctx.widgets.component(1370, 20).valid())ctx.widgets.component(1370, 20).click();
+					running=true;
+					new Thread(new Runnable() {
+						public void run() {
+							Utility.Sleep.Wait(1000);
+							while(running)
+							{
+								if(LocalPlayer.Backpack.Count(ctx,ItemId.COOKED_MEAT) != lastMeatCount)
+								{
+									lastMeatCount = LocalPlayer.Backpack.Count(ctx, ItemId.COOKED_MEAT);
+									if(lastMeatCount!=0)meatsCooked++;
+								}
+								Utility.Sleep.Wait(500);
+							}
+						}
+					}).start();
 					do
 					{
 						Utility.Sleep.WaitRandomTime(1000, 2000);
 					}while(LocalPlayer.Animation.CheckPlayerIdle(ctx)==Animation.PLAYER_NOT_IDLE);
+					running=false;
 				}
 				else
 				{
@@ -130,29 +159,8 @@ public class MadCow extends PollingScript<ClientContext>{
 			break;
 		case walk_to_bank:
 			System.out.println("Walking to bank");
-			new Thread(new Runnable() {
-				public void run() {
-					while(currentState==State.walk_to_bank)
-					{
-						if(ctx.players.local().inMotion())
-						{
-							if(LocalPlayer.Backpack.Has(ctx, ObjectName.BONES))
-							{
-								//bury the bones
-								LocalPlayer.Backpack.Use(ctx, ObjectName.BONES, Interact.BURY);
-							}
-							else if(LocalPlayer.Backpack.Has(ctx, ObjectName.BURNT_MEAT))
-							{
-								//drop the meat
-								LocalPlayer.Backpack.Use(ctx, ObjectName.BURNT_MEAT, Interact.DROP);
-							}
-							Utility.Sleep.WaitRandomTime(500, 2000);
-						}
-					}
-				}
-			}).start();
 			Traverse.TraversePathInReverse(ctx, fromBankToCows);
-			ToObject.WalkToObject(ctx, ObjectName.BANK_CHEST,bankArea.getRandomTile());
+			ToObject.WalkToObject(ctx, ObjectName.BANK_CHEST);
 			break;
 		case walk_to_cows:
 			System.out.println("Walking to cows");
@@ -164,8 +172,9 @@ public class MadCow extends PollingScript<ClientContext>{
 	
 	public State getState()
 	{
-		if(LocalPlayer.Backpack.isFull(ctx) && !LocalPlayer.Location.Within(ctx, bankArea))
+		if(LocalPlayer.Backpack.Count(ctx)>26 && !LocalPlayer.Location.Within(ctx, bankArea))
 		{
+			if(LocalPlayer.Backpack.Has(ctx, ItemId.BONES,ItemId.BURNT_MEAT))return State.usebags;
 			return State.walk_to_bank;
 		}
 		else if(LocalPlayer.Backpack.hasStuff(ctx) && LocalPlayer.Location.Within(ctx, bankArea))
@@ -193,5 +202,14 @@ public class MadCow extends PollingScript<ClientContext>{
 	public enum State
 	{
 		kill, usebags, walk_to_bank, walk_to_cows, deposit
+	}
+
+	public void repaint(Graphics graphics) {
+		StatisticsEngine.GetInstance().SetStringsToDraw(
+				"Combat Levels Gained = "+StatisticsEngine.GetInstance().getCombatLevelsGained(),
+				"Cow Hides Collected = "+cowHides,
+				"Bones buried = "+bonesBuried,
+				"Meats cooked = "+meatsCooked)
+				.repaint(graphics);
 	}
 }

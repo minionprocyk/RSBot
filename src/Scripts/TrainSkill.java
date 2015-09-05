@@ -34,11 +34,12 @@ public class TrainSkill extends PollingScript<ClientContext> implements MessageL
 	String[] objects;
 	Tile[] pathToBank;
 	boolean isBanking=true;
-	int stopAtLevel=100;
 	public void start()
 	{
+		
 		ChatEngine.GetInstance().SetContext(ctx).build().start();
-		StatisticsEngine.GetInstance().SetContext(ctx).build().start();
+		StatisticsEngine.GetInstance().SetContext(ctx).SetName("Train Skills").build().start();
+		
 		STORAGE_DIRECTORY=getStorageDirectory();
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
@@ -137,9 +138,14 @@ public class TrainSkill extends PollingScript<ClientContext> implements MessageL
 	public void messaged(MessageEvent msg) {
 		Messages.AddPastReadMessages(msg.source(), msg.text());
 	}
-	@Override
+	
 	public void repaint(Graphics arg0) {
-		StatisticsEngine.GetInstance().repaint(arg0);
+		StatisticsEngine.GetInstance().SetStringsToDraw(
+				"Leveling "+StatisticsEngine.GetInstance().getSkill(StatisticsEngine.skill),
+				"Levels Gained = "+StatisticsEngine.GetInstance().getLevelsGained(StatisticsEngine.skill),
+				"EXP Gained = "+StatisticsEngine.GetInstance().getXPGained(StatisticsEngine.skill)+"xp",
+				"EXP/HR = "+StatisticsEngine.GetInstance().getExperiencePerHour(StatisticsEngine.skill)+"xp/hr"
+				).repaint(arg0);
 		
 	}
 }

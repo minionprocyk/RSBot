@@ -731,6 +731,7 @@ public class ItemId {
 	public static final int RAW_CHICKEN = 2138;
 	public static final int COOKED_CHICKEN = 2140;
 	public static final int COOKED_MEAT = 2142;
+	public static final int BURNT_MEAT = 2146;
 	public static final int SWAMP_TOAD = 2150;
 	public static final int TOADS_LEGS = 2152;
 	public static final int KING_WORM = 2162;

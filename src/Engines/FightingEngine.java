@@ -31,6 +31,7 @@ public class FightingEngine implements Runnable{
 	private boolean attackAtRandom=false;
 	private boolean usePrayer=false;
 	private boolean fightAnyway=false;
+	private boolean inCombat=false;
 	private String textHealth;
 	private int lowHealth=60, currentHealth=100, maxHealth=100, currentHealthPercent=100;
 	private int enemyCurrentHealth=100, enemyMaxHealth=100, enemyCurrentHealthPercent=100;
@@ -58,11 +59,12 @@ public class FightingEngine implements Runnable{
 	}
 	public void run() {
 		//if were not in combat. find a target
+		inCombat = ctx.players.local().inCombat() && (currentTarget!=null && currentTarget.inCombat() && currentTarget.healthPercent()>0);
 		if(fightingArea!=null && !LocalPlayer.Location.Within(ctx, fightingArea))
 		{		
 			Pathing.MoveTowards.Location(ctx, fightingArea);
 		}
-		if(ctx.players.local().inCombat())
+		if(inCombat)
 		{
 			if(currentTarget != null && currentTarget.inCombat() && currentTarget.healthPercent() > 0)
 			{
@@ -86,6 +88,7 @@ public class FightingEngine implements Runnable{
 			else
 			{
 				System.out.println("Current target is either not instantiated, not in combat, or dead");
+				
 			}
 		}
 		else
@@ -96,67 +99,76 @@ public class FightingEngine implements Runnable{
 				System.out.println("Current Target is dead.");
 				SimpleTask.Loot(ctx, loot);	
 			}	
-			if(currentHealthPercent > 50 || fightAnyway)
+			try
 			{
-				do
+				if(currentHealthPercent > 50 || fightAnyway)
 				{
-					fightAnyway=false;
-					List<Npc> collection= new ArrayList<Npc>();
-					if(targetNames != null)
+					do
 					{
-						ctx.npcs.select().name(targetNames).nearest().addTo(collection);
-					}
-					else if(targetIds != null)
-					{
-						ctx.npcs.select().id(targetIds).nearest().addTo(collection);
-					}
-					if(collection.size()==0)
-					{
-						System.out.println("No targets found. Trying again");
-						Utility.Sleep.Wait(1000);
-						return;
-					}
-					System.out.println("Fighting Engine: Collection list has "+collection.size()+" items");
-					previousTarget=currentTarget;
-					currentTarget=AvoidNpcs.GetNearestNonAvoidableNpc(collection);
-					if(currentTarget==null)Pathing.MoveTowards.Location(ctx,this.fightingArea.getRandomTile());
-					System.out.println("We found "+currentTarget.name()+" to fight!");
-					if(Tiles.Calculations.isPlayerNearTile(ctx, currentTarget.tile()))
-					{
-						System.out.println("Player is near "+currentTarget.name()+". avoid!");
-						Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
-					}
-					else
-					{
-						Actions.Interact.InteractWithNPC(ctx, currentTarget, Interact.ATTACK);
-						if(timer!=null)timer.stop();
-						timer = new Timer(100,new ActionListener() {
-							
-							public void actionPerformed(ActionEvent arg0) {
-								if(Messages.GetLastReadMessage().getMessage().equals(GameMessage.CantReach))
-								{
-									Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
+						fightAnyway=false;
+						List<Npc> collection= new ArrayList<Npc>();
+						if(targetNames != null)
+						{
+							ctx.npcs.select().name(targetNames).nearest().addTo(collection);
+						}
+						else if(targetIds != null)
+						{
+							ctx.npcs.select().id(targetIds).nearest().addTo(collection);
+						}
+						if(collection.size()==0)
+						{
+							System.out.println("No targets found. Trying again");
+							Utility.Sleep.Wait(1000);
+							return;
+						}
+						System.out.println("Fighting Engine: Collection list has "+collection.size()+" items");
+						previousTarget=currentTarget;
+						currentTarget=AvoidNpcs.GetNearestNonAvoidableNpc(collection);
+						if(currentTarget==null)Pathing.MoveTowards.Location(ctx,this.fightingArea.getRandomTile());
+						System.out.println("We found "+currentTarget.name()+" to fight!");
+						if(Tiles.Calculations.isPlayerNearTile(ctx, currentTarget.tile()))
+						{
+							System.out.println("Player is near "+currentTarget.name()+". avoid!");
+							Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
+						}
+						else
+						{
+							Actions.Interact.InteractWithNPC(ctx, currentTarget, Interact.ATTACK);
+							if(timer!=null)timer.stop();
+							timer = new Timer(100,new ActionListener() {
+								
+								public void actionPerformed(ActionEvent arg0) {
+									if(Messages.GetLastReadMessage().getMessage().equals(GameMessage.CantReach))
+									{
+										Pathing.AvoidNpcs.AddAvoidableNpc(new AvoidNpc(currentTarget));
+									}
 								}
-							}
-						});
-					}
-				}while(currentTarget==null || currentTarget.equals(previousTarget) || Pathing.AvoidNpcs.IsAvoided(currentTarget));
-			}
-			else
-			{
-				//current health is less than 50. its too dangerous
-				System.out.println("Our health is less than 50. What do we do?");
-				if(EatFood()==false)
-				{
-					System.out.println("There's northing we can do. Stopping.");
-					if(ctx.game.loggedIn())ctx.game.logout(true);
-					ctx.controller.stop();
+							});
+						}
+					}while(currentTarget==null || currentTarget.equals(previousTarget) || Pathing.AvoidNpcs.IsAvoided(currentTarget));
 				}
 				else
 				{
-					fightAnyway=true;
+					//current health is less than 50. its too dangerous
+					System.out.println("Our health is less than 50. What do we do?");
+					if(EatFood()==false)
+					{
+						System.out.println("There's northing we can do. Stopping.");
+						if(ctx.game.loggedIn())ctx.game.logout(true);
+						ctx.controller.stop();
+					}
+					else
+					{
+						fightAnyway=true;
+					}
 				}
 			}
+			catch(NullPointerException e)
+			{
+				//all npcs being avoided, find something to loot instead
+				if(loot!=null)SimpleTask.Loot(ctx, loot);
+			}
+			
 		}
 	}
 	private boolean EatFood()
