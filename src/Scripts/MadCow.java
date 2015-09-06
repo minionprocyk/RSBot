@@ -97,7 +97,14 @@ public class MadCow extends PollingScript<ClientContext> implements PaintListene
 					System.out.println("There's a fire we can use");
 					//theres a fire around to use
 					LocalPlayer.Backpack.Use(ctx, ObjectName.RAW_BEEF, Interact.USE);
-					Actions.Interact.InteractWithObject(ctx, ObjectName.FIRE, Interact.USE);
+					try
+					{
+						Actions.Interact.InteractWithObject(ctx, ObjectName.FIRE, Interact.USE);
+					}
+					catch(NullPointerException e)
+					{
+						return;
+					}
 					Utility.Sleep.WaitRandomTime(1000, 2000);
 					if(ctx.widgets.component(WidgetId.CHOOSE_A_TOOL, WidgetId.CHOOSE_A_TOOL_COOK).component(1).valid())
 						ctx.widgets.component(WidgetId.CHOOSE_A_TOOL, WidgetId.CHOOSE_A_TOOL_COOK).component(1).click();
@@ -130,6 +137,7 @@ public class MadCow extends PollingScript<ClientContext> implements PaintListene
 					if(LocalPlayer.Backpack.Has(ctx, ObjectName.LOGS))
 					{
 						System.out.println("Making a fire");
+						Traverse.TraversePath(ctx, cowArea.getRandomTile());
 						LocalPlayer.Backpack.Use(ctx, ObjectName.LOGS, Interact.LIGHT);						
 						do
 						{

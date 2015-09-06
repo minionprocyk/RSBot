@@ -1,6 +1,5 @@
 package Tasks;
 
-import org.powerbot.script.ClientAccessor;
 import org.powerbot.script.rt6.ClientContext;
 import org.powerbot.script.rt6.Component;
 
@@ -9,11 +8,7 @@ import Constants.Interact;
 import Constants.ObjectName;
 import Manager.WorldHopManager;
 
-public class SimpleTask extends ClientAccessor<ClientContext>{
-	public SimpleTask(ClientContext ctx)
-	{
-		super(ctx);
-	}
+public class SimpleTask{
 	public static void Smelt(ClientContext ctx)
 	{
 		//search for a widget
