@@ -29,7 +29,7 @@ public class AvoidObjectsManager {
 			}
 			return goodObject;
 		}
-		throw new NullPointerException("Pathing.AvoidObjects.GetNearestNonAvoidableObject: All objects are being avoided.");
+		throw new NullPointerException("rt4.manager.AvoidObjectsManager.GetNearestNonAvoidableObject: All objects are being avoided.");
 		
 	}
 	public static void AddAvoidableObject(AvoidObject avoidable)

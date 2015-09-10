@@ -11,7 +11,7 @@ import org.powerbot.script.rt6.Hud.Menu;
 import procyk.industries.rt6.actions.Widgets;
 import procyk.industries.rt6.utility.Sleep;
 import procyk.industries.rt6.widgets.Search;
-import procyk.industries.shared.constants.WidgetIdConstants;
+import procyk.industries.shared.constants.WidgetIdConstantsRT6;
 
 public class WorldHopManager {
 	private static WorldHopManager whm;
@@ -41,8 +41,8 @@ public class WorldHopManager {
 			Sleep.Wait(1500);
 			for(int i=0;i<10;i++)
 			{
-				Component componentWorldPlayers = ctx.widgets.component(WidgetIdConstants.WORLD_SELECT, WidgetIdConstants.WORLD_SELECT_WORLD).component(WidgetIdConstants.WORLD_SELECT_WORLD_PLAYERS +i*worldModifier);
-				Component componentWorldNumber = ctx.widgets.component(WidgetIdConstants.WORLD_SELECT, WidgetIdConstants.WORLD_SELECT_WORLD).component(WidgetIdConstants.WORLD_SELECT_WORLD_NUMBER +i*worldModifier);
+				Component componentWorldPlayers = ctx.widgets.component(WidgetIdConstantsRT6.WORLD_SELECT, WidgetIdConstantsRT6.WORLD_SELECT_WORLD).component(WidgetIdConstantsRT6.WORLD_SELECT_WORLD_PLAYERS +i*worldModifier);
+				Component componentWorldNumber = ctx.widgets.component(WidgetIdConstantsRT6.WORLD_SELECT, WidgetIdConstantsRT6.WORLD_SELECT_WORLD).component(WidgetIdConstantsRT6.WORLD_SELECT_WORLD_NUMBER +i*worldModifier);
 				int worldNumber = Integer.parseInt(componentWorldNumber.text().trim());
 				int worldPlayers = Integer.parseInt(componentWorldPlayers.text().trim());
 				System.out.println("World "+worldNumber+" | Players = "+worldPlayers);
@@ -51,10 +51,10 @@ public class WorldHopManager {
 				{
 					previousWorlds.add(hopWorld);
 					//click the row
-					Widgets.Click(ctx, WidgetIdConstants.WORLD_SELECT,WidgetIdConstants.WORLD_SELECT_WORLD, (i * worldModifier));
+					Widgets.Click(ctx, WidgetIdConstantsRT6.WORLD_SELECT,WidgetIdConstantsRT6.WORLD_SELECT_WORLD, (i * worldModifier));
 					
 					//click yes
-					Widgets.Click(ctx, WidgetIdConstants.WORLD_SELECT,WidgetIdConstants.WORLD_SELECT_CONFIRM_YES);
+					Widgets.Click(ctx, WidgetIdConstantsRT6.WORLD_SELECT,WidgetIdConstantsRT6.WORLD_SELECT_CONFIRM_YES);
 					break;
 				}
 			}
@@ -68,7 +68,7 @@ public class WorldHopManager {
 	}
 	private void GetCurrentWorld()
 	{
-		int currentWorldNumber = Integer.parseInt(ctx.widgets.component(WidgetIdConstants.FRIENDS_LIST, WidgetIdConstants.FRIENDS_LIST_WORLDNUMBER).text().split("RuneScape ")[1].trim());
+		int currentWorldNumber = Integer.parseInt(ctx.widgets.component(WidgetIdConstantsRT6.FRIENDS_LIST, WidgetIdConstantsRT6.FRIENDS_LIST_WORLDNUMBER).text().split("RuneScape ")[1].trim());
 		CURRENT_WORLD = new World(currentWorldNumber,0);
 		System.out.println("Current World = "+CURRENT_WORLD.getWorldNumber());
 	}

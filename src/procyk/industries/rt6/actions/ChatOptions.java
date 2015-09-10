@@ -4,7 +4,7 @@ import org.powerbot.script.rt6.ChatOption;
 import org.powerbot.script.rt6.ClientContext;
 
 import procyk.industries.rt6.utility.Sleep;
-import procyk.industries.shared.constants.WidgetIdConstants;
+import procyk.industries.shared.constants.WidgetIdConstantsRT6;
 
 public class ChatOptions {
 	public static boolean SelectNextOption(ClientContext ctx, String option)
@@ -12,7 +12,7 @@ public class ChatOptions {
 		ChatOption co = null;
 		while(!(co = ctx.chat.select().text(option).first().poll()).valid())
 		{
-			Widgets.Click(ctx, WidgetIdConstants.CHATWINDOW,WidgetIdConstants.CHATWINDOW_CONTINUE);
+			Widgets.Click(ctx, WidgetIdConstantsRT6.CHATWINDOW,WidgetIdConstantsRT6.CHATWINDOW_CONTINUE);
 			Sleep.WaitRandomTime(300,750);
 			co = ctx.chat.select().text(option).first().poll();
 		}

@@ -7,7 +7,7 @@ import procyk.industries.rt6.actions.Widgets;
 import procyk.industries.rt6.localplayer.Location;
 import procyk.industries.rt6.pathing.Traverse;
 import procyk.industries.shared.constants.AreaConstants;
-import procyk.industries.shared.constants.WidgetIdConstants;
+import procyk.industries.shared.constants.WidgetIdConstantsRT6;
 
 public class WalkToGrandExchange extends Task{
 
@@ -33,8 +33,8 @@ public class WalkToGrandExchange extends Task{
 			if(distance > 20)
 			{
 				//teleport to varrock and walk
-				Widgets.Click(ctx, WidgetIdConstants.HUD, WidgetIdConstants.HUD_MINIMAP, WidgetIdConstants.HUD_MINIMAP_TELEPORT);
-				Widgets.Click(ctx, WidgetIdConstants.TELEPORT_MAP,WidgetIdConstants.TELEPORT_MAP_VARROCK);
+				Widgets.Click(ctx, WidgetIdConstantsRT6.HUD, WidgetIdConstantsRT6.HUD_MINIMAP, WidgetIdConstantsRT6.HUD_MINIMAP_TELEPORT);
+				Widgets.Click(ctx, WidgetIdConstantsRT6.TELEPORT_MAP,WidgetIdConstantsRT6.TELEPORT_MAP_VARROCK);
 				procyk.industries.rt6.utility.Sleep.Wait(15000);
 				Traverse.TraversePath(ctx, lodestoneToCenter);
 				Traverse.TraversePath(ctx, varrockCenterToGrandExchange);

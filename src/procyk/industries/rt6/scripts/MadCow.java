@@ -28,7 +28,7 @@ import procyk.industries.shared.constants.ItemIdConstants;
 import procyk.industries.shared.constants.ItemNameConstants;
 import procyk.industries.shared.constants.NpcNameConstants;
 import procyk.industries.shared.constants.ObjectNameConstants;
-import procyk.industries.shared.constants.WidgetIdConstants;
+import procyk.industries.shared.constants.WidgetIdConstantsRT6;
 
 @Manifest(name = "Cow Killing", description = "starts next to bank in lumbridge or in cow farm", properties = "client=6; topic=0;")
 
@@ -111,8 +111,8 @@ public class MadCow extends PollingScript<ClientContext> implements PaintListene
 						return;
 					}
 					Sleep.WaitRandomTime(1000, 2000);
-					if(ctx.widgets.component(WidgetIdConstants.CHOOSE_A_TOOL, WidgetIdConstants.CHOOSE_A_TOOL_COOK).component(1).valid())
-						ctx.widgets.component(WidgetIdConstants.CHOOSE_A_TOOL, WidgetIdConstants.CHOOSE_A_TOOL_COOK).component(1).click();
+					if(ctx.widgets.component(WidgetIdConstantsRT6.CHOOSE_A_TOOL, WidgetIdConstantsRT6.CHOOSE_A_TOOL_COOK).component(1).valid())
+						ctx.widgets.component(WidgetIdConstantsRT6.CHOOSE_A_TOOL, WidgetIdConstantsRT6.CHOOSE_A_TOOL_COOK).component(1).click();
 					if(ctx.widgets.component(1370, 20).valid())ctx.widgets.component(1370, 20).click();
 					running=true;
 					new Thread(new Runnable() {

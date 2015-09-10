@@ -55,16 +55,16 @@ public class SimpleTask{
 		ctx.bank.depositInventory();
 		if(closeBank)ctx.bank.close();
 	}
-	public static void Loot(ClientContext ctx, String... item)
+	public static void Loot(ClientContext ctx, String... items)
 	{
 		
-		ctx.groundItems.select().name(item).nearest().poll().interact(InteractConstants.TAKE);
+		//ctx.groundItems.select().name(item).nearest().poll().interact(InteractConstants.TAKE);
+		for(String item:items)
+		{
+			ctx.groundItems.select().name(item).nearest().poll().interact(InteractConstants.TAKE,item);		
+		}
 		Sleep.WhileRunning(ctx);
 		if(ctx.widgets.component(1622, 14).valid())ctx.widgets.component(1622, 14).click();//loot all
-	}
-	public static void LootAll(ClientContext ctx)
-	{
-		Search.ForComponent(ctx, WidgetSearchNameConstants.LOOT).click();
 	}
 	public static void WorldHop(ClientContext ctx)
 	{

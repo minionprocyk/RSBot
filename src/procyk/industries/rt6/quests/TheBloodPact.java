@@ -11,7 +11,7 @@ import procyk.industries.rt6.actions.Widgets;
 import procyk.industries.rt6.pathing.Traverse;
 import procyk.industries.shared.constants.InteractConstants;
 import procyk.industries.shared.constants.NpcIdConstants;
-import procyk.industries.shared.constants.WidgetIdConstants;
+import procyk.industries.shared.constants.WidgetIdConstantsRT6;
 public class TheBloodPact extends ClientAccessor{
 	private Objective[] objectives = new Objective[]{new Objective1(ctx), new Objective2(ctx)};
 	public TheBloodPact(ClientContext arg0) {
@@ -40,8 +40,8 @@ public class TheBloodPact extends ClientAccessor{
 		}
 
 		public void perform() {
-			Widgets.Click(ctx, WidgetIdConstants.HUD, WidgetIdConstants.HUD_MINIMAP, WidgetIdConstants.HUD_MINIMAP_TELEPORT);
-			Widgets.Click(ctx, WidgetIdConstants.TELEPORT_MAP,WidgetIdConstants.TELEPORT_MAP_LUMBRIDGE);
+			Widgets.Click(ctx, WidgetIdConstantsRT6.HUD, WidgetIdConstantsRT6.HUD_MINIMAP, WidgetIdConstantsRT6.HUD_MINIMAP_TELEPORT);
+			Widgets.Click(ctx, WidgetIdConstantsRT6.TELEPORT_MAP,WidgetIdConstantsRT6.TELEPORT_MAP_LUMBRIDGE);
 			procyk.industries.rt6.utility.Sleep.Wait(15000);
 			if(procyk.industries.rt6.localplayer.Location.Within(ctx, lodestone))
 			{

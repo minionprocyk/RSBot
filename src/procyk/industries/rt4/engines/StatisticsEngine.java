@@ -100,9 +100,12 @@ public class StatisticsEngine extends Thread implements Runnable, PaintListener{
 		g.setFont(new Font("Arial", 1, 14));
 		g.drawString("Runtime = "+getRuntimeString((int)Math.abs(System.currentTimeMillis()-start)), rectX+2, rectY+textModHeight*depth++);
 		
-		for(String s: stringsToDraw)
+		if(stringsToDraw!=null)
 		{
-			g.drawString(s, rectX+2, rectY+textModHeight*depth++);
+			for(String s: stringsToDraw)
+			{
+				g.drawString(s, rectX+2, rectY+textModHeight*depth++);
+			}
 		}
 		
 	}

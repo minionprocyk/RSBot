@@ -27,8 +27,9 @@ import procyk.industries.shared.constants.ItemIdConstants;
 import procyk.industries.shared.constants.ObjectNameConstants;
 import procyk.industries.shared.gui.SkillType;
 
-@Manifest(name = "AlAkard Scorpians", description = "kill scorpians and restock food", properties = "client=4; topic=0;")
-
+@Manifest(name = "AlAkard Scorpians",
+		  description = "kill scorpians and restock food", 
+		  properties = "client=4; topic=0;")
 public class AlakardTraining extends PollingScript<ClientContext> implements MessageListener{
 	State currentState=null, previousState=null;
 	Area killSite = new Area(new Tile(3289, 3270, 0), new Tile(3321, 3318, 0));

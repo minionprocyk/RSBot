@@ -1,6 +1,6 @@
 package procyk.industries.shared.constants;
 
-public class WidgetIdConstants {
+public class WidgetIdConstantsRT6 {
 	//hud 
 	public static final int HUD = 1477;
 	public static final int HUD_MINIMAP = 38;

@@ -28,10 +28,9 @@ public class Calculations {
 	{
 		//check 1 tile around the tile for a player
 		Iterator<Player> iPlayer = ctx.players.select().iterator();
-		Player player=null;
 		while(iPlayer.hasNext())
 		{
-			player = iPlayer.next();
+			Player player = iPlayer.next();
 			if(player.name()!= ctx.players.local().name() && player.tile().distanceTo(tile) < 4)
 			{
 				return true;

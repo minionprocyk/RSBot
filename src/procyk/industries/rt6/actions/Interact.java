@@ -14,7 +14,7 @@ import procyk.industries.rt6.pathing.ToObject;
 import procyk.industries.rt6.pathing.Traverse;
 import procyk.industries.rt6.utility.Sleep;
 import procyk.industries.shared.constants.InteractConstants;
-import procyk.industries.shared.constants.WidgetIdConstants;
+import procyk.industries.shared.constants.WidgetIdConstantsRT6;
 
 public class Interact {
 	private static final int highDistance=15;
@@ -26,13 +26,13 @@ public class Interact {
 	private static boolean InteractWithObject(ClientContext ctx,GameObject gameObject, String action, int helper)
 	{
 		if(helper!=0)helper++;
-		Component widget = ctx.widgets.select().id(WidgetIdConstants.EXAMINE_PORTRAIT).poll()
-				.component(WidgetIdConstants.EXAMINE_PORTRAIT_TITLE)
-				.component(WidgetIdConstants.EXAMINE_PORTRAIT_TITLE_TEXT);
+		Component widget = ctx.widgets.select().id(WidgetIdConstantsRT6.EXAMINE_PORTRAIT).poll()
+				.component(WidgetIdConstantsRT6.EXAMINE_PORTRAIT_TITLE)
+				.component(WidgetIdConstantsRT6.EXAMINE_PORTRAIT_TITLE_TEXT);
 		if(widget!= null && widget.valid() && widget.visible() && !widget.text().isEmpty())
 		{
 			//close it
-			Widgets.Click(ctx, WidgetIdConstants.EXAMINE_PORTRAIT, WidgetIdConstants.EXAMINE_PORTRAIT_CLOSE, WidgetIdConstants.EXAMINE_PORTRAIT_CLOSE_BUTTON);
+			Widgets.Click(ctx, WidgetIdConstantsRT6.EXAMINE_PORTRAIT, WidgetIdConstantsRT6.EXAMINE_PORTRAIT_CLOSE, WidgetIdConstantsRT6.EXAMINE_PORTRAIT_CLOSE_BUTTON);
 		}	
 		if(helper>avoidObjectThreshold)AvoidObjectsManager.AddAvoidableObject(new AvoidObject(gameObject));
 		if(gameObject!=null && gameObject.valid())

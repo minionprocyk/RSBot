@@ -7,6 +7,7 @@ import java.util.List;
 import javax.swing.Timer;
 
 import org.powerbot.script.Area;
+import org.powerbot.script.Tile;
 import org.powerbot.script.rt4.ClientContext;
 import org.powerbot.script.rt4.Npc;
 
@@ -21,7 +22,6 @@ import procyk.industries.rt4.tasks.SimpleTask;
 import procyk.industries.rt4.tiles.Calculations;
 import procyk.industries.rt4.utility.Sleep;
 import procyk.industries.shared.constants.InteractConstants;
-import procyk.industries.shared.constants.WidgetIdConstants;
 
 public class FightingEngine implements Runnable{
 	private Area fightingArea;
@@ -34,6 +34,7 @@ public class FightingEngine implements Runnable{
 	private String[] loot;
 	private boolean inCombat=false;
 	private boolean usePrayer=false;
+	private boolean runOnce=true;
 	private String textHealth;
 	private int lowHealth=60, currentHealth=100, maxHealth=100, currentHealthPercent=100;
 	private int enemyCurrentHealth=100, enemyMaxHealth=100, enemyCurrentHealthPercent=100;
@@ -59,8 +60,20 @@ public class FightingEngine implements Runnable{
 		}
 		return this;
 	}
+	private void init()
+	{
+		runOnce=false;
+		//do some stuff
+		if(fightingArea==null)
+		{
+			//define a fighting area immediately around us 30x30
+			Tile tile = ctx.players.local().tile();
+			fightingArea = new Area(new Tile(tile.x()+15,tile.y()+15), new Tile(tile.x()-15,tile.y()-15));
+		}
+	}
 	public void run() 
 	{
+		if(runOnce)init();
 		if(currentTarget==null)
 		{
 			//check if we're already in combat
@@ -71,7 +84,8 @@ public class FightingEngine implements Runnable{
 			{
 				Npc nextNpc = npc.next();
 				if(nextNpc.valid() && nextNpc.inCombat()   
-								   && nextNpc.tile().distanceTo(ctx.players.local().tile())< 4)
+								   && nextNpc.tile().distanceTo(ctx.players.local().tile())< 4
+								   && !Calculations.isPlayerNearTile(ctx, nextNpc.tile()))
 				{
 					currentTarget = nextNpc;
 					inCombat = true;
@@ -103,18 +117,22 @@ public class FightingEngine implements Runnable{
 				}
 				
 				
-				textHealth = ctx.widgets.select().id(WidgetIdConstants.COMBAT_BAR).poll().component(WidgetIdConstants.COMBAT_BAR_HEALTH).
-										component(WidgetIdConstants.COMBAT_BAR_HEALTH_TEXT).text();
-				
-				maxHealth = Integer.parseInt(textHealth.split("/")[1]);
-				currentHealth = Integer.parseInt(textHealth.split("/")[0]);
+				currentHealth = ctx.players.local().health();
+				maxHealth = ctx.players.local().maxHealth();
 				currentHealthPercent = (currentHealth*100)/maxHealth;
 				System.out.println("Player current health = "+currentHealthPercent + " ["+
 						currentHealth+" / "+maxHealth+"]");
 				System.out.println("Enemy Current Health = "+currentTarget.health());
-				if(currentHealthPercent < lowHealth)
+				if(currentHealth != -1 && currentHealthPercent < lowHealth)
 				{
-					EatFood();
+					try
+					{
+						EatFood();
+					}
+					catch(NullPointerException e)
+					{
+						System.out.println("Not eating");
+					}
 				}
 				//determine if were going to lose this fight. if we are then run
 				Sleep.WaitRandomTime(500,1000);
@@ -157,6 +175,11 @@ public class FightingEngine implements Runnable{
 					if(Calculations.isPlayerNearTile(ctx, npc.tile()))
 					{
 						System.out.println("Player is near "+npc.name()+" avoid.");
+						AvoidNpcsManager.AddAvoidableNpc(new AvoidNpc(npc));
+					}
+					else if(npc.inCombat())
+					{
+						System.out.println(npc.name()+" is already in combat... avoid.");
 						AvoidNpcsManager.AddAvoidableNpc(new AvoidNpc(npc));
 					}
 					else if(Location.NearHighLevelMobs(ctx))

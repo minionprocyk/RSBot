@@ -21,7 +21,7 @@ import procyk.industries.rt6.tasks.SimpleTask;
 import procyk.industries.rt6.tiles.Calculations;
 import procyk.industries.rt6.utility.Sleep;
 import procyk.industries.shared.constants.InteractConstants;
-import procyk.industries.shared.constants.WidgetIdConstants;
+import procyk.industries.shared.constants.WidgetIdConstantsRT6;
 
 public class FightingEngine implements Runnable{
 	private Area fightingArea;
@@ -103,8 +103,8 @@ public class FightingEngine implements Runnable{
 				}
 				
 				
-				textHealth = ctx.widgets.select().id(WidgetIdConstants.COMBAT_BAR).poll().component(WidgetIdConstants.COMBAT_BAR_HEALTH).
-										component(WidgetIdConstants.COMBAT_BAR_HEALTH_TEXT).text();
+				textHealth = ctx.widgets.select().id(WidgetIdConstantsRT6.COMBAT_BAR).poll().component(WidgetIdConstantsRT6.COMBAT_BAR_HEALTH).
+										component(WidgetIdConstantsRT6.COMBAT_BAR_HEALTH_TEXT).text();
 				
 				maxHealth = Integer.parseInt(textHealth.split("/")[1]);
 				currentHealth = Integer.parseInt(textHealth.split("/")[0]);

@@ -7,7 +7,7 @@ import java.util.List;
 import org.powerbot.script.rt4.Npc;
 
 public class AvoidNpcsManager {
-private static List<AvoidNpc> avoidNpcs = new ArrayList<AvoidNpc>();
+	private static List<AvoidNpc> avoidNpcs = new ArrayList<AvoidNpc>();
 	
 	public static Npc GetNearestNonAvoidableNpc(List<Npc> npcs)
 	{
@@ -30,7 +30,7 @@ private static List<AvoidNpc> avoidNpcs = new ArrayList<AvoidNpc>();
 			return goodNpc;
 		}
 		
-		throw new NullPointerException("Pathing.AvoidNpcs.GetNearestNonAvoidableNpc: All npcs are being avoided.");
+		throw new NullPointerException("rt4.manager.AvoidNpcs.GetNearestNonAvoidableNpc: All npcs are being avoided.");
 
 		
 	}
